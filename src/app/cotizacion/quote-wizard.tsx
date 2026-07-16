@@ -6,7 +6,8 @@ import Image from "next/image"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { Producto } from "@prisma/client"
+import { toast } from "sonner"
+import type { Producto } from "@/lib/mocks"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -145,7 +146,7 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
     setStatus("loading")
     setErrorMessage("")
 
-    const step1Data = {} as Step1Data // Will be gathered from form
+    const step1Data = {} as Step1Data
     const formValues = document.forms.namedItem("quote-form") as HTMLFormElement
     if (formValues) {
       const fd = new FormData(formValues)
@@ -164,25 +165,15 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
     }
 
     try {
-      const response = await fetch("/api/cotizacion-publica", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...step1Data,
-          duracionDias: data.duracionDias,
-          ubicacionEvento: data.ubicacionEvento,
-          notasAdicionales: data.notasAdicionales,
-          items,
-        }),
-      })
-
-      const result = await response.json()
-
-      if (!response.ok) {
-        throw new Error(result.message || "Error al enviar la cotización")
-      }
+      // Simulated API call — no backend in static prototype
+      await new Promise((resolve) => setTimeout(resolve, 1000))
 
       setStatus("success")
+      toast.success(`Cotización solicitada por ${step1Data.nombre || "Cliente"}`, {
+        description: data.duracionDias
+          ? `Duración: ${data.duracionDias} días. Te contactaremos en menos de 24 horas.`
+          : "Te contactaremos en menos de 24 horas.",
+      })
     } catch (error) {
       setStatus("error")
       setErrorMessage(
@@ -190,6 +181,9 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
           ? error.message
           : "Hubo un error. Por favor intenta de nuevo o contáctanos por WhatsApp."
       )
+      toast.error("No pudimos enviar tu solicitud", {
+        description: "Intenta de nuevo o contáctanos por WhatsApp.",
+      })
     }
   }
 

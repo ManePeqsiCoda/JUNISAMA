@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { prisma } from "@/lib/prisma"
+import { productos } from "@/lib/mocks"
 import { QuoteWizard } from "./quote-wizard"
 import {
   seoConfig,
@@ -17,11 +17,10 @@ export const metadata: Metadata = {
   twitter: generateTwitterCard("cotizacion"),
 }
 
-export default async function CotizacionPage() {
-  const productos = await prisma.producto.findMany({
-    where: { estado: "ACTIVO" },
-    orderBy: { orden: "asc" },
-  })
+export default function CotizacionPage() {
+  const activeProductos = productos
+    .filter((p) => p.estado === "ACTIVO")
+    .sort((a, b) => a.orden - b.orden)
 
   const breadcrumbJsonLd = generateBreadcrumbJsonLd([
     { name: "Inicio", path: "/" },
@@ -34,7 +33,7 @@ export default async function CotizacionPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
-      <QuoteWizard productos={productos} />
+      <QuoteWizard productos={activeProductos} />
     </div>
   )
 }

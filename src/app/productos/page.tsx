@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { prisma } from "@/lib/prisma"
+import { productos, categorias } from "@/lib/mocks"
 import { ProductCatalog } from "./product-catalog"
 import {
   seoConfig,
@@ -17,15 +17,12 @@ export const metadata: Metadata = {
   twitter: generateTwitterCard("productos"),
 }
 
-export default async function ProductosPage() {
-  const [productos, categorias] = await Promise.all([
-    prisma.producto.findMany({
-      where: { estado: "ACTIVO" },
-      include: { categoria: true },
-      orderBy: { orden: "asc" },
-    }),
-    prisma.categoria.findMany({ orderBy: { orden: "asc" } }),
-  ])
+export default function ProductosPage() {
+  const activeProductos = productos
+    .filter((p) => p.estado === "ACTIVO")
+    .sort((a, b) => a.orden - b.orden)
+
+  const activeCategorias = categorias.sort((a, b) => a.orden - b.orden)
 
   const breadcrumbJsonLd = generateBreadcrumbJsonLd([
     { name: "Inicio", path: "/" },
@@ -51,7 +48,7 @@ export default async function ProductosPage() {
         </div>
       </section>
 
-      <ProductCatalog productos={productos} categorias={categorias} />
+      <ProductCatalog productos={activeProductos} categorias={activeCategorias} />
     </div>
   )
 }

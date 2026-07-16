@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Faq } from "@prisma/client"
+import type { Faq } from "@/lib/mocks"
 import {
   Accordion,
   AccordionContent,

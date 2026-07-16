@@ -28,7 +28,9 @@ import {
 import { Checkbox } from "@/components/ui/checkbox"
 import { Loader2, Star, Check } from "lucide-react"
 import { cn } from "@/lib/utils"
-import type { Evento } from "@prisma/client"
+import { slugify } from "@/lib/slugify"
+import type { Evento } from "@/lib/mocks"
+import { generateMockId } from "@/lib/mocks"
 
 interface ProductoOption {
   id: string
@@ -40,7 +42,7 @@ interface EventoPortafolioFormProps {
   onOpenChange: (open: boolean) => void
   evento: Evento | null
   productos: ProductoOption[]
-  onSuccess: () => void
+  onSuccess: (evento: Evento) => void
 }
 
 const tipoEventoOptions = [
@@ -145,32 +147,29 @@ export function EventoPortafolioForm({
 
   const onSubmit = async (data: FormData) => {
     try {
-      const url = isEditing ? `/api/eventos/${evento!.id}` : "/api/eventos"
-      const method = isEditing ? "PUT" : "POST"
-
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...data,
-          descripcion: data.descripcion?.trim() || null,
-          imagenPrincipal: data.imagenPrincipal?.trim() || null,
-          ciudad: data.ciudad?.trim() || null,
-          testimonio: data.testimonio?.trim() || null,
-          nombreTestimonio: data.nombreTestimonio?.trim() || null,
-          cargoTestimonio: data.cargoTestimonio?.trim() || null,
-        }),
-      })
-
-      if (!res.ok) {
-        const result = await res.json()
-        throw new Error(result.error || "Error al guardar el evento")
+      const saved: Evento = {
+        id: evento?.id ?? generateMockId("evt"),
+        slug: evento?.slug ?? slugify(data.nombre),
+        nombre: data.nombre,
+        anio: data.anio,
+        tipo: data.tipo,
+        descripcion: data.descripcion?.trim() || null,
+        imagenPrincipal: data.imagenPrincipal?.trim() || null,
+        ciudad: data.ciudad?.trim() || null,
+        cantidadUnidades: data.cantidadUnidades ?? null,
+        productosUsados: data.productosUsados,
+        testimonio: data.testimonio?.trim() || null,
+        nombreTestimonio: data.nombreTestimonio?.trim() || null,
+        cargoTestimonio: data.cargoTestimonio?.trim() || null,
+        estrellasTestimonio: data.estrellasTestimonio ?? null,
+        destacado: data.destacado,
+        estado: data.estado,
       }
 
       toast.success(
         isEditing ? "Evento actualizado" : "Evento creado correctamente"
       )
-      onSuccess()
+      onSuccess(saved)
       onOpenChange(false)
     } catch (error) {
       toast.error(

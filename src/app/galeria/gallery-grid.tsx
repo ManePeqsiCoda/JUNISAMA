@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react"
 import Image from "next/image"
-import { Evento, TipoEvento } from "@prisma/client"
+import type { Evento, TipoEvento } from "@/lib/mocks"
 import { Badge } from "@/components/ui/badge"
 import { FadeIn } from "@/components/home/fade-in"
 import { cn } from "@/lib/utils"

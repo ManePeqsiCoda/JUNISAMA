@@ -1,6 +1,11 @@
+"use client"
+
 import Link from "next/link"
+import { useParams } from "next/navigation"
 import { notFound } from "next/navigation"
-import { prisma } from "@/lib/prisma"
+import { useState } from "react"
+import { toast } from "sonner"
+import { getCotizacionById } from "@/lib/mocks"
 import { StatusBadge } from "@/components/admin/status-badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -13,12 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { ArrowLeft, Pencil } from "lucide-react"
-import { updateEstadoCotizacion } from "./actions"
-import type { EstadoCotizacion } from "@prisma/client"
-
-interface CotizacionDetailPageProps {
-  params: Promise<{ id: string }>
-}
+import type { EstadoCotizacion } from "@/lib/mocks"
 
 function formatCurrency(value: number | null | undefined) {
   if (value == null) return "—"
@@ -29,7 +29,7 @@ function formatCurrency(value: number | null | undefined) {
   }).format(Number(value))
 }
 
-function formatDate(date: Date | string | null) {
+function formatDate(date: string | Date | null | undefined) {
   if (!date) return "—"
   return new Intl.DateTimeFormat("es-CO", {
     day: "2-digit",
@@ -38,23 +38,17 @@ function formatDate(date: Date | string | null) {
   }).format(new Date(date))
 }
 
-export default async function CotizacionDetailPage({
-  params,
-}: CotizacionDetailPageProps) {
-  const { id } = await params
+export default function CotizacionDetailPage() {
+  const params = useParams()
+  const id = typeof params.id === "string" ? params.id : ""
 
-  const cotizacion = await prisma.cotizacion.findUnique({
-    where: { id },
-    include: {
-      cliente: true,
-      items: { include: { producto: true } },
-      creadoPor: { select: { nombre: true, email: true } },
-    },
-  })
+  const initialCotizacion = getCotizacionById(id)
 
-  if (!cotizacion) {
+  if (!initialCotizacion) {
     notFound()
   }
+
+  const [cotizacion, setCotizacion] = useState(initialCotizacion)
 
   const costoTotal = Number(cotizacion.costoTotal)
   const precioVenta = Number(cotizacion.precioVenta)
@@ -72,6 +66,11 @@ export default async function CotizacionDetailPage({
   }
   if (cotizacion.estado !== "EXPIRADA") {
     acciones.push({ estado: "EXPIRADA", label: "Marcar expirada", variant: "outline" })
+  }
+
+  const handleChangeEstado = (nuevoEstado: EstadoCotizacion) => {
+    setCotizacion((prev) => ({ ...prev, estado: nuevoEstado }))
+    toast.success(`Estado actualizado a ${nuevoEstado.toLowerCase()}`)
   }
 
   return (
@@ -105,25 +104,18 @@ export default async function CotizacionDetailPage({
 
         <div className="flex flex-wrap items-center gap-2">
           {acciones.map((accion) => (
-            <form
+            <Button
               key={accion.estado}
-              action={async () => {
-                "use server"
-                await updateEstadoCotizacion(id, accion.estado)
-              }}
+              variant={accion.variant}
+              onClick={() => handleChangeEstado(accion.estado)}
+              className={
+                accion.variant === "default"
+                  ? "bg-primary font-semibold text-primary-foreground hover:bg-primary-hover"
+                  : ""
+              }
             >
-              <Button
-                type="submit"
-                variant={accion.variant}
-                className={
-                  accion.variant === "default"
-                    ? "bg-primary font-semibold text-primary-foreground hover:bg-primary-hover"
-                    : ""
-                }
-              >
-                {accion.label}
-              </Button>
-            </form>
+              {accion.label}
+            </Button>
           ))}
           <Button
             variant="outline"

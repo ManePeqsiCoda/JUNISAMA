@@ -1,14 +1,9 @@
 import type { MetadataRoute } from "next";
-import { prisma } from "@/lib/prisma";
+import { productos } from "@/lib/mocks";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "https://junisama.com";
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const productos = await prisma.producto.findMany({
-    where: { estado: "ACTIVO" },
-    select: { slug: true, updatedAt: true },
-  });
-
+export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes: { path: string; priority: number; changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"] }[] = [
     { path: "/", priority: 1.0, changeFrequency: "weekly" },
     { path: "/productos", priority: 0.9, changeFrequency: "weekly" },
@@ -30,11 +25,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: route.changeFrequency,
       priority: route.priority,
     })),
-    ...productos.map((producto) => ({
-      url: `${BASE_URL}/productos/${producto.slug}`,
-      lastModified: producto.updatedAt,
-      changeFrequency: "monthly" as const,
-      priority: 0.8,
-    })),
+    ...productos
+      .filter((producto) => producto.estado === "ACTIVO")
+      .map((producto) => ({
+        url: `${BASE_URL}/productos/${producto.slug}`,
+        changeFrequency: "monthly" as const,
+        priority: 0.8,
+      })),
   ];
 }

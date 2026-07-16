@@ -1,7 +1,7 @@
-import { prisma } from "@/lib/prisma"
 import { KpiCard } from "@/components/admin/kpi-card"
 import { RecentCotizaciones } from "@/components/admin/recent-cotizaciones"
 import { CotizacionesStatusChart } from "@/components/admin/cotizaciones-status-chart"
+import { cotizaciones } from "@/lib/mocks"
 import {
   FileText,
   DollarSign,
@@ -63,75 +63,58 @@ const recentActivities = [
   { id: 2, text: "Dashboard cargado con datos actualizados", time: "Hace unos segundos" },
 ]
 
-export default async function AdminDashboardPage() {
+export default function AdminDashboardPage() {
   const { startOfMonth, endOfMonth, startOfPrev, endOfPrev } = getMonthRanges()
 
-  const [
-    cotizacionesMesActual,
-    cotizacionesMesAnterior,
-    ingresosResult,
-    ingresosMesAnteriorResult,
-    cotizacionesPendientes,
-    clientesActivos,
-    statusCounts,
-    recentCotizaciones,
-  ] = await Promise.all([
-    prisma.cotizacion.count({
-      where: { createdAt: { gte: startOfMonth, lte: endOfMonth } },
-    }),
-    prisma.cotizacion.count({
-      where: { createdAt: { gte: startOfPrev, lte: endOfPrev } },
-    }),
-    prisma.cotizacion.aggregate({
-      where: {
-        estado: "APROBADA",
-        createdAt: { gte: startOfMonth, lte: endOfMonth },
-      },
-      _sum: { precioVenta: true },
-    }),
-    prisma.cotizacion.aggregate({
-      where: {
-        estado: "APROBADA",
-        createdAt: { gte: startOfPrev, lte: endOfPrev },
-      },
-      _sum: { precioVenta: true },
-    }),
-    prisma.cotizacion.count({
-      where: {
-        estado: { in: ["BORRADOR", "ENVIADA"] },
-      },
-    }),
-    prisma.cliente.count({
-      where: { cotizaciones: { some: {} } },
-    }),
-    prisma.cotizacion.groupBy({
-      by: ["estado"],
-      _count: { id: true },
-    }),
-    prisma.cotizacion.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 5,
-      include: { cliente: true },
-    }),
-  ])
+  const cotizacionesMesActual = cotizaciones.filter((c) => {
+    const date = new Date(c.createdAt)
+    return date >= startOfMonth && date <= endOfMonth
+  }).length
 
-  const ingresosEstimados = ingresosResult._sum.precioVenta
-    ? Number(ingresosResult._sum.precioVenta)
-    : 0
+  const cotizacionesMesAnterior = cotizaciones.filter((c) => {
+    const date = new Date(c.createdAt)
+    return date >= startOfPrev && date <= endOfPrev
+  }).length
 
-  const ingresosMesAnterior = ingresosMesAnteriorResult._sum.precioVenta
-    ? Number(ingresosMesAnteriorResult._sum.precioVenta)
-    : 0
+  const ingresosEstimados = cotizaciones
+    .filter((c) => {
+      if (c.estado !== "APROBADA") return false
+      const date = new Date(c.createdAt)
+      return date >= startOfMonth && date <= endOfMonth
+    })
+    .reduce((sum, c) => sum + (c.precioVenta ?? 0), 0)
+
+  const ingresosMesAnterior = cotizaciones
+    .filter((c) => {
+      if (c.estado !== "APROBADA") return false
+      const date = new Date(c.createdAt)
+      return date >= startOfPrev && date <= endOfPrev
+    })
+    .reduce((sum, c) => sum + (c.precioVenta ?? 0), 0)
+
+  const cotizacionesPendientes = cotizaciones.filter((c) =>
+    ["BORRADOR", "ENVIADA"].includes(c.estado)
+  ).length
+
+  const clientesActivos = new Set(
+    cotizaciones.map((c) => c.clienteId)
+  ).size
+
+  const statusData = (["BORRADOR", "ENVIADA", "APROBADA", "RECHAZADA", "EXPIRADA"] as const).map(
+    (estado) => ({
+      estado,
+      count: cotizaciones.filter((c) => c.estado === estado).length,
+    })
+  )
+
+  const recentCotizaciones = [...cotizaciones]
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .slice(0, 5)
 
   const cotizacionesTrend = calculateTrend(
     cotizacionesMesActual,
     cotizacionesMesAnterior
   )
-
-  const statusData = statusCounts.map((item) => ({
-    estado: item.estado,
-    count: item._count.id,
-  }))
 
   return (
     <div className="space-y-6">

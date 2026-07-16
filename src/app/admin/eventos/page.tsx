@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
 import { EventoPortafolioForm } from "@/components/admin/evento-portafolio-form"
 import { Button } from "@/components/ui/button"
@@ -44,7 +44,8 @@ import {
 } from "lucide-react"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
-import type { Evento } from "@prisma/client"
+import { eventos as eventosMock, productos as productosMock } from "@/lib/mocks"
+import type { Evento } from "@/lib/mocks"
 
 const tipoEventoOptions = [
   { value: "TODOS", label: "Todos los tipos" },
@@ -67,7 +68,7 @@ interface ProductoOption {
   nombre: string
 }
 
-function formatTipo(tipo: string | null) {
+function formatTipo(tipo: string | null | undefined) {
   const found = tipoEventoOptions.find((t) => t.value === tipo)
   return found?.label || tipo || "—"
 }
@@ -80,7 +81,9 @@ function getProductosUsados(evento: Evento): string[] {
 
 export default function EventosAdminPage() {
   const [eventos, setEventos] = useState<Evento[]>([])
-  const [productos, setProductos] = useState<ProductoOption[]>([])
+  const [productos] = useState<ProductoOption[]>(
+    productosMock.map((p) => ({ id: p.id, nombre: p.nombre }))
+  )
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
   const [debouncedSearch, setDebouncedSearch] = useState("")
@@ -88,8 +91,6 @@ export default function EventosAdminPage() {
   const [tipoFiltro, setTipoFiltro] = useState("TODOS")
   const [vista, setVista] = useState<"tabla" | "grid">("tabla")
   const [page, setPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
-  const [refreshKey, setRefreshKey] = useState(0)
 
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [selectedEvento, setSelectedEvento] = useState<Evento | null>(null)
@@ -97,6 +98,8 @@ export default function EventosAdminPage() {
     open: boolean
     evento: Evento | null
   }>({ open: false, evento: null })
+
+  const limit = 9
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -107,70 +110,52 @@ export default function EventosAdminPage() {
   }, [search])
 
   useEffect(() => {
-    let cancelled = false
-    async function load() {
-      setLoading(true)
-      try {
-        const anioParam = anioFiltro ? `&anio=${encodeURIComponent(anioFiltro)}` : ""
-        const tipoParam = tipoFiltro && tipoFiltro !== "TODOS" ? `&tipo=${tipoFiltro}` : ""
-        const res = await fetch(
-          `/api/eventos?search=${encodeURIComponent(
-            debouncedSearch
-          )}&page=${page}&limit=9${anioParam}${tipoParam}`
-        )
-        if (!res.ok) throw new Error("Error")
-        const data = await res.json()
-        if (!cancelled) {
-          setEventos(data.eventos)
-          setTotalPages(data.totalPages)
-        }
-      } catch {
-        if (!cancelled) toast.error("No se pudieron cargar los eventos")
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
-    }
-    load()
-    return () => {
-      cancelled = true
-    }
-  }, [debouncedSearch, page, anioFiltro, tipoFiltro, refreshKey])
-
-  useEffect(() => {
-    async function loadProductos() {
-      try {
-        const res = await fetch("/api/productos?estado=ACTIVO&limit=100")
-        if (!res.ok) throw new Error("Error")
-        const data = await res.json()
-        setProductos(
-          (data.productos || []).map((p: { id: string; nombre: string }) => ({
-            id: p.id,
-            nombre: p.nombre,
-          }))
-        )
-      } catch {
-        toast.error("No se pudieron cargar los productos")
-      }
-    }
-    loadProductos()
+    const timer = setTimeout(() => {
+      setEventos(eventosMock)
+      setLoading(false)
+    }, 300)
+    return () => clearTimeout(timer)
   }, [])
 
-  const refresh = useCallback(() => setRefreshKey((k) => k + 1), [])
+  const filteredEventos = useMemo(() => {
+    const term = debouncedSearch.toLowerCase()
+    return eventos.filter((e) => {
+      const matchesSearch =
+        e.nombre.toLowerCase().includes(term) ||
+        (e.ciudad?.toLowerCase().includes(term) ?? false) ||
+        (e.descripcion?.toLowerCase().includes(term) ?? false)
+      const matchesAnio = !anioFiltro || e.anio === Number(anioFiltro)
+      const matchesTipo = tipoFiltro === "TODOS" || e.tipo === tipoFiltro
+      return matchesSearch && matchesAnio && matchesTipo
+    })
+  }, [eventos, debouncedSearch, anioFiltro, tipoFiltro])
 
-  const handleDelete = async () => {
+  const totalPages = Math.max(1, Math.ceil(filteredEventos.length / limit))
+  const paginatedEventos = useMemo(() => {
+    const start = (page - 1) * limit
+    return filteredEventos.slice(start, start + limit)
+  }, [filteredEventos, page])
+
+  const handleDelete = () => {
     if (!deleteDialog.evento) return
-    try {
-      const res = await fetch(`/api/eventos/${deleteDialog.evento.id}`, {
-        method: "DELETE",
-      })
-      if (!res.ok) throw new Error("Error")
-      toast.success("Evento archivado")
-      refresh()
-    } catch {
-      toast.error("No se pudo archivar el evento")
-    } finally {
-      setDeleteDialog({ open: false, evento: null })
-    }
+    setEventos((prev) =>
+      prev.map((e) =>
+        e.id === deleteDialog.evento!.id ? { ...e, estado: "ARCHIVADO" as const } : e
+      )
+    )
+    toast.success("Evento archivado")
+    setDeleteDialog({ open: false, evento: null })
+  }
+
+  const handleSuccess = (evento: Evento) => {
+    setEventos((prev) => {
+      const exists = prev.find((e) => e.id === evento.id)
+      if (exists) {
+        return prev.map((e) => (e.id === evento.id ? evento : e))
+      }
+      return [...prev, evento]
+    })
+    setDrawerOpen(false)
   }
 
   const años = Array.from(
@@ -290,7 +275,7 @@ export default function EventosAdminPage() {
                       <Loader2 className="mx-auto h-6 w-6 animate-spin text-primary" />
                     </TableCell>
                   </TableRow>
-                ) : eventos.length === 0 ? (
+                ) : paginatedEventos.length === 0 ? (
                   <TableRow className="border-border hover:bg-transparent">
                     <TableCell colSpan={6} className="py-12 text-center">
                       <div className="flex flex-col items-center justify-center text-muted-foreground">
@@ -300,7 +285,7 @@ export default function EventosAdminPage() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  eventos.map((evento) => {
+                  paginatedEventos.map((evento) => {
                     const estilo = estadoEventoStyles[evento.estado] || estadoEventoStyles.BORRADOR
                     return (
                       <TableRow key={evento.id} className="border-border">
@@ -387,13 +372,13 @@ export default function EventosAdminPage() {
             <div className="col-span-full py-12 text-center">
               <Loader2 className="mx-auto h-6 w-6 animate-spin text-primary" />
             </div>
-          ) : eventos.length === 0 ? (
+          ) : paginatedEventos.length === 0 ? (
             <div className="col-span-full py-12 text-center text-muted-foreground">
               <Calendar className="mx-auto h-10 w-10" />
               <p className="mt-2 text-sm">No se encontraron eventos.</p>
             </div>
           ) : (
-            eventos.map((evento) => {
+            paginatedEventos.map((evento) => {
               const estilo = estadoEventoStyles[evento.estado] || estadoEventoStyles.BORRADOR
               const productosCount = getProductosUsados(evento).length
               return (
@@ -489,7 +474,7 @@ export default function EventosAdminPage() {
         </div>
       )}
 
-      {!loading && eventos.length > 0 && (
+      {!loading && paginatedEventos.length > 0 && (
         <div className="flex items-center justify-between border-t border-border px-4 py-3">
           <p className="text-sm text-muted-foreground">
             Página {page} de {totalPages}
@@ -522,7 +507,7 @@ export default function EventosAdminPage() {
         onOpenChange={setDrawerOpen}
         evento={selectedEvento}
         productos={productos}
-        onSuccess={refresh}
+        onSuccess={handleSuccess}
       />
 
       <Dialog

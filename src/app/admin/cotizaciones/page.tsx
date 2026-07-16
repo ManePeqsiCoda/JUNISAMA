@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
@@ -39,11 +39,11 @@ import {
   Loader2,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import type { Cotizacion, Cliente, EstadoCotizacion } from "@prisma/client"
+import { cotizaciones as cotizacionesMock } from "@/lib/mocks"
+import type { Cotizacion, Cliente, EstadoCotizacion } from "@/lib/mocks"
 
 type CotizacionWithCliente = Cotizacion & {
   cliente: Cliente
-  items: { id: string }[]
 }
 
 const estados: { value: EstadoCotizacion | "TODOS"; label: string }[] = [
@@ -63,7 +63,7 @@ function formatCurrency(value: number | null | undefined) {
   }).format(Number(value))
 }
 
-function formatDate(date: Date | string | null) {
+function formatDate(date: string | Date | null | undefined) {
   if (!date) return "—"
   return new Intl.DateTimeFormat("es-CO", {
     day: "2-digit",
@@ -81,12 +81,6 @@ interface Stats {
 
 export default function CotizacionesAdminPage() {
   const [cotizaciones, setCotizaciones] = useState<CotizacionWithCliente[]>([])
-  const [stats, setStats] = useState<Stats>({
-    totalCotizaciones: 0,
-    pendientes: 0,
-    aprobadasMes: 0,
-    ingresosEstimados: 0,
-  })
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
   const [debouncedSearch, setDebouncedSearch] = useState("")
@@ -94,12 +88,12 @@ export default function CotizacionesAdminPage() {
     "TODOS"
   )
   const [page, setPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
-  const [refreshKey, setRefreshKey] = useState(0)
   const [deleteDialog, setDeleteDialog] = useState<{
     open: boolean
     cotizacion: CotizacionWithCliente | null
   }>({ open: false, cotizacion: null })
+
+  const limit = 10
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -110,52 +104,65 @@ export default function CotizacionesAdminPage() {
   }, [search])
 
   useEffect(() => {
-    let cancelled = false
-    async function load() {
-      setLoading(true)
-      try {
-        const estadoParam =
-          estadoFiltro === "TODOS" ? "" : `&estado=${estadoFiltro}`
-        const res = await fetch(
-          `/api/cotizaciones?search=${encodeURIComponent(
-            debouncedSearch
-          )}&page=${page}&limit=10${estadoParam}`
-        )
-        if (!res.ok) throw new Error("Error")
-        const data = await res.json()
-        if (!cancelled) {
-          setCotizaciones(data.cotizaciones)
-          setTotalPages(data.totalPages)
-          setStats(data.stats)
-        }
-      } catch {
-        if (!cancelled) toast.error("No se pudieron cargar las cotizaciones")
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
-    }
-    load()
-    return () => {
-      cancelled = true
-    }
-  }, [debouncedSearch, page, estadoFiltro, refreshKey])
+    const timer = setTimeout(() => {
+      setCotizaciones(cotizacionesMock as CotizacionWithCliente[])
+      setLoading(false)
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [])
 
-  const refresh = useCallback(() => setRefreshKey((k) => k + 1), [])
+  const filteredCotizaciones = useMemo(() => {
+    const term = debouncedSearch.toLowerCase()
+    return cotizaciones.filter((c) => {
+      const matchesSearch =
+        c.codigo.toLowerCase().includes(term) ||
+        c.cliente.nombreEmpresa.toLowerCase().includes(term) ||
+        c.nombre.toLowerCase().includes(term)
+      const matchesEstado = estadoFiltro === "TODOS" || c.estado === estadoFiltro
+      return matchesSearch && matchesEstado
+    })
+  }, [cotizaciones, debouncedSearch, estadoFiltro])
 
-  const handleDelete = async () => {
-    if (!deleteDialog.cotizacion) return
-    try {
-      const res = await fetch(`/api/cotizaciones/${deleteDialog.cotizacion.id}`, {
-        method: "DELETE",
+  const totalPages = Math.max(1, Math.ceil(filteredCotizaciones.length / limit))
+  const paginatedCotizaciones = useMemo(() => {
+    const start = (page - 1) * limit
+    return filteredCotizaciones.slice(start, start + limit)
+  }, [filteredCotizaciones, page])
+
+  const stats = useMemo<Stats>(() => {
+    const now = new Date()
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+    const aprobadasMes = cotizaciones.filter((c) => {
+      if (c.estado !== "APROBADA") return false
+      const date = new Date(c.createdAt)
+      return date >= startOfMonth
+    }).length
+    const ingresosEstimados = cotizaciones
+      .filter((c) => {
+        if (c.estado !== "APROBADA") return false
+        const date = new Date(c.createdAt)
+        return date >= startOfMonth
       })
-      if (!res.ok) throw new Error("Error")
-      toast.success("Cotización eliminada")
-      refresh()
-    } catch {
-      toast.error("No se pudo eliminar la cotización")
-    } finally {
-      setDeleteDialog({ open: false, cotizacion: null })
+      .reduce((sum, c) => sum + (c.precioVenta ?? 0), 0)
+    return {
+      totalCotizaciones: cotizaciones.length,
+      pendientes: cotizaciones.filter((c) =>
+        ["BORRADOR", "ENVIADA"].includes(c.estado)
+      ).length,
+      aprobadasMes,
+      ingresosEstimados,
     }
+  }, [cotizaciones])
+
+  const handleDelete = () => {
+    if (!deleteDialog.cotizacion) return
+    setCotizaciones((prev) =>
+      prev.map((c) =>
+        c.id === deleteDialog.cotizacion!.id ? { ...c, estado: "EXPIRADA" as const } : c
+      )
+    )
+    toast.success("Cotización marcada como expirada")
+    setDeleteDialog({ open: false, cotizacion: null })
   }
 
   return (
@@ -271,14 +278,14 @@ export default function CotizacionesAdminPage() {
                     <Loader2 className="mx-auto h-6 w-6 animate-spin text-primary" />
                   </TableCell>
                 </TableRow>
-              ) : cotizaciones.length === 0 ? (
+              ) : paginatedCotizaciones.length === 0 ? (
                 <TableRow className="border-border hover:bg-transparent">
                   <TableCell colSpan={8} className="py-12 text-center text-muted-foreground">
                     No se encontraron cotizaciones.
                   </TableCell>
                 </TableRow>
               ) : (
-                cotizaciones.map((cotizacion) => (
+                paginatedCotizaciones.map((cotizacion) => (
                   <TableRow key={cotizacion.id} className="border-border">
                     <TableCell className="font-mono text-xs text-foreground">
                       {cotizacion.codigo}
@@ -293,7 +300,6 @@ export default function CotizacionesAdminPage() {
                       </div>
                     </TableCell>
                     <TableCell className="text-foreground">
-                      {/* placeholder count; API includes items length */}
                       {cotizacion.items?.length ?? "—"}
                     </TableCell>
                     <TableCell className="font-medium text-foreground">
@@ -350,7 +356,7 @@ export default function CotizacionesAdminPage() {
             </TableBody>
           </Table>
 
-          {!loading && cotizaciones.length > 0 && (
+          {!loading && paginatedCotizaciones.length > 0 && (
             <div className="flex items-center justify-between border-t border-border px-4 py-3">
               <p className="text-sm text-muted-foreground">
                 Página {page} de {totalPages}

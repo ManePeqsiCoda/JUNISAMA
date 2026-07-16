@@ -1,13 +1,21 @@
+"use client"
+
+import { useRouter, useSearchParams } from "next/navigation"
+import { toast } from "sonner"
 import { CotizacionWizard } from "@/components/admin/cotizacion-wizard"
+import type { Cotizacion } from "@/lib/mocks"
 
-interface NuevaCotizacionPageProps {
-  searchParams: Promise<{ clienteId?: string; id?: string }>
-}
+export default function NuevaCotizacionPage() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const clienteId = searchParams.get("clienteId") ?? undefined
+  const id = searchParams.get("id") ?? undefined
 
-export default async function NuevaCotizacionPage({
-  searchParams,
-}: NuevaCotizacionPageProps) {
-  const { clienteId, id } = await searchParams
+  const handleSuccess = (cotizacion: Cotizacion) => {
+    toast.success("Cotización guardada")
+    router.push(`/admin/cotizaciones/${cotizacion.id}`)
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -23,6 +31,7 @@ export default async function NuevaCotizacionPage({
       <CotizacionWizard
         cotizacionId={id}
         preselectedClienteId={clienteId}
+        onSuccess={handleSuccess}
       />
     </div>
   )

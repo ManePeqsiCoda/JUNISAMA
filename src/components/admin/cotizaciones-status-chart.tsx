@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { StatusBadge } from "./status-badge"
-import { EstadoCotizacion } from "@prisma/client"
+import type { EstadoCotizacion } from "@/lib/mocks"
 import { cn } from "@/lib/utils"
 
 interface StatusCount {

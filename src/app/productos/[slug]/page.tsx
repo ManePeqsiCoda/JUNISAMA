@@ -2,7 +2,11 @@ import { Metadata } from "next"
 import Link from "next/link"
 import Image from "next/image"
 import { notFound } from "next/navigation"
-import { prisma } from "@/lib/prisma"
+import {
+  productos,
+  getProductoBySlug,
+  type Producto,
+} from "@/lib/mocks"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { buttonVariants } from "@/components/ui/button"
@@ -36,27 +40,16 @@ interface ProductPageProps {
 }
 
 export async function generateStaticParams() {
-  const productos = await prisma.producto.findMany({
-    where: { estado: "ACTIVO" },
-    select: { slug: true },
-  })
-
-  return productos.map((p) => ({ slug: p.slug }))
+  return productos
+    .filter((p) => p.estado === "ACTIVO")
+    .map((p) => ({ slug: p.slug }))
 }
 
 export async function generateMetadata({
   params,
 }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params
-  const producto = await prisma.producto.findUnique({
-    where: { slug },
-    select: {
-      seoTitle: true,
-      seoDescription: true,
-      nombre: true,
-      imagenPrincipal: true,
-    },
-  })
+  const producto = getProductoBySlug(slug)
 
   if (!producto) {
     return {
@@ -100,27 +93,27 @@ export async function generateMetadata({
   }
 }
 
+function getRelatedProducts(producto: Producto) {
+  return productos
+    .filter(
+      (p) =>
+        p.categoriaId === producto.categoriaId &&
+        p.estado === "ACTIVO" &&
+        p.id !== producto.id
+    )
+    .slice(0, 3)
+    .sort((a, b) => a.orden - b.orden)
+}
+
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params
-  const producto = await prisma.producto.findUnique({
-    where: { slug },
-    include: { categoria: true },
-  })
+  const producto = getProductoBySlug(slug)
 
   if (!producto) {
     notFound()
   }
 
-  const relatedProducts = await prisma.producto.findMany({
-    where: {
-      categoriaId: producto.categoriaId,
-      estado: "ACTIVO",
-      id: { not: producto.id },
-    },
-    include: { categoria: true },
-    take: 3,
-    orderBy: { orden: "asc" },
-  })
+  const relatedProducts = getRelatedProducts(producto)
 
   const especificaciones =
     typeof producto.especificaciones === "object" &&

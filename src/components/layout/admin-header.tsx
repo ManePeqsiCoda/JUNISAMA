@@ -22,7 +22,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-import { signOut } from "next-auth/react"
+
 import { cn } from "@/lib/utils"
 
 const titleMap: Record<string, string> = {
@@ -49,10 +49,11 @@ const configItem = {
 }
 
 interface AdminHeaderProps {
-  user?: {
-    name?: string | null
-    email?: string | null
+  user: {
+    name: string
+    email: string
   }
+  onLogout: () => void
 }
 
 function MobileNav({ onNavigate }: { onNavigate?: () => void }) {
@@ -107,14 +108,10 @@ function MobileNav({ onNavigate }: { onNavigate?: () => void }) {
   )
 }
 
-export function AdminHeader({ user }: AdminHeaderProps) {
+export function AdminHeader({ user, onLogout }: AdminHeaderProps) {
   const pathname = usePathname()
   const title = titleMap[pathname] || "Panel de Administración"
   const [mobileOpen, setMobileOpen] = useState(false)
-
-  const handleLogout = () => {
-    signOut({ callbackUrl: "/admin/login" })
-  }
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-card/80 px-6 backdrop-blur">
@@ -169,7 +166,7 @@ export function AdminHeader({ user }: AdminHeaderProps) {
         <Button
           variant="ghost"
           size="icon"
-          onClick={handleLogout}
+          onClick={onLogout}
           aria-label="Cerrar sesión"
           className="text-muted-foreground hover:text-foreground"
         >

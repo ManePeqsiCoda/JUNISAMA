@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState, useMemo } from "react"
 import Image from "next/image"
 import { toast } from "sonner"
 import { ProductoForm } from "@/components/admin/producto-form"
@@ -34,7 +34,8 @@ import {
   Loader2,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import type { Producto, Categoria } from "@prisma/client"
+import { productos as productosMock, categorias as categoriasMock } from "@/lib/mocks"
+import type { Producto, Categoria } from "@/lib/mocks"
 
 type ProductoWithCategoria = Producto & { categoria: Categoria }
 
@@ -45,18 +46,6 @@ function formatCurrency(value: number | null | undefined) {
     currency: "COP",
     maximumFractionDigits: 0,
   }).format(Number(value))
-}
-
-function mapEspecificaciones(
-  data: unknown
-): { nombre: string; valor: string }[] {
-  if (typeof data !== "object" || data === null) return []
-  return Object.entries(data as Record<string, string | number>).map(
-    ([nombre, valor]) => ({
-      nombre,
-      valor: Array.isArray(valor) ? valor.join(", ") : String(valor),
-    })
-  )
 }
 
 const estadoStyles: Record<
@@ -93,36 +82,13 @@ const tipoStyles: Record<Producto["tipo"], { label: string; bg: string; text: st
   },
 }
 
-function buildPayload(producto: ProductoWithCategoria) {
-  return {
-    nombre: producto.nombre,
-    nombreCorto: producto.nombreCorto,
-    slug: producto.slug,
-    descripcion: producto.descripcion,
-    descripcionCorta: producto.descripcionCorta,
-    categoriaId: producto.categoriaId,
-    tipo: producto.tipo,
-    badge: producto.badge,
-    imagenPrincipal: producto.imagenPrincipal,
-    precioBase: producto.precioBase ? Number(producto.precioBase) : null,
-    unidadMedida: producto.unidadMedida,
-    destacado: producto.destacado,
-    orden: producto.orden,
-    estado: producto.estado,
-    seoTitle: producto.seoTitle,
-    seoDescription: producto.seoDescription,
-    especificaciones: mapEspecificaciones(producto.especificaciones),
-  }
-}
-
 export default function ProductosAdminPage() {
   const [productos, setProductos] = useState<ProductoWithCategoria[]>([])
-  const [categorias, setCategorias] = useState<Categoria[]>([])
+  const [categorias] = useState<Categoria[]>(categoriasMock)
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
   const [debouncedSearch, setDebouncedSearch] = useState("")
   const [page, setPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [selectedProduct, setSelectedProduct] =
     useState<ProductoWithCategoria | null>(null)
@@ -130,7 +96,8 @@ export default function ProductosAdminPage() {
     open: boolean
     producto: ProductoWithCategoria | null
   }>({ open: false, producto: null })
-  const [refreshKey, setRefreshKey] = useState(0)
+
+  const limit = 10
 
   // Debounce search
   useEffect(() => {
@@ -141,52 +108,29 @@ export default function ProductosAdminPage() {
     return () => clearTimeout(timer)
   }, [search])
 
+  // Simulate initial load
   useEffect(() => {
-    let cancelled = false
-    async function load() {
-      setLoading(true)
-      try {
-        const res = await fetch(
-          `/api/productos?search=${encodeURIComponent(
-            debouncedSearch
-          )}&page=${page}&limit=10`
-        )
-        if (!res.ok) throw new Error("Error al cargar productos")
-        const data = await res.json()
-        if (!cancelled) {
-          setProductos(data.productos)
-          setTotalPages(data.totalPages)
-        }
-      } catch {
-        if (!cancelled) {
-          toast.error("No se pudieron cargar los productos")
-        }
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
-    }
-    load()
-    return () => {
-      cancelled = true
-    }
-  }, [debouncedSearch, page, refreshKey])
-
-  const refresh = useCallback(() => setRefreshKey((k) => k + 1), [])
-
-  useEffect(() => {
-    async function fetchCategorias() {
-      try {
-        const res = await fetch("/api/categorias")
-        if (res.ok) {
-          const data = await res.json()
-          setCategorias(data)
-        }
-      } catch {
-        toast.error("No se pudieron cargar las categorías")
-      }
-    }
-    fetchCategorias()
+    const timer = setTimeout(() => {
+      setProductos(productosMock as ProductoWithCategoria[])
+      setLoading(false)
+    }, 300)
+    return () => clearTimeout(timer)
   }, [])
+
+  const filteredProductos = useMemo(() => {
+    const term = debouncedSearch.toLowerCase()
+    return productos.filter((p) =>
+      p.nombre.toLowerCase().includes(term) ||
+      p.nombreCorto.toLowerCase().includes(term) ||
+      p.categoria.nombre.toLowerCase().includes(term)
+    )
+  }, [productos, debouncedSearch])
+
+  const totalPages = Math.max(1, Math.ceil(filteredProductos.length / limit))
+  const paginatedProductos = useMemo(() => {
+    const start = (page - 1) * limit
+    return filteredProductos.slice(start, start + limit)
+  }, [filteredProductos, page])
 
   const handleCreate = () => {
     setSelectedProduct(null)
@@ -198,36 +142,30 @@ export default function ProductosAdminPage() {
     setDrawerOpen(true)
   }
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
     if (!deleteDialog.producto) return
-    try {
-      const res = await fetch(`/api/productos/${deleteDialog.producto.id}`, {
-        method: "DELETE",
-      })
-      if (!res.ok) throw new Error("Error al eliminar")
-      toast.success("Producto eliminado")
-      refresh()
-    } catch {
-      toast.error("No se pudo eliminar el producto")
-    } finally {
-      setDeleteDialog({ open: false, producto: null })
-    }
+    setProductos((prev) => prev.filter((p) => p.id !== deleteDialog.producto!.id))
+    toast.success("Producto eliminado")
+    setDeleteDialog({ open: false, producto: null })
   }
 
-  const handleToggleEstado = async (producto: ProductoWithCategoria) => {
+  const handleToggleEstado = (producto: ProductoWithCategoria) => {
     const nuevoEstado = producto.estado === "ACTIVO" ? "INACTIVO" : "ACTIVO"
-    try {
-      const res = await fetch(`/api/productos/${producto.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...buildPayload(producto), estado: nuevoEstado }),
-      })
-      if (!res.ok) throw new Error("Error al cambiar estado")
-      toast.success(`Estado actualizado a ${nuevoEstado.toLowerCase()}`)
-      refresh()
-    } catch {
-      toast.error("No se pudo cambiar el estado")
-    }
+    setProductos((prev) =>
+      prev.map((p) => (p.id === producto.id ? { ...p, estado: nuevoEstado } : p))
+    )
+    toast.success(`Estado actualizado a ${nuevoEstado.toLowerCase()}`)
+  }
+
+  const handleSuccess = (producto: ProductoWithCategoria) => {
+    setProductos((prev) => {
+      const exists = prev.find((p) => p.id === producto.id)
+      if (exists) {
+        return prev.map((p) => (p.id === producto.id ? producto : p))
+      }
+      return [...prev, producto]
+    })
+    setDrawerOpen(false)
   }
 
   return (
@@ -288,7 +226,7 @@ export default function ProductosAdminPage() {
                     <Loader2 className="mx-auto h-6 w-6 animate-spin text-primary" />
                   </TableCell>
                 </TableRow>
-              ) : productos.length === 0 ? (
+              ) : paginatedProductos.length === 0 ? (
                 <TableRow className="border-border hover:bg-transparent">
                   <TableCell colSpan={7}>
                     <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -305,7 +243,7 @@ export default function ProductosAdminPage() {
                   </TableCell>
                 </TableRow>
               ) : (
-                productos.map((producto) => {
+                paginatedProductos.map((producto) => {
                   const estadoStyle = estadoStyles[producto.estado]
                   const tipoStyle = tipoStyles[producto.tipo]
                   return (
@@ -402,7 +340,7 @@ export default function ProductosAdminPage() {
           </Table>
 
           {/* Pagination */}
-          {!loading && productos.length > 0 && (
+          {!loading && paginatedProductos.length > 0 && (
             <div className="flex items-center justify-between border-t border-border px-4 py-3">
               <p className="text-sm text-muted-foreground">
                 Página {page} de {totalPages}
@@ -438,7 +376,7 @@ export default function ProductosAdminPage() {
         onOpenChange={setDrawerOpen}
         producto={selectedProduct}
         categorias={categorias}
-        onSuccess={refresh}
+        onSuccess={handleSuccess}
       />
 
       {/* Delete dialog */}

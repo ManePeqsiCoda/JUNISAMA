@@ -1,7 +1,8 @@
 "use client"
 
-import { usePathname } from "next/navigation"
-import { useSession } from "next-auth/react"
+import { usePathname, useRouter } from "next/navigation"
+import { useEffect } from "react"
+import { useAuthMock } from "@/lib/auth-mock"
 import { AdminSidebar } from "@/components/layout/admin-sidebar"
 import { AdminHeader } from "@/components/layout/admin-header"
 import { Loader2 } from "lucide-react"
@@ -12,9 +13,16 @@ export default function AdminLayout({
   children: React.ReactNode
 }) {
   const pathname = usePathname()
-  const { data: session, status } = useSession()
+  const router = useRouter()
+  const { user, status, signOut } = useAuthMock()
 
   const isLoginPage = pathname === "/admin/login"
+
+  useEffect(() => {
+    if (status === "unauthenticated" && !isLoginPage) {
+      router.push("/admin/login")
+    }
+  }, [status, isLoginPage, router])
 
   if (isLoginPage) {
     return (
@@ -27,7 +35,7 @@ export default function AdminLayout({
     )
   }
 
-  if (status === "loading") {
+  if (!user) {
     return (
       <div
         data-admin-theme="dark"
@@ -51,7 +59,7 @@ export default function AdminLayout({
       </a>
       <AdminSidebar />
       <div className="flex min-h-screen flex-col lg:ml-[260px]">
-        <AdminHeader user={session?.user} />
+        <AdminHeader user={user} onLogout={signOut} />
         <main id="admin-main-content" className="flex-1 overflow-y-auto p-6" tabIndex={-1}>
           {children}
         </main>

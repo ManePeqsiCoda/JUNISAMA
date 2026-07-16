@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/table"
 import { StatusBadge } from "./status-badge"
 import { ArrowUpRight } from "lucide-react"
-import type { Cotizacion, Cliente } from "@prisma/client"
+import type { Cotizacion, Cliente } from "@/lib/mocks"
 
 type RecentCotizacion = Cotizacion & { cliente: Cliente }
 
@@ -27,7 +27,7 @@ function formatCurrency(value: number | null | undefined) {
   }).format(value)
 }
 
-function formatDate(date: Date) {
+function formatDate(date: string | Date) {
   return new Intl.DateTimeFormat("es-CO", {
     day: "2-digit",
     month: "short",

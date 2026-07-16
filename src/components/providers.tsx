@@ -1,6 +1,6 @@
 "use client"
 
-import { SessionProvider } from "next-auth/react"
+import { AuthMockProvider } from "@/lib/auth-mock"
 import { ThemeProvider } from "next-themes"
 import { usePathname } from "next/navigation"
 import { Navbar } from "@/components/layout/navbar"
@@ -14,7 +14,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-      <SessionProvider>
+      <AuthMockProvider>
         {!isAdmin && (
           <a
             href="#main-content"
@@ -34,7 +34,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
         {!isAdmin && <Footer />}
         {!isAdmin && <WhatsAppButton />}
         <Toaster position="top-right" richColors />
-      </SessionProvider>
+      </AuthMockProvider>
     </ThemeProvider>
   )
 }

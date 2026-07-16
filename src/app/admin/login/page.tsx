@@ -1,11 +1,11 @@
 "use client"
 
-import { Suspense } from "react"
+import { Suspense, useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { signIn } from "next-auth/react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter } from "next/navigation"
+import { useAuthMock } from "@/lib/auth-mock"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -30,40 +30,30 @@ type LoginForm = z.infer<typeof loginSchema>
 
 function LoginForm() {
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get("callbackUrl") || "/admin"
+  const { signIn } = useAuthMock()
+  const [error, setError] = useState("")
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-    setError,
   } = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: "admin@junisama.com",
+      password: "Junisama2025!",
     },
   })
 
   const onSubmit = async (data: LoginForm) => {
-    const result = await signIn("credentials", {
-      email: data.email,
-      password: data.password,
-      redirect: false,
-      callbackUrl,
-    })
-
-    if (result?.error) {
-      setError("root", {
-        type: "manual",
-        message: "Credenciales inválidas. Inténtalo de nuevo.",
-      })
-      return
+    setError("")
+    const ok = await signIn(data.email, data.password)
+    if (ok) {
+      router.push("/admin")
+      router.refresh()
+    } else {
+      setError("Credenciales inválidas. Inténtalo de nuevo.")
     }
-
-    router.push(callbackUrl)
-    router.refresh()
   }
 
   return (
@@ -78,15 +68,18 @@ function LoginForm() {
         <CardDescription className="text-muted-foreground">
           Inicia sesión para gestionar Junisama
         </CardDescription>
+        <p className="text-xs text-muted-foreground">
+          Demo: admin@junisama.com / Junisama2025!
+        </p>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {errors.root && (
+          {error && (
             <Alert
               variant="destructive"
               className="border-error/30 bg-error-bg text-error"
             >
-              <AlertDescription>{errors.root.message}</AlertDescription>
+              <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
 
@@ -97,7 +90,6 @@ function LoginForm() {
             <Input
               id="email"
               type="email"
-              placeholder="admin@junisama.com"
               autoComplete="email"
               className="border-input bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-primary"
               {...register("email")}
@@ -114,7 +106,6 @@ function LoginForm() {
             <Input
               id="password"
               type="password"
-              placeholder="••••••••"
               autoComplete="current-password"
               className="border-input bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-primary"
               {...register("password")}

@@ -18,7 +18,17 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Loader2, Plus, Trash2, ArrowRight, ArrowLeft, Save, Send } from "lucide-react"
 import { cn } from "@/lib/utils"
 import Image from "next/image"
-import type { Categoria, Cliente, Producto, EstadoCotizacion } from "@prisma/client"
+import {
+  clientes as clientesMock,
+  productos as productosMock,
+  categorias as categoriasMock,
+  getCotizacionById,
+  generateMockId,
+  CURRENT_YEAR,
+  getCurrentTimestamp,
+  parseDateToISO,
+} from "@/lib/mocks"
+import type { Categoria, Cliente, Producto, Cotizacion, EstadoCotizacion, CotizacionItem } from "@/lib/mocks"
 
 type ProductoWithCategoria = Producto & { categoria: Categoria }
 
@@ -28,30 +38,6 @@ type CotizacionItemInput = {
   cantidad: number
   precioUnitario: number
   precioTotal: number
-}
-
-type CotizacionWithDetails = {
-  id: string
-  codigo: string
-  nombre: string
-  descripcion: string | null
-  estado: EstadoCotizacion
-  fechaEvento: string | null
-  ubicacionEvento: string | null
-  tipoEvento: string | null
-  duracionDias: number | null
-  costoTotal: number
-  precioVenta: number
-  margen: number
-  notasInternas: string | null
-  cliente: Cliente
-  items: {
-    productoId: string
-    cantidad: number
-    precioUnitario: number
-    precioTotal: number
-    producto: ProductoWithCategoria
-  }[]
 }
 
 function formatCurrency(value: number) {
@@ -77,14 +63,21 @@ const tipoEventoOptions = [
 interface CotizacionWizardProps {
   cotizacionId?: string
   preselectedClienteId?: string
+  onSuccess?: (cotizacion: Cotizacion) => void
 }
 
 export function CotizacionWizard({
   cotizacionId,
   preselectedClienteId,
+  onSuccess,
 }: CotizacionWizardProps) {
   const router = useRouter()
   const isEditing = Boolean(cotizacionId)
+
+  const initialCotizacion = useMemo(
+    () => (cotizacionId ? getCotizacionById(cotizacionId) : undefined),
+    [cotizacionId]
+  )
 
   const [step, setStep] = useState(1)
   const [clientes, setClientes] = useState<Cliente[]>([])
@@ -94,7 +87,7 @@ export function CotizacionWizard({
   const [saving, setSaving] = useState(false)
 
   const [clienteId, setClienteId] = useState(
-    !cotizacionId && preselectedClienteId ? preselectedClienteId : ""
+    initialCotizacion?.cliente.id ?? preselectedClienteId ?? ""
   )
   const [isNewClient, setIsNewClient] = useState(false)
   const [newClient, setNewClient] = useState({
@@ -107,87 +100,57 @@ export function CotizacionWizard({
   })
 
   const [evento, setEvento] = useState({
-    nombre: "",
-    fecha: "",
-    ubicacion: "",
-    tipo: "",
-    duracion: 1,
+    nombre: initialCotizacion?.nombre ?? "",
+    fecha: initialCotizacion?.fechaEvento
+      ? initialCotizacion.fechaEvento.split("T")[0]
+      : "",
+    ubicacion: initialCotizacion?.ubicacionEvento ?? "",
+    tipo: initialCotizacion?.tipoEvento ?? "",
+    duracion: initialCotizacion?.duracionDias ?? 1,
   })
 
-  const [cotizacionNombre, setCotizacionNombre] = useState("")
-  const [descripcion, setDescripcion] = useState("")
-  const [items, setItems] = useState<CotizacionItemInput[]>([])
-  const [precioVenta, setPrecioVenta] = useState(0)
-  const [notasInternas, setNotasInternas] = useState("")
-  const [estado, setEstado] = useState<EstadoCotizacion>("BORRADOR")
+  const [cotizacionNombre, setCotizacionNombre] = useState(
+    initialCotizacion?.nombre ?? ""
+  )
+  const [descripcion, setDescripcion] = useState(
+    initialCotizacion?.descripcion ?? ""
+  )
+  const [items, setItems] = useState<CotizacionItemInput[]>(
+    initialCotizacion?.items.map((item) => ({
+      productoId: item.productoId,
+      producto: item.producto as ProductoWithCategoria,
+      cantidad: item.cantidad,
+      precioUnitario: Number(item.precioUnitario),
+      precioTotal: Number(item.precioTotal),
+    })) ?? []
+  )
+  const [precioVenta, setPrecioVenta] = useState(
+    Number(initialCotizacion?.precioVenta ?? 0)
+  )
+  const [notasInternas, setNotasInternas] = useState(
+    initialCotizacion?.notasInternas ?? ""
+  )
+  const estado: EstadoCotizacion = initialCotizacion?.estado ?? "BORRADOR"
 
   const [searchProducto, setSearchProducto] = useState("")
   const [categoriaActiva, setCategoriaActiva] = useState("Todas")
 
-  // Load initial data
   useEffect(() => {
-    async function load() {
-      try {
-        const [clientesRes, productosRes, categoriasRes] = await Promise.all([
-          fetch("/api/clientes"),
-          fetch("/api/productos?estado=ACTIVO&limit=100"),
-          fetch("/api/categorias"),
-        ])
-
-        if (clientesRes.ok) setClientes(await clientesRes.json())
-        if (productosRes.ok) {
-          const data = await productosRes.json()
-          setProductos(data.productos)
-        }
-        if (categoriasRes.ok) setCategorias(await categoriasRes.json())
-      } catch {
-        toast.error("Error al cargar datos iniciales")
-      } finally {
-        setLoadingInit(false)
-      }
-    }
-    load()
+    const timer = setTimeout(() => {
+      setClientes(clientesMock)
+      setProductos(productosMock as ProductoWithCategoria[])
+      setCategorias(categoriasMock)
+      setLoadingInit(false)
+    }, 300)
+    return () => clearTimeout(timer)
   }, [])
 
-  // Load existing cotizacion for edit
   useEffect(() => {
-    if (!cotizacionId) return
-    async function loadCotizacion() {
-      try {
-        const res = await fetch(`/api/cotizaciones/${cotizacionId}`)
-        if (!res.ok) throw new Error("Error")
-        const c: CotizacionWithDetails = await res.json()
-
-        setClienteId(c.cliente.id)
-        setIsNewClient(false)
-        setEvento({
-          nombre: c.nombre,
-          fecha: c.fechaEvento ? c.fechaEvento.split("T")[0] : "",
-          ubicacion: c.ubicacionEvento || "",
-          tipo: c.tipoEvento || "",
-          duracion: c.duracionDias || 1,
-        })
-        setCotizacionNombre(c.nombre)
-        setDescripcion(c.descripcion || "")
-        setItems(
-          c.items.map((item) => ({
-            productoId: item.productoId,
-            producto: item.producto,
-            cantidad: item.cantidad,
-            precioUnitario: Number(item.precioUnitario),
-            precioTotal: Number(item.precioTotal),
-          }))
-        )
-        setPrecioVenta(Number(c.precioVenta))
-        setNotasInternas(c.notasInternas || "")
-        setEstado(c.estado)
-      } catch {
-        toast.error("No se pudo cargar la cotización")
-        router.push("/admin/cotizaciones")
-      }
+    if (cotizacionId && !initialCotizacion) {
+      toast.error("No se pudo cargar la cotización")
+      router.push("/admin/cotizaciones")
     }
-    loadCotizacion()
-  }, [cotizacionId, router])
+  }, [cotizacionId, initialCotizacion, router])
 
   const costoTotal = useMemo(
     () => items.reduce((sum, item) => sum + item.precioTotal, 0),
@@ -325,12 +288,64 @@ export function CotizacionWizard({
 
     setSaving(true)
     try {
-      const payload = {
-        clienteId: isNewClient ? undefined : clienteId,
-        nuevoCliente: isNewClient ? newClient : undefined,
-        nombre: cotizacionNombre || nombreSugerido,
+      let finalClienteId = clienteId
+      let cliente: Cliente | undefined
+
+      if (isNewClient) {
+        finalClienteId = generateMockId("cli")
+        cliente = {
+          id: finalClienteId,
+          nombreEmpresa: newClient.nombreEmpresa,
+          nombreContacto: newClient.nombreContacto || null,
+          email: newClient.email,
+          telefono: newClient.telefono,
+          sector: newClient.sector || null,
+          ciudad: newClient.ciudad || null,
+          direccion: null,
+          notas: null,
+          fuente: "WEB",
+          estado: "PROSPECTO",
+        }
+        setClientes((prev) => [...prev, cliente!])
+      } else {
+        cliente = clientes.find((c) => c.id === finalClienteId)
+      }
+
+      if (!cliente) {
+        throw new Error("Cliente no encontrado")
+      }
+
+      const finalNombre = cotizacionNombre || nombreSugerido
+      const finalEstado: EstadoCotizacion = enviar
+        ? "ENVIADA"
+        : estado === "BORRADOR"
+        ? "BORRADOR"
+        : estado
+
+      const now = getCurrentTimestamp()
+      const cotizacionIdFinal = cotizacionId ?? generateMockId("cot")
+
+      const cotizacionItems: CotizacionItem[] = items.map((item) => ({
+        id: generateMockId("item"),
+        cotizacionId: cotizacionIdFinal,
+        productoId: item.productoId,
+        producto: item.producto,
+        cantidad: item.cantidad,
+        precioUnitario: item.precioUnitario,
+        precioTotal: item.precioTotal,
+        descripcionPersonalizada: null,
+        costoUnitario: null,
+      }))
+
+      const saved: Cotizacion = {
+        id: cotizacionIdFinal,
+        codigo: `COT-${CURRENT_YEAR}-${generateMockId("seq").split("_").pop()}`,
+        clienteId: finalClienteId,
+        cliente,
+        nombre: finalNombre,
         descripcion: descripcion || null,
-        fechaEvento: evento.fecha ? new Date(evento.fecha).toISOString() : null,
+        estado: finalEstado,
+        fechaEvento: evento.fecha ? parseDateToISO(evento.fecha) : null,
         ubicacionEvento: evento.ubicacion || null,
         tipoEvento: evento.tipo || null,
         duracionDias: evento.duracion || null,
@@ -338,38 +353,22 @@ export function CotizacionWizard({
         precioVenta,
         margen,
         moneda: "COP",
-        estado: enviar ? "ENVIADA" : estado === "BORRADOR" ? "BORRADOR" : estado,
+        items: cotizacionItems,
+        creadoPorId: "usr_1",
         notasInternas: notasInternas || null,
-        items: items.map((item) => ({
-          productoId: item.productoId,
-          cantidad: item.cantidad,
-          precioUnitario: item.precioUnitario,
-          precioTotal: item.precioTotal,
-          descripcionPersonalizada: null,
-        })),
+        createdAt: isEditing ? (initialCotizacion?.createdAt ?? now) : now,
+        updatedAt: now,
       }
 
-      const url = isEditing
-        ? `/api/cotizaciones/${cotizacionId}`
-        : "/api/cotizaciones"
-      const method = isEditing ? "PUT" : "POST"
-
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      })
-
-      if (!res.ok) {
-        const data = await res.json()
-        throw new Error(data.error || "Error al guardar")
-      }
-
-      const result = await res.json()
       toast.success(
         enviar ? "Cotización guardada y enviada" : "Cotización guardada como borrador"
       )
-      router.push(`/admin/cotizaciones/${result.id}`)
+
+      if (onSuccess) {
+        onSuccess(saved)
+      } else {
+        router.push(`/admin/cotizaciones/${saved.id}`)
+      }
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Error al guardar la cotización"

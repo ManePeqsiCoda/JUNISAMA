@@ -10,45 +10,23 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { buttonVariants } from "@/components/ui/button"
 import { FadeIn } from "./fade-in"
-import { ArrowRight, Star, Bath, Zap, Truck } from "lucide-react"
+import { ArrowRight, Star, Bath, Accessibility, Users, Leaf } from "lucide-react"
 import { cn } from "@/lib/utils"
+import type { Producto } from "@/lib/mocks"
 
-const products = [
-  {
-    name: "Baño VIP",
-    href: "/productos/bano-vip",
-    description:
-      "Unidad premium con acabados de lujo, espejo e iluminación LED para eventos de alto nivel.",
-    badge: "Premium",
-    icon: Star,
-  },
-  {
-    name: "Baños Estándar",
-    href: "/productos/bano-estandar",
-    description:
-      "Solución práctica y confiable para obras, festivales y eventos masivos.",
-    badge: "Más popular",
-    icon: Bath,
-  },
-  {
-    name: "Baños Eléctricos",
-    href: "/productos/electricos",
-    description:
-      "Equipos con ventilación forzada, iluminación interior y funcionamiento autónomo.",
-    badge: "Tecnología",
-    icon: Zap,
-  },
-  {
-    name: "Trailer de Lujo",
-    href: "/productos/trailer-lujo",
-    description:
-      "Múltiples cabinas climatizadas con distribución optimizada para grandes eventos.",
-    badge: "Alto volumen",
-    icon: Truck,
-  },
-]
+const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+  Crown: Star,
+  Bath: Bath,
+  Accessibility: Accessibility,
+  Leaf: Leaf,
+  Users: Users,
+}
 
-export function FeaturedProducts() {
+interface FeaturedProductsProps {
+  productos: Producto[]
+}
+
+export function FeaturedProducts({ productos }: FeaturedProductsProps) {
   return (
     <section className="bg-white py-16 md:py-24">
       <div className="container mx-auto px-4 lg:px-6">
@@ -62,10 +40,10 @@ export function FeaturedProducts() {
         </FadeIn>
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {products.map((product, index) => {
-            const Icon = product.icon
+          {productos.map((producto, index) => {
+            const Icon = iconMap[producto.categoria.icono || ""] || Bath
             return (
-              <FadeIn key={product.name} delay={index * 0.1}>
+              <FadeIn key={producto.id} delay={index * 0.1}>
                 <Card className="group h-full border-border-subtle bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-md">
                   <div className="relative h-44 overflow-hidden rounded-t-xl bg-bg-light">
                     <div className="absolute inset-0 flex items-center justify-center">
@@ -73,19 +51,21 @@ export function FeaturedProducts() {
                         <Icon className="h-10 w-10" />
                       </div>
                     </div>
-                    <Badge className="absolute top-3 right-3 bg-accent-gold text-white hover:bg-accent-gold">
-                      {product.badge}
-                    </Badge>
+                    {producto.badge && (
+                      <Badge className="absolute top-3 right-3 bg-accent-gold text-white hover:bg-accent-gold">
+                        {producto.badge}
+                      </Badge>
+                    )}
                   </div>
                   <CardHeader>
                     <h3 className="text-lg font-medium text-dark">
-                      {product.name}
+                      {producto.nombre}
                     </h3>
-                    <CardDescription>{product.description}</CardDescription>
+                    <CardDescription>{producto.descripcionCorta}</CardDescription>
                   </CardHeader>
                   <CardContent className="mt-auto">
                     <Link
-                      href={product.href}
+                      href={`/productos/${producto.slug}`}
                       className="inline-flex items-center text-sm font-semibold text-primary hover:text-primary-hover"
                     >
                       Ver más

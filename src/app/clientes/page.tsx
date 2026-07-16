@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { prisma } from "@/lib/prisma"
+import { clientes, eventos } from "@/lib/mocks"
 import { Card, CardContent } from "@/components/ui/card"
 import { FadeIn } from "@/components/home/fade-in"
 import { Star, Users, MapPin, Calendar, Award } from "lucide-react"
@@ -77,14 +77,17 @@ const featuredClients = [
   "Carnaval de Barranquilla",
 ]
 
-export default async function ClientesPage() {
-  const eventos = await prisma.evento.findMany({
-    where: { estado: "PUBLICADO", destacado: true },
-    take: 15,
-    orderBy: { anio: "desc" },
-  })
+export default function ClientesPage() {
+  const publicEventos = eventos
+    .filter((e) => e.estado === "PUBLICADO" && e.destacado)
+    .slice(0, 15)
+    .sort((a, b) => b.anio - a.anio)
 
-  const clientNames = eventos.map((e) => e.nombre)
+  const clientNames = [
+    ...featuredClients,
+    ...clientes.map((c) => c.nombreEmpresa),
+    ...publicEventos.map((e) => e.nombre),
+  ].slice(0, 30)
 
   const breadcrumbJsonLd = generateBreadcrumbJsonLd([
     { name: "Inicio", path: "/" },
@@ -138,7 +141,7 @@ export default async function ClientesPage() {
           </h2>
         </FadeIn>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-          {[...featuredClients, ...clientNames].slice(0, 30).map((client, index) => (
+          {clientNames.map((client, index) => (
             <FadeIn key={`${client}-${index}`} delay={index * 0.02}>
               <div className="flex h-24 items-center justify-center rounded-xl border border-border bg-bg-light px-4 text-center shadow-sm transition-all hover:-translate-y-1 hover:border-primary/30 hover:shadow-md">
                 <span className="text-sm font-semibold text-dark">{client}</span>

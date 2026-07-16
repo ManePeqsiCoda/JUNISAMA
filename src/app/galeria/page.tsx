@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { prisma } from "@/lib/prisma"
+import { eventos } from "@/lib/mocks"
 import { GalleryGrid } from "./gallery-grid"
 import {
   seoConfig,
@@ -17,11 +17,10 @@ export const metadata: Metadata = {
   twitter: generateTwitterCard("galeria"),
 }
 
-export default async function GaleriaPage() {
-  const eventos = await prisma.evento.findMany({
-    where: { estado: "PUBLICADO" },
-    orderBy: { anio: "desc" },
-  })
+export default function GaleriaPage() {
+  const publicEventos = eventos
+    .filter((e) => e.estado === "PUBLICADO")
+    .sort((a, b) => b.anio - a.anio)
 
   const breadcrumbJsonLd = generateBreadcrumbJsonLd([
     { name: "Inicio", path: "/" },
@@ -34,7 +33,7 @@ export default async function GaleriaPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
-      <GalleryGrid eventos={eventos} />
+      <GalleryGrid eventos={publicEventos} />
     </div>
   )
 }

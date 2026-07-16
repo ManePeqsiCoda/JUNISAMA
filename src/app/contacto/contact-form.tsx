@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
+import { toast } from "sonner"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -25,7 +26,6 @@ import {
   Clock,
   Loader2,
   CheckCircle2,
-  AlertCircle,
 } from "lucide-react"
 
 const contactSchema = z.object({
@@ -96,7 +96,6 @@ export default function ContactForm() {
   const [status, setStatus] = useState<
     "idle" | "loading" | "success" | "error"
   >("idle")
-  const [errorMessage, setErrorMessage] = useState("")
 
   const {
     register,
@@ -110,27 +109,22 @@ export default function ContactForm() {
 
   const onSubmit = async (data: ContactForm) => {
     setStatus("loading")
-    setErrorMessage("")
 
     try {
-      const response = await fetch("/api/contacto", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      })
-
-      if (!response.ok) {
-        throw new Error("Error al enviar el mensaje")
-      }
+      // Simulated API call — no backend in static prototype
+      await new Promise((resolve) => setTimeout(resolve, 1000))
 
       setStatus("success")
       reset()
+      toast.success(`Gracias ${data.nombre}`, {
+        description: "Tu mensaje fue recibido. Te responderemos en menos de 24 horas.",
+      })
       setTimeout(() => setStatus("idle"), 5000)
     } catch {
       setStatus("error")
-      setErrorMessage(
-        "No pudimos enviar tu mensaje. Por favor intenta de nuevo o contáctanos por WhatsApp."
-      )
+      toast.error("No pudimos enviar tu mensaje", {
+        description: "Por favor intenta de nuevo o contáctanos por WhatsApp.",
+      })
     }
   }
 
@@ -292,13 +286,6 @@ export default function ContactForm() {
                       <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
                       Gracias por contactarnos. Te responderemos en menos de 24
                       horas.
-                    </div>
-                  )}
-
-                  {status === "error" && (
-                    <div className="flex items-start gap-2 rounded-lg bg-error-bg p-3 text-sm text-error">
-                      <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
-                      {errorMessage}
                     </div>
                   )}
                 </form>

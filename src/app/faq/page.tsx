@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { prisma } from "@/lib/prisma"
+import { faqs } from "@/lib/mocks"
 import { Button } from "@/components/ui/button"
 import { FaqAccordion } from "./faq-accordion"
 import { FadeIn } from "@/components/home/fade-in"
@@ -29,17 +29,20 @@ const categoryLabels: Record<string, string> = {
   EVENTOS: "Eventos",
 }
 
-export default async function FaqPage() {
-  const faqs = await prisma.faq.findMany({
-    where: { estado: "PUBLICADO" },
-    orderBy: [{ categoria: "asc" }, { orden: "asc" }],
-  })
+export default function FaqPage() {
+  const publicFaqs = faqs
+    .filter((f) => f.estado === "PUBLICADO")
+    .sort((a, b) => {
+      if (a.categoria < b.categoria) return -1
+      if (a.categoria > b.categoria) return 1
+      return a.orden - b.orden
+    })
 
   const categories = Array.from(
-    new Set(faqs.map((f) => f.categoria))
+    new Set(publicFaqs.map((f) => f.categoria))
   ) as string[]
 
-  const mainEntity = faqs.map((faq) => ({
+  const mainEntity = publicFaqs.map((faq) => ({
     "@type": "Question",
     name: faq.pregunta,
     acceptedAnswer: {
@@ -83,7 +86,7 @@ export default async function FaqPage() {
       {/* FAQ Accordion */}
       <section className="container mx-auto -mt-8 px-4 pb-20 lg:px-6">
         <FaqAccordion
-          faqs={faqs}
+          faqs={publicFaqs}
           categories={categories}
           categoryLabels={categoryLabels}
         />

@@ -1,7 +1,7 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { EstadoCotizacion } from "@prisma/client"
+import type { EstadoCotizacion } from "@/lib/mocks"
 
 const statusConfig: Record<
   EstadoCotizacion,

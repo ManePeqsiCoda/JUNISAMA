@@ -3,15 +3,13 @@
 import { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { Producto, Categoria } from "@prisma/client"
+import type { Producto, Categoria } from "@/lib/mocks"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { buttonVariants } from "@/components/ui/button"
 import { FadeIn } from "@/components/home/fade-in"
 import { cn } from "@/lib/utils"
 import { ArrowRight, Star, Bath, Accessibility, Users, Leaf } from "lucide-react"
-
-type ProductoConCategoria = Producto & { categoria: Categoria }
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Crown: Star,
@@ -22,7 +20,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 }
 
 interface ProductCatalogProps {
-  productos: ProductoConCategoria[]
+  productos: Producto[]
   categorias: Categoria[]
 }
 

@@ -10,8 +10,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Loader2, Save, Store, Share2, Search } from "lucide-react"
-import type { Configuracion } from "@prisma/client"
+import { Save, Store, Share2, Search, Loader2 } from "lucide-react"
+import { configuracion } from "@/lib/mocks"
+import type { Configuracion } from "@/lib/mocks"
 
 const configSchema = z.object({
   nombreSitio: z.string().min(1, "El nombre del sitio es obligatorio"),
@@ -31,8 +32,8 @@ const configSchema = z.object({
 type FormData = z.infer<typeof configSchema>
 
 export default function ConfiguracionAdminPage() {
-  const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [config, setConfig] = useState<Configuracion>(configuracion)
 
   const {
     register,
@@ -42,75 +43,58 @@ export default function ConfiguracionAdminPage() {
   } = useForm<FormData>({
     resolver: zodResolver(configSchema) as Resolver<FormData>,
     defaultValues: {
-      nombreSitio: "",
-      telefono: "",
-      email: "",
-      direccionMedellin: "",
-      direccionBogota: "",
-      whatsappNumero: "",
-      instagramUrl: "",
-      linkedinUrl: "",
-      mensajeWhatsApp: "",
-      seoTitleDefault: "",
-      seoDescriptionDefault: "",
-      scriptAnalytics: "",
+      nombreSitio: config.nombreSitio,
+      telefono: config.telefono || "",
+      email: config.email || "",
+      direccionMedellin: config.direccionMedellin || "",
+      direccionBogota: config.direccionBogota || "",
+      whatsappNumero: config.whatsappNumero || "",
+      instagramUrl: config.instagramUrl || "",
+      linkedinUrl: config.linkedinUrl || "",
+      mensajeWhatsApp: config.mensajeWhatsApp || "",
+      seoTitleDefault: config.seoTitleDefault || "",
+      seoDescriptionDefault: config.seoDescriptionDefault || "",
+      scriptAnalytics: config.scriptAnalytics || "",
     },
   })
 
   useEffect(() => {
-    async function load() {
-      try {
-        const res = await fetch("/api/configuracion")
-        if (!res.ok) throw new Error("Error")
-        const data: Configuracion = await res.json()
-        reset({
-          nombreSitio: data.nombreSitio,
-          telefono: data.telefono || "",
-          email: data.email || "",
-          direccionMedellin: data.direccionMedellin || "",
-          direccionBogota: data.direccionBogota || "",
-          whatsappNumero: data.whatsappNumero || "",
-          instagramUrl: data.instagramUrl || "",
-          linkedinUrl: data.linkedinUrl || "",
-          mensajeWhatsApp: data.mensajeWhatsApp || "",
-          seoTitleDefault: data.seoTitleDefault || "",
-          seoDescriptionDefault: data.seoDescriptionDefault || "",
-          scriptAnalytics: data.scriptAnalytics || "",
-        })
-      } catch {
-        toast.error("No se pudo cargar la configuración")
-      } finally {
-        setLoading(false)
-      }
-    }
-    load()
-  }, [reset])
+    reset({
+      nombreSitio: config.nombreSitio,
+      telefono: config.telefono || "",
+      email: config.email || "",
+      direccionMedellin: config.direccionMedellin || "",
+      direccionBogota: config.direccionBogota || "",
+      whatsappNumero: config.whatsappNumero || "",
+      instagramUrl: config.instagramUrl || "",
+      linkedinUrl: config.linkedinUrl || "",
+      mensajeWhatsApp: config.mensajeWhatsApp || "",
+      seoTitleDefault: config.seoTitleDefault || "",
+      seoDescriptionDefault: config.seoDescriptionDefault || "",
+      scriptAnalytics: config.scriptAnalytics || "",
+    })
+  }, [config, reset])
 
   const onSubmit = async (data: FormData) => {
     setSaving(true)
     try {
-      const res = await fetch("/api/configuracion", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...data,
-          telefono: data.telefono?.trim() || null,
-          email: data.email?.trim() || null,
-          direccionMedellin: data.direccionMedellin?.trim() || null,
-          direccionBogota: data.direccionBogota?.trim() || null,
-          whatsappNumero: data.whatsappNumero?.trim() || null,
-          instagramUrl: data.instagramUrl?.trim() || null,
-          linkedinUrl: data.linkedinUrl?.trim() || null,
-          mensajeWhatsApp: data.mensajeWhatsApp?.trim() || null,
-          seoTitleDefault: data.seoTitleDefault?.trim() || null,
-          seoDescriptionDefault: data.seoDescriptionDefault?.trim() || null,
-          scriptAnalytics: data.scriptAnalytics?.trim() || null,
-        }),
-      })
+      const updated: Configuracion = {
+        ...config,
+        nombreSitio: data.nombreSitio,
+        telefono: data.telefono?.trim() || "",
+        email: data.email?.trim() || "",
+        direccionMedellin: data.direccionMedellin?.trim() || "",
+        direccionBogota: data.direccionBogota?.trim() || "",
+        whatsappNumero: data.whatsappNumero?.trim() || "",
+        instagramUrl: data.instagramUrl?.trim() || null,
+        linkedinUrl: data.linkedinUrl?.trim() || null,
+        mensajeWhatsApp: data.mensajeWhatsApp?.trim() || "",
+        seoTitleDefault: data.seoTitleDefault?.trim() || null,
+        seoDescriptionDefault: data.seoDescriptionDefault?.trim() || null,
+        scriptAnalytics: data.scriptAnalytics?.trim() || null,
+      }
 
-      if (!res.ok) throw new Error("Error")
-
-      const updated = await res.json()
+      setConfig(updated)
       reset({
         nombreSitio: updated.nombreSitio,
         telefono: updated.telefono || "",
@@ -131,14 +115,6 @@ export default function ConfiguracionAdminPage() {
     } finally {
       setSaving(false)
     }
-  }
-
-  if (loading) {
-    return (
-      <div className="flex h-64 items-center justify-center">
-        <Loader2 className="h-6 w-6 animate-spin text-primary" />
-      </div>
-    )
   }
 
   return (

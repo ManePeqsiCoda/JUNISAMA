@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { prisma } from "@/lib/prisma"
+import { getClienteById, cotizaciones } from "@/lib/mocks"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -27,7 +27,7 @@ function formatCurrency(value: number | null | undefined) {
   }).format(Number(value))
 }
 
-function formatDate(date: Date | string | null) {
+function formatDate(date: string | Date | null) {
   if (!date) return "—"
   return new Intl.DateTimeFormat("es-CO", {
     day: "2-digit",
@@ -47,14 +47,15 @@ export default async function ClienteDetailPage({
 }: ClienteDetailPageProps) {
   const { id } = await params
 
-  const cliente = await prisma.cliente.findUnique({
-    where: { id },
-    include: { cotizaciones: { orderBy: { createdAt: "desc" } } },
-  })
+  const cliente = getClienteById(id)
 
   if (!cliente) {
     notFound()
   }
+
+  const cotizacionesCliente = cotizaciones
+    .filter((c) => c.clienteId === id)
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 
   const estilo = estadoStyles[cliente.estado]
 
@@ -155,11 +156,11 @@ export default async function ClienteDetailPage({
       <Card className="bg-card ring-1 ring-foreground/10">
         <CardHeader>
           <CardTitle className="text-sm font-extrabold uppercase tracking-wider">
-            Historial de cotizaciones ({cliente.cotizaciones.length})
+            Historial de cotizaciones ({cotizacionesCliente.length})
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {cliente.cotizaciones.length === 0 ? (
+          {cotizacionesCliente.length === 0 ? (
             <p className="text-sm text-muted-foreground">
               No hay cotizaciones registradas para este cliente.
             </p>
@@ -178,7 +179,7 @@ export default async function ClienteDetailPage({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {cliente.cotizaciones.map((cot) => (
+                {cotizacionesCliente.map((cot) => (
                   <TableRow key={cot.id} className="border-border">
                     <TableCell className="font-mono text-xs text-foreground">
                       {cot.codigo}

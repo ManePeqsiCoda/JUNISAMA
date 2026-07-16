@@ -6,6 +6,10 @@ import { WhyUs } from "@/components/home/why-us"
 import { Testimonials } from "@/components/home/testimonials"
 import { Contact } from "@/components/home/contact"
 import {
+  eventos,
+  getProductosDestacados,
+} from "@/lib/mocks"
+import {
   seoConfig,
   generateOpenGraph,
   generateTwitterCard,
@@ -21,13 +25,18 @@ export const metadata: Metadata = {
 }
 
 export default function HomePage() {
+  const productosDestacados = getProductosDestacados(4)
+  const eventosDestacados = eventos
+    .filter((e) => e.destacado && e.estado === "PUBLICADO")
+    .slice(0, 3)
+
   return (
     <>
       <Hero />
       <Clients />
-      <FeaturedProducts />
+      <FeaturedProducts productos={productosDestacados} />
       <WhyUs />
-      <Testimonials />
+      <Testimonials eventos={eventosDestacados} />
       <Contact />
     </>
   )

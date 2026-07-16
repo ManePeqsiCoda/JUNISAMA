@@ -30,7 +30,8 @@ import {
 import { X, Plus, Loader2 } from "lucide-react"
 import { slugify } from "@/lib/slugify"
 import { cn } from "@/lib/utils"
-import type { Producto, Categoria } from "@prisma/client"
+import type { Producto, Categoria } from "@/lib/mocks"
+import { generateMockId } from "@/lib/mocks"
 
 const especificacionSchema = z.object({
   nombre: z.string().min(1, "Requerido"),
@@ -64,7 +65,7 @@ interface ProductoFormProps {
   onOpenChange: (open: boolean) => void
   producto: (Producto & { categoria?: Categoria }) | null
   categorias: Categoria[]
-  onSuccess: () => void
+  onSuccess: (producto: Producto & { categoria: Categoria }) => void
 }
 
 const defaultValues: FormData = {
@@ -97,6 +98,15 @@ function mapEspecificaciones(
       valor: Array.isArray(valor) ? valor.join(", ") : String(valor),
     })
   )
+}
+
+function buildEspecificacionesObject(
+  especificaciones: { nombre: string; valor: string }[]
+): Record<string, string> {
+  return especificaciones.reduce((acc, { nombre, valor }) => {
+    acc[nombre] = valor
+    return acc
+  }, {} as Record<string, string>)
 }
 
 export function ProductoForm({
@@ -154,28 +164,33 @@ export function ProductoForm({
 
   const onSubmit = async (data: FormData) => {
     try {
-      const payload = {
-        ...data,
-        badge: data.badge?.trim() || null,
-        seoTitle: data.seoTitle?.trim() || null,
-        seoDescription: data.seoDescription?.trim() || null,
-        precioBase: data.precioBase ? parseFloat(data.precioBase) : null,
+      const categoria = categorias.find((c) => c.id === data.categoriaId)
+      if (!categoria) {
+        toast.error("Categoría no encontrada")
+        return
       }
 
-      const url = isEditing
-        ? `/api/productos/${producto!.id}`
-        : "/api/productos"
-      const method = isEditing ? "PUT" : "POST"
-
-      const response = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      })
-
-      if (!response.ok) {
-        const result = await response.json()
-        throw new Error(result.error || "Error al guardar el producto")
+      const saved: Producto & { categoria: Categoria } = {
+        id: producto?.id ?? generateMockId("prod"),
+        slug: data.slug,
+        nombre: data.nombre,
+        nombreCorto: data.nombreCorto,
+        descripcion: data.descripcion,
+        descripcionCorta: data.descripcionCorta,
+        categoriaId: data.categoriaId,
+        categoria,
+        tipo: data.tipo,
+        badge: data.badge?.trim() || null,
+        imagenPrincipal: data.imagenPrincipal,
+        imagenes: producto?.imagenes ?? null,
+        especificaciones: buildEspecificacionesObject(data.especificaciones),
+        precioBase: data.precioBase ? parseFloat(data.precioBase) : null,
+        unidadMedida: data.unidadMedida,
+        destacado: data.destacado,
+        orden: data.orden,
+        seoTitle: data.seoTitle?.trim() || null,
+        seoDescription: data.seoDescription?.trim() || null,
+        estado: data.estado,
       }
 
       toast.success(
@@ -183,7 +198,7 @@ export function ProductoForm({
           ? "Producto actualizado correctamente"
           : "Producto creado correctamente"
       )
-      onSuccess()
+      onSuccess(saved)
       onOpenChange(false)
     } catch (error) {
       toast.error(

@@ -26,7 +26,8 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Loader2 } from "lucide-react"
-import type { Cliente } from "@prisma/client"
+import type { Cliente } from "@/lib/mocks"
+import { generateMockId } from "@/lib/mocks"
 
 const formSchema = z.object({
   nombreEmpresa: z.string().min(1, "El nombre es obligatorio"),
@@ -47,7 +48,7 @@ interface ClienteFormProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   cliente: Cliente | null
-  onSuccess: () => void
+  onSuccess: (cliente: Cliente) => void
 }
 
 const sectorOptions = [
@@ -112,26 +113,24 @@ export function ClienteForm({
 
   const onSubmit = async (data: FormData) => {
     try {
-      const url = isEditing
-        ? `/api/clientes/${cliente!.id}`
-        : "/api/clientes"
-      const method = isEditing ? "PUT" : "POST"
-
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      })
-
-      if (!res.ok) {
-        const result = await res.json()
-        throw new Error(result.error || "Error al guardar el cliente")
+      const saved: Cliente = {
+        id: cliente?.id ?? generateMockId("cli"),
+        nombreEmpresa: data.nombreEmpresa,
+        nombreContacto: data.nombreContacto || null,
+        email: data.email,
+        telefono: data.telefono,
+        sector: data.sector || null,
+        ciudad: data.ciudad || null,
+        direccion: data.direccion || null,
+        notas: data.notas || null,
+        fuente: data.fuente,
+        estado: data.estado,
       }
 
       toast.success(
         isEditing ? "Cliente actualizado" : "Cliente creado correctamente"
       )
-      onSuccess()
+      onSuccess(saved)
       onOpenChange(false)
     } catch (error) {
       toast.error(

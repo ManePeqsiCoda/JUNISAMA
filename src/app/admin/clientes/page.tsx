@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { toast } from "sonner"
 import { ClienteForm } from "@/components/admin/cliente-form"
@@ -35,7 +35,8 @@ import {
   Loader2,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import type { Cliente, EstadoCliente } from "@prisma/client"
+import { clientes as clientesMock } from "@/lib/mocks"
+import type { Cliente, EstadoCliente } from "@/lib/mocks"
 
 const estadoOptions: { value: EstadoCliente | "TODOS"; label: string }[] = [
   { value: "TODOS", label: "Todos" },
@@ -75,8 +76,6 @@ export default function ClientesAdminPage() {
   )
   const [ciudadFiltro, setCiudadFiltro] = useState("")
   const [page, setPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
-  const [refreshKey, setRefreshKey] = useState(0)
 
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [selectedCliente, setSelectedCliente] = useState<Cliente | null>(null)
@@ -84,6 +83,8 @@ export default function ClientesAdminPage() {
     open: boolean
     cliente: Cliente | null
   }>({ open: false, cliente: null })
+
+  const limit = 10
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -94,54 +95,54 @@ export default function ClientesAdminPage() {
   }, [search])
 
   useEffect(() => {
-    let cancelled = false
-    async function load() {
-      setLoading(true)
-      try {
-        const estadoParam =
-          estadoFiltro === "TODOS" ? "" : `&estado=${estadoFiltro}`
-        const ciudadParam = ciudadFiltro
-          ? `&ciudad=${encodeURIComponent(ciudadFiltro)}`
-          : ""
-        const res = await fetch(
-          `/api/clientes?search=${encodeURIComponent(
-            debouncedSearch
-          )}&page=${page}&limit=10${estadoParam}${ciudadParam}`
-        )
-        if (!res.ok) throw new Error("Error")
-        const data = await res.json()
-        if (!cancelled) {
-          setClientes(data.clientes)
-          setTotalPages(data.totalPages)
-        }
-      } catch {
-        if (!cancelled) toast.error("No se pudieron cargar los clientes")
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
-    }
-    load()
-    return () => {
-      cancelled = true
-    }
-  }, [debouncedSearch, page, estadoFiltro, ciudadFiltro, refreshKey])
+    const timer = setTimeout(() => {
+      setClientes(clientesMock)
+      setLoading(false)
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [])
 
-  const refresh = useCallback(() => setRefreshKey((k) => k + 1), [])
+  const filteredClientes = useMemo(() => {
+    const term = debouncedSearch.toLowerCase()
+    return clientes.filter((c) => {
+      const matchesSearch =
+        c.nombreEmpresa.toLowerCase().includes(term) ||
+        (c.email?.toLowerCase().includes(term) ?? false) ||
+        (c.telefono?.toLowerCase().includes(term) ?? false)
+      const matchesEstado = estadoFiltro === "TODOS" || c.estado === estadoFiltro
+      const matchesCiudad =
+        !ciudadFiltro ||
+        (c.ciudad?.toLowerCase().includes(ciudadFiltro.toLowerCase()) ?? false)
+      return matchesSearch && matchesEstado && matchesCiudad
+    })
+  }, [clientes, debouncedSearch, estadoFiltro, ciudadFiltro])
 
-  const handleDelete = async () => {
+  const totalPages = Math.max(1, Math.ceil(filteredClientes.length / limit))
+  const paginatedClientes = useMemo(() => {
+    const start = (page - 1) * limit
+    return filteredClientes.slice(start, start + limit)
+  }, [filteredClientes, page])
+
+  const handleDelete = () => {
     if (!deleteDialog.cliente) return
-    try {
-      const res = await fetch(`/api/clientes/${deleteDialog.cliente.id}`, {
-        method: "DELETE",
-      })
-      if (!res.ok) throw new Error("Error")
-      toast.success("Cliente eliminado")
-      refresh()
-    } catch {
-      toast.error("No se pudo eliminar el cliente")
-    } finally {
-      setDeleteDialog({ open: false, cliente: null })
-    }
+    setClientes((prev) =>
+      prev.map((c) =>
+        c.id === deleteDialog.cliente!.id ? { ...c, estado: "INACTIVO" as const } : c
+      )
+    )
+    toast.success("Cliente marcado como inactivo")
+    setDeleteDialog({ open: false, cliente: null })
+  }
+
+  const handleSuccess = (cliente: Cliente) => {
+    setClientes((prev) => {
+      const exists = prev.find((c) => c.id === cliente.id)
+      if (exists) {
+        return prev.map((c) => (c.id === cliente.id ? cliente : c))
+      }
+      return [...prev, cliente]
+    })
+    setDrawerOpen(false)
   }
 
   return (
@@ -224,7 +225,7 @@ export default function ClientesAdminPage() {
                     <Loader2 className="mx-auto h-6 w-6 animate-spin text-primary" />
                   </TableCell>
                 </TableRow>
-              ) : clientes.length === 0 ? (
+              ) : paginatedClientes.length === 0 ? (
                 <TableRow className="border-border hover:bg-transparent">
                   <TableCell colSpan={7} className="py-12 text-center">
                     <div className="flex flex-col items-center justify-center text-muted-foreground">
@@ -234,7 +235,7 @@ export default function ClientesAdminPage() {
                   </TableCell>
                 </TableRow>
               ) : (
-                clientes.map((cliente) => {
+                paginatedClientes.map((cliente) => {
                   const estilo = estadoStyles[cliente.estado]
                   return (
                     <TableRow key={cliente.id} className="border-border">
@@ -309,7 +310,7 @@ export default function ClientesAdminPage() {
             </TableBody>
           </Table>
 
-          {!loading && clientes.length > 0 && (
+          {!loading && paginatedClientes.length > 0 && (
             <div className="flex items-center justify-between border-t border-border px-4 py-3">
               <p className="text-sm text-muted-foreground">
                 Página {page} de {totalPages}
@@ -343,7 +344,7 @@ export default function ClientesAdminPage() {
         open={drawerOpen}
         onOpenChange={setDrawerOpen}
         cliente={selectedCliente}
-        onSuccess={refresh}
+        onSuccess={handleSuccess}
       />
 
       <Dialog
