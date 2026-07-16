@@ -6,8 +6,8 @@ import { ShieldCheck, Clock, MapPin, Leaf } from "lucide-react"
 
 const reasons = [
   {
-    title: "ISO 14001 Certificado",
-    description: "Cumplimiento ambiental garantizado en cada operación.",
+    title: "Estándar de excelencia",
+    description: "Procesos validados y operación impecable en cada evento.",
     icon: ShieldCheck,
   },
   {
@@ -21,7 +21,7 @@ const reasons = [
     icon: MapPin,
   },
   {
-    title: "Insumos biodegradables",
+    title: "Insumos eco-friendly",
     description: "Compromiso real con el medio ambiente y la sostenibilidad.",
     icon: Leaf,
   },
@@ -29,13 +29,21 @@ const reasons = [
 
 export function WhyUs() {
   return (
-    <section className="bg-secondary py-16 md:py-24">
+    <section className="bg-[var(--boga-deep-500)] py-16 md:py-24">
       <div className="container mx-auto px-4 lg:px-6">
         <FadeIn className="mb-12 text-center">
+          <span className="mb-3 inline-flex items-center gap-2 text-caption uppercase tracking-wider text-[var(--boga-lima-500)]">
+            <span className="boga-circles--s">
+              <span className="circle" />
+              <span className="circle" />
+              <span className="circle" />
+            </span>
+            Por qué BOGA
+          </span>
           <h2 className="text-2xl font-bold text-white md:text-4xl">
-            La diferencia Junisama
+            La diferencia BOGA
           </h2>
-          <p className="mx-auto mt-3 max-w-2xl text-text-on-dark-muted">
+          <p className="mx-auto mt-3 max-w-2xl text-white/70">
             Más de una década respaldando los eventos más importantes del país
           </p>
         </FadeIn>
@@ -45,15 +53,15 @@ export function WhyUs() {
             const Icon = reason.icon
             return (
               <FadeIn key={reason.title} delay={index * 0.1}>
-                <Card className="h-full border-white/10 bg-white/5 text-white backdrop-blur-sm transition-all hover:border-accent-gold/30 hover:bg-white/10">
+                <Card className="h-full border-white/10 bg-white/5 text-white backdrop-blur-sm transition-all hover:border-[var(--boga-lima-500)]/30 hover:bg-white/10">
                   <CardContent className="flex flex-col items-center p-6 text-center">
-                    <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-accent-gold/15 text-accent-gold">
+                    <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--boga-lima-500)]/15 text-[var(--boga-lima-500)]">
                       <Icon className="h-7 w-7" />
                     </div>
                     <h3 className="text-lg font-bold text-white">
                       {reason.title}
                     </h3>
-                    <p className="mt-2 text-sm text-text-on-dark-muted">
+                    <p className="mt-2 text-sm text-white/70">
                       {reason.description}
                     </p>
                   </CardContent>

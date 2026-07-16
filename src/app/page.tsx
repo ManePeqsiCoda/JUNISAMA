@@ -28,7 +28,27 @@ export default function HomePage() {
     <>
       <Hero />
       <ClientMarquee />
-      <ProductGrid productos={productosDestacados} columns={4} />
+      <section className="bg-[var(--boga-surface-canvas)] py-16 md:py-24">
+        <div className="container-junisama">
+          <div className="mb-12 text-center">
+            <span className="mb-3 inline-flex items-center gap-2 text-caption uppercase tracking-wider text-[var(--boga-electric-500)]">
+              <span className="boga-circles--s boga-circles--electric">
+                <span className="circle" />
+                <span className="circle" />
+                <span className="circle" />
+              </span>
+              Productos destacados
+            </span>
+            <h2 className="font-sans text-heading-lg text-[var(--boga-text-primary)] md:text-display-md">
+              Nuestras soluciones
+            </h2>
+            <p className="mx-auto mt-3 max-w-2xl text-[var(--boga-text-secondary)]">
+              Equipos sanitarios portátiles para todo tipo de evento
+            </p>
+          </div>
+          <ProductGrid productos={productosDestacados} columns={4} />
+        </div>
+      </section>
       <WhyUs />
       <OurNumbers />
       <Contact />

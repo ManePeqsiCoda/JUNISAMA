@@ -13,7 +13,7 @@ const stats = [
   { value: "10+", label: "Años experiencia" },
 ]
 
-// TODO: Agregar número real de certificado ISO 14001 cuando esté disponible
+// TODO: Agregar número real de certificado ISO 9001 cuando esté disponible
 const ISO_CERTIFICATE_NUMBER = ""
 
 export function Hero() {
@@ -26,32 +26,40 @@ export function Hero() {
       className="relative flex min-h-[90vh] items-center justify-center overflow-hidden"
       aria-label="Sección principal"
     >
-      {/* Fallback: gradiente industrial oscuro con patrón sutil */}
-      <div className="absolute inset-0 bg-gradient-to-b from-secondary-900 via-secondary-800 to-secondary-900" />
+      {/* Fondo azul eléctrico BOGA con gradiente */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[var(--boga-deep-500)] via-[var(--boga-electric-500)] to-[var(--boga-electric-400)]" />
       <div
-        className="absolute inset-0 opacity-[0.04]"
+        className="absolute inset-0 opacity-[0.06]"
         style={{
           backgroundImage:
-            "repeating-linear-gradient(45deg, #ffffff 0, #ffffff 1px, transparent 0, transparent 50%), repeating-linear-gradient(-45deg, #ffffff 0, #ffffff 1px, transparent 0, transparent 50%)",
-          backgroundSize: "40px 40px",
+            "radial-gradient(circle at 20% 30%, rgba(255,255,255,0.15) 0%, transparent 40%), radial-gradient(circle at 80% 70%, rgba(255,255,255,0.1) 0%, transparent 40%)",
         }}
       />
 
-      {/* Fondo real con overlay oscuro */}
-      {/* TODO: Reemplazar /images/hero-background.jpg por foto/video real de evento atendido por Junisama */}
+      {/* Fondo real con overlay */}
+      {/* TODO: Reemplazar /images/hero-background.jpg por foto/video real de evento atendido por BOGA */}
       <Image
         src="/images/hero-background.jpg"
         alt=""
         fill
         className="absolute inset-0 -z-10 object-cover transition-opacity duration-700"
-        style={{ opacity: showImage ? 1 : 0 }}
+        style={{ opacity: showImage ? 0.3 : 0 }}
         priority
         quality={85}
         onLoad={() => setImageLoaded(true)}
         onError={() => setImageError(true)}
         aria-hidden="true"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-secondary-900/90 via-secondary-900/70 to-secondary-900/85" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[var(--boga-deep-500)]/90 via-[var(--boga-electric-500)]/70 to-[var(--boga-deep-500)]/85" />
+
+      {/* Decorativo 3 círculos BOGA */}
+      <div className="absolute top-24 right-8 hidden opacity-30 lg:block">
+        <div className="boga-circles--l">
+          <div className="circle" />
+          <div className="circle" />
+          <div className="circle" />
+        </div>
+      </div>
 
       <div className="container-junisama relative z-10 py-24 text-center">
         <motion.div
@@ -61,33 +69,37 @@ export function Hero() {
         >
           <div className="badge-iso mx-auto mb-6">
             <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
-            <span>ISO 14001 Certificado</span>
+            <span>ISO 9001</span>
             {ISO_CERTIFICATE_NUMBER && (
-              <span className="ml-1 font-space-grotesk text-neutral-400">
+              <span className="ml-1 font-sans text-white/70">
                 · {ISO_CERTIFICATE_NUMBER}
               </span>
             )}
           </div>
         </motion.div>
 
-        <motion.h1
+        <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="font-outfit text-display-md text-white md:text-display-lg max-w-4xl mx-auto"
+          className="mx-auto max-w-4xl"
         >
-          Infraestructura Sanitaria{" "}
-          <span className="text-primary-500">Industrial</span>
-        </motion.h1>
+          <h1 className="font-sans text-display-2xl text-white md:text-display-3xl tracking-tight-sm">
+            BOGA
+          </h1>
+          <p className="mt-2 text-overline text-white/80">
+            Ingeniería Portátil
+          </p>
+        </motion.div>
 
         <motion.p
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="mx-auto mt-6 max-w-2xl text-body-lg text-neutral-300"
+          className="mx-auto mt-6 max-w-2xl text-body-lg text-white/90"
         >
-          Soluciones robustas y confiables para eventos de gran escala.
-          Tecnología avanzada, operación 24/7 y cumplimiento normativo garantizado.
+          Elevamos el estándar de tus eventos. Baños portátiles, unidades sanitarias
+          y operación 24/7 para eventos de gran escala en Colombia.
         </motion.p>
 
         <motion.div
@@ -98,11 +110,11 @@ export function Hero() {
         >
           <Link href="/cotizacion" className="btn-primary">
             <CircleDot className="h-5 w-5" aria-hidden="true" />
-            Solicitar presupuesto a la medida
+            Cotizar ahora
           </Link>
-          <Link href="/servicios" className="btn-secondary">
+          <Link href="/productos" className="btn-secondary">
             <LayoutGrid className="h-5 w-5" aria-hidden="true" />
-            Ver servicios
+            Ver productos
             <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </Link>
         </motion.div>
@@ -112,13 +124,13 @@ export function Hero() {
           initial={{ opacity: 0, y: 32 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.5 }}
-          className="mx-auto mt-16 max-w-5xl rounded-2xl border border-white/10 bg-secondary-800/60 px-6 py-8 backdrop-blur-sm md:mt-20"
+          className="mx-auto mt-16 max-w-5xl rounded-2xl border border-white/10 bg-[var(--boga-deep-500)]/60 px-6 py-8 backdrop-blur-sm md:mt-20"
         >
           <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
             {stats.map((stat) => (
               <div key={stat.label} className="text-center">
                 <div className="stat-number">{stat.value}</div>
-                <div className="mt-2 text-xs font-medium uppercase tracking-wider text-neutral-400 md:text-sm">
+                <div className="mt-2 text-xs font-medium uppercase tracking-wider text-white/70 md:text-sm">
                   {stat.label}
                 </div>
               </div>

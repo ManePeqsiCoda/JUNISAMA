@@ -17,13 +17,13 @@ const featuredClients = [
 
 export function Clients() {
   return (
-    <section className="bg-bg-light py-16 md:py-20">
+    <section className="bg-[var(--boga-surface-muted)] py-16 md:py-20">
       <div className="container mx-auto px-4 lg:px-6">
         <FadeIn className="mb-12 text-center">
-          <h2 className="text-2xl font-bold text-dark md:text-3xl">
+          <h2 className="text-2xl font-bold text-[var(--boga-text-primary)] md:text-3xl">
             Empresas y eventos que confían en nosotros
           </h2>
-          <p className="mx-auto mt-3 max-w-2xl text-body">
+          <p className="mx-auto mt-3 max-w-2xl text-[var(--boga-text-secondary)]">
             Respaldo de las principales organizaciones del país
           </p>
         </FadeIn>
@@ -33,9 +33,9 @@ export function Clients() {
             {featuredClients.map((client) => (
               <div
                 key={client}
-                className="group flex h-24 items-center justify-center rounded-xl border border-border bg-white px-4 py-3 shadow-sm transition-all hover:-translate-y-1 hover:border-accent-gold/30 hover:shadow-md"
+                className="group flex h-24 items-center justify-center rounded-xl border border-[var(--boga-border-subtle)] bg-[var(--boga-surface-elevated)] px-4 py-3 shadow-[var(--boga-shadow-1)] transition-all hover:-translate-y-1 hover:border-[var(--boga-lima-500)]/30 hover:shadow-[var(--boga-shadow-3)]"
               >
-                <span className="text-center text-sm font-semibold text-muted transition-colors group-hover:text-dark">
+                <span className="text-center text-sm font-semibold text-[var(--boga-text-tertiary)] transition-colors group-hover:text-[var(--boga-text-primary)]">
                   {client}
                 </span>
               </div>

@@ -23,18 +23,31 @@ function ProductImagePlaceholder({ producto }: { producto: Producto }) {
   const firstSpec = Object.entries(specs)[0]
 
   return (
-    <div className="flex h-full w-full flex-col items-center justify-center bg-gradient-to-br from-neutral-100 to-neutral-200 p-6 text-center">
-      <span className="font-outfit text-sm font-semibold text-neutral-600">
+    <div className="flex h-full w-full flex-col items-center justify-center bg-gradient-to-br from-[var(--boga-surface-muted)] to-[var(--boga-surface-inset)] p-6 text-center">
+      <span className="font-sans text-sm font-semibold text-[var(--boga-text-secondary)]">
         {producto.nombre}
       </span>
       {firstSpec && (
-        <span className="mt-1 text-xs text-neutral-500">
+        <span className="mt-1 text-xs text-[var(--boga-text-tertiary)]">
           {firstSpec[0]}: {firstSpec[1]}
         </span>
       )}
       {/* TODO: Reemplazar por foto real del producto (mín. 800x600px) */}
     </div>
   )
+}
+
+function getBadgeColor(badge: string): string {
+  const lower = badge.toLowerCase()
+  if (lower.includes("premium") || lower.includes("vip") || lower.includes("nuevo"))
+    return "bg-[var(--boga-lima-500)] text-[var(--boga-text-on-lima)]"
+  if (lower.includes("inclusivo") || lower.includes("tecnología") || lower.includes("popular"))
+    return "bg-[var(--boga-electric-500)] text-white"
+  if (lower.includes("sostenible") || lower.includes("eco"))
+    return "bg-[var(--boga-success-500)] text-white"
+  if (lower.includes("iso"))
+    return "bg-[#c9a84c] text-[#1b1341]"
+  return "bg-[var(--boga-neutral-200)] text-[var(--boga-neutral-700)]"
 }
 
 export function ProductCard({ producto, className }: ProductCardProps) {
@@ -74,28 +87,28 @@ export function ProductCard({ producto, className }: ProductCardProps) {
         )}
 
         {!imageLoaded && !imageError && (
-          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-neutral-100 to-neutral-200">
-            <span className="text-sm font-medium text-neutral-500">{producto.nombre}</span>
+          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[var(--boga-surface-muted)] to-[var(--boga-surface-inset)]">
+            <span className="text-sm font-medium text-[var(--boga-text-tertiary)]">{producto.nombre}</span>
           </div>
         )}
 
         {/* Badge flotante */}
         {producto.badge && (
-          <span className="absolute left-4 top-4 rounded-full bg-primary-500 px-3 py-1 text-xs font-semibold text-white">
+          <span className={cn("absolute left-4 top-4 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wider", getBadgeColor(producto.badge))}>
             {producto.badge}
           </span>
         )}
 
         {/* Overlay en hover */}
-        <div className="absolute inset-0 bg-gradient-to-t from-secondary-900/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[var(--boga-deep-500)]/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
       </div>
 
       {/* Contenido */}
       <div className="p-6">
-        <h3 className="font-outfit text-heading-sm text-secondary-800 transition-colors group-hover:text-primary-500">
+        <h3 className="font-sans text-heading-sm text-[var(--boga-text-primary)] transition-colors group-hover:text-[var(--boga-electric-500)]">
           {producto.nombre}
         </h3>
-        <p className="mt-2 line-clamp-2 text-body-sm text-neutral-500">
+        <p className="mt-2 line-clamp-2 text-body-sm text-[var(--boga-text-secondary)]">
           {producto.descripcionCorta}
         </p>
 
@@ -105,16 +118,16 @@ export function ProductCard({ producto, className }: ProductCardProps) {
             {specEntries.map(([label, value]) => (
               <span
                 key={label}
-                className="inline-flex items-center gap-1 rounded-md bg-neutral-100 px-2 py-1 text-xs text-neutral-600"
+                className="inline-flex items-center gap-1 rounded-md bg-[var(--boga-surface-muted)] px-2 py-1 text-xs text-[var(--boga-text-secondary)]"
               >
-                <Check className="h-3 w-3 text-primary-500" aria-hidden="true" />
+                <Check className="h-3 w-3 text-[var(--boga-electric-500)]" aria-hidden="true" />
                 {value}
               </span>
             ))}
           </div>
         )}
 
-        <div className="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-primary-500 transition-all group-hover:gap-2">
+        <div className="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-[var(--boga-electric-500)] transition-all group-hover:gap-2">
           Ver detalles
           <ArrowRight className="h-4 w-4" aria-hidden="true" />
         </div>

@@ -21,23 +21,27 @@ export function ClientMarquee({ filterType, filterYear, className }: ClientMarqu
 
   return (
     <section
-      className={cn("overflow-hidden bg-secondary-800 py-16 md:py-24", className)}
+      className={cn("overflow-hidden bg-[var(--boga-surface-muted)] py-12 md:py-16", className)}
       aria-labelledby="clients-heading"
     >
-      <div className="container-junisama mb-12 text-center">
-        <span className="badge-iso mx-auto mb-4 inline-flex">
+      <div className="container-junisama mb-8 text-center">
+        <span className="inline-flex items-center gap-2 text-caption uppercase tracking-wider text-[var(--boga-text-tertiary)]">
+          <span className="boga-circles--s boga-circles--electric">
+            <span className="circle" />
+            <span className="circle" />
+            <span className="circle" />
+          </span>
           Empresas y eventos que han confiado en nosotros
+          <span className="boga-circles--s boga-circles--electric">
+            <span className="circle" />
+            <span className="circle" />
+            <span className="circle" />
+          </span>
         </span>
-        <h2
-          id="clients-heading"
-          className="font-outfit text-heading-lg text-white md:text-display-md"
-        >
-          Respaldo de las principales organizaciones del país
-        </h2>
       </div>
 
       {/* Marquee Track 1 — izquierda a derecha */}
-      <div className="marquee-container mb-6">
+      <div className="marquee-container mb-5">
         <div className="marquee-track">
           {duplicated.map((event, i) => (
             <EventPill key={`${event.id}-${i}`} event={event} />
@@ -49,7 +53,7 @@ export function ClientMarquee({ filterType, filterYear, className }: ClientMarqu
       <div className="marquee-container">
         <div
           className="flex w-max"
-          style={{ animation: "marquee-reverse 45s linear infinite" }}
+          style={{ animation: "boga-marquee-reverse 30s linear infinite" }}
         >
           {[...duplicated].reverse().map((event, i) => (
             <EventPill key={`${event.id}-rev-${i}`} event={event} variant="outline" />
@@ -65,18 +69,31 @@ interface EventPillProps {
   variant?: "filled" | "outline"
 }
 
+function Separator() {
+  return (
+    <span className="boga-circles--s boga-circles--electric mx-4 self-center opacity-60">
+      <span className="circle" />
+      <span className="circle" />
+      <span className="circle" />
+    </span>
+  )
+}
+
 function EventPill({ event, variant = "filled" }: EventPillProps) {
   return (
-    <div
-      className={cn(
-        "mx-3 flex-shrink-0 whitespace-nowrap rounded-full border px-6 py-3",
-        variant === "filled"
-          ? "border-white/10 bg-white/10 text-white"
-          : "border-white/20 bg-transparent text-neutral-300"
-      )}
-    >
-      <span className="font-outfit text-sm font-semibold">{event.name}</span>
-      <span className="ml-3 text-xs text-neutral-400">{event.years.join(", ")}</span>
+    <div className="flex items-center">
+      <div
+        className={cn(
+          "flex-shrink-0 whitespace-nowrap rounded-full border px-6 py-3",
+          variant === "filled"
+            ? "border-[var(--boga-border-subtle)] bg-[var(--boga-surface-elevated)] text-[var(--boga-text-primary)] shadow-[var(--boga-shadow-1)]"
+            : "border-[var(--boga-border-default)] bg-transparent text-[var(--boga-text-secondary)]"
+        )}
+      >
+        <span className="font-sans text-sm font-semibold uppercase tracking-wider">{event.name}</span>
+        <span className="ml-3 text-xs text-[var(--boga-text-tertiary)]">{event.years.join(", ")}</span>
+      </div>
+      <Separator />
     </div>
   )
 }
