@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -33,7 +33,7 @@ model Producto {
   imagenPrincipal         String
   imagenes                Json?
   especificaciones        Json?
-  precioBase              Decimal?
+  precioBase              Decimal? @db.Decimal(12, 2)
   unidadMedida            String           @default("unidad")
   destacado               Boolean          @default(false)
   orden                   Int              @default(0)
@@ -75,9 +75,9 @@ model Cotizacion {
   ubicacionEvento String?
   tipoEvento      String?
   duracionDias    Int?
-  costoTotal      Decimal?
-  precioVenta     Decimal?
-  margen          Decimal?
+  costoTotal      Decimal? @db.Decimal(12, 2)
+  precioVenta     Decimal? @db.Decimal(12, 2)
+  margen          Decimal? @db.Decimal(5, 2)
   moneda          String           @default("COP")
   items           CotizacionItem[]
   creadoPorId     String
@@ -94,10 +94,10 @@ model CotizacionItem {
   productoId               String
   producto                 Producto   @relation(fields: [productoId], references: [id])
   cantidad                 Int
-  precioUnitario           Decimal
-  precioTotal              Decimal
+  precioUnitario           Decimal  @db.Decimal(12, 2)
+  precioTotal              Decimal  @db.Decimal(12, 2)
   descripcionPersonalizada String?
-  costoUnitario            Decimal?
+  costoUnitario            Decimal? @db.Decimal(12, 2)
   createdAt                DateTime   @default(now())
 }
 
