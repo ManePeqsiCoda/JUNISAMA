@@ -21,11 +21,11 @@ const statusOrder: EstadoCotizacion[] = [
 ]
 
 const statusBarColors: Record<EstadoCotizacion, string> = {
-  BORRADOR: "bg-gray-500",
-  ENVIADA: "bg-[#3B82F6]",
-  APROBADA: "bg-[#22C55E]",
-  RECHAZADA: "bg-[#EF4444]",
-  EXPIRADA: "bg-[#F59E0B]",
+  BORRADOR: "bg-boga-neutral-500",
+  ENVIADA: "bg-boga-info-500",
+  APROBADA: "bg-boga-success-500",
+  RECHAZADA: "bg-boga-error-500",
+  EXPIRADA: "bg-boga-warning-500",
 }
 
 export function CotizacionesStatusChart({

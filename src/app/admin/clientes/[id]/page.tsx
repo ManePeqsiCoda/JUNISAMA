@@ -37,9 +37,9 @@ function formatDate(date: string | Date | null) {
 }
 
 const estadoStyles: Record<string, { label: string; bg: string; text: string }> = {
-  PROSPECTO: { label: "Prospecto", bg: "bg-gray-500/15", text: "text-gray-400" },
-  ACTIVO: { label: "Activo", bg: "bg-[#22C55E]/15", text: "text-[#22C55E]" },
-  INACTIVO: { label: "Inactivo", bg: "bg-[#EF4444]/15", text: "text-[#EF4444]" },
+  PROSPECTO: { label: "Prospecto", bg: "bg-boga-neutral-500/15", text: "text-boga-neutral-400" },
+  ACTIVO: { label: "Activo", bg: "bg-boga-success-500/15", text: "text-boga-success-500" },
+  INACTIVO: { label: "Inactivo", bg: "bg-boga-error-500/15", text: "text-boga-error-500" },
 }
 
 export default async function ClienteDetailPage({

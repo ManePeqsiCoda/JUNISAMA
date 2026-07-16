@@ -981,8 +981,8 @@ export function CotizacionWizard({
                   className={cn(
                     "font-semibold",
                     precioVenta - costoTotal >= 0
-                      ? "text-[#22C55E]"
-                      : "text-[#EF4444]"
+                      ? "text-boga-success-500"
+                      : "text-boga-error-500"
                   )}
                 >
                   {formatCurrency(precioVenta - costoTotal)}

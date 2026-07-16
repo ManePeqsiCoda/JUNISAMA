@@ -397,7 +397,7 @@ export function EventoPortafolioForm({
                           className={cn(
                             "rounded p-1 transition-colors",
                             active
-                              ? "text-[#F59E0B]"
+                              ? "text-boga-warning-500"
                               : "text-muted-foreground hover:text-foreground"
                           )}
                         >

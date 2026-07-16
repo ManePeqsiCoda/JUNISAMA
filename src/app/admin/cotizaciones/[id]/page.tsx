@@ -286,7 +286,7 @@ export default function CotizacionDetailPage() {
               <span className="text-muted-foreground">Ganancia</span>
               <span
                 className={
-                  ganancia >= 0 ? "font-bold text-[#22C55E]" : "font-bold text-[#EF4444]"
+                  ganancia >= 0 ? "font-bold text-boga-success-500" : "font-bold text-boga-error-500"
                 }
               >
                 {formatCurrency(ganancia)}

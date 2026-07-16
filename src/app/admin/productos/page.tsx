@@ -54,31 +54,31 @@ const estadoStyles: Record<
 > = {
   ACTIVO: {
     label: "Activo",
-    bg: "bg-[#22C55E]/15",
-    text: "text-[#22C55E]",
+    bg: "bg-boga-success-500/15",
+    text: "text-boga-success-500",
   },
   INACTIVO: {
     label: "Inactivo",
-    bg: "bg-[#EF4444]/15",
-    text: "text-[#EF4444]",
+    bg: "bg-boga-error-500/15",
+    text: "text-boga-error-500",
   },
   AGOTADO: {
     label: "Agotado",
-    bg: "bg-[#F59E0B]/15",
-    text: "text-[#F59E0B]",
+    bg: "bg-boga-warning-500/15",
+    text: "text-boga-warning-500",
   },
 }
 
 const tipoStyles: Record<Producto["tipo"], { label: string; bg: string; text: string }> = {
   PRODUCTO: {
     label: "Producto",
-    bg: "bg-[#3B82F6]/15",
-    text: "text-[#3B82F6]",
+    bg: "bg-boga-info-500/15",
+    text: "text-boga-info-500",
   },
   SERVICIO: {
     label: "Servicio",
-    bg: "bg-purple-500/15",
-    text: "text-purple-400",
+    bg: "bg-boga-electric-500/15",
+    text: "text-boga-electric-400",
   },
 }
 
@@ -294,10 +294,10 @@ export default function ProductosAdminPage() {
                             className={cn(
                               "h-1.5 w-1.5 rounded-full",
                               producto.estado === "ACTIVO"
-                                ? "bg-[#22C55E]"
+                                ? "bg-boga-success-500"
                                 : producto.estado === "AGOTADO"
-                                  ? "bg-[#F59E0B]"
-                                  : "bg-[#EF4444]"
+                                  ? "bg-boga-warning-500"
+                                  : "bg-boga-error-500"
                             )}
                           />
                           {estadoStyle.label}

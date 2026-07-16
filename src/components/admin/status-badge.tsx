@@ -9,33 +9,33 @@ const statusConfig: Record<
 > = {
   BORRADOR: {
     label: "Borrador",
-    bg: "bg-gray-500/15",
-    text: "text-gray-400",
-    border: "border-gray-500/20",
+    bg: "bg-boga-neutral-500/15",
+    text: "text-boga-neutral-400",
+    border: "border-boga-neutral-500/20",
   },
   ENVIADA: {
     label: "Enviada",
-    bg: "bg-[#3B82F6]/15",
-    text: "text-[#3B82F6]",
-    border: "border-[#3B82F6]/20",
+    bg: "bg-boga-info-500/15",
+    text: "text-boga-info-500",
+    border: "border-boga-info-500/20",
   },
   APROBADA: {
     label: "Aprobada",
-    bg: "bg-[#22C55E]/15",
-    text: "text-[#22C55E]",
-    border: "border-[#22C55E]/20",
+    bg: "bg-boga-success-500/15",
+    text: "text-boga-success-500",
+    border: "border-boga-success-500/20",
   },
   RECHAZADA: {
     label: "Rechazada",
-    bg: "bg-[#EF4444]/15",
-    text: "text-[#EF4444]",
-    border: "border-[#EF4444]/20",
+    bg: "bg-boga-error-500/15",
+    text: "text-boga-error-500",
+    border: "border-boga-error-500/20",
   },
   EXPIRADA: {
     label: "Expirada",
-    bg: "bg-[#F59E0B]/15",
-    text: "text-[#F59E0B]",
-    border: "border-[#F59E0B]/20",
+    bg: "bg-boga-warning-500/15",
+    text: "text-boga-warning-500",
+    border: "border-boga-warning-500/20",
   },
 }
 

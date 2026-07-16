@@ -58,9 +58,9 @@ const tipoEventoOptions = [
 ]
 
 const estadoEventoStyles: Record<string, { label: string; bg: string; text: string }> = {
-  PUBLICADO: { label: "Publicado", bg: "bg-[#22C55E]/15", text: "text-[#22C55E]" },
-  BORRADOR: { label: "Borrador", bg: "bg-gray-500/15", text: "text-gray-400" },
-  ARCHIVADO: { label: "Archivado", bg: "bg-[#F59E0B]/15", text: "text-[#F59E0B]" },
+  PUBLICADO: { label: "Publicado", bg: "bg-boga-success-500/15", text: "text-boga-success-500" },
+  BORRADOR: { label: "Borrador", bg: "bg-boga-neutral-500/15", text: "text-boga-neutral-400" },
+  ARCHIVADO: { label: "Archivado", bg: "bg-boga-warning-500/15", text: "text-boga-warning-500" },
 }
 
 interface ProductoOption {
@@ -429,7 +429,7 @@ export default function EventosAdminPage() {
                     </div>
                     {evento.testimonio && (
                       <div className="space-y-1">
-                        <div className="flex text-[#F59E0B]">
+                        <div className="flex text-boga-warning-500">
                           {Array.from({ length: evento.estrellasTestimonio || 0 }).map((_, i) => (
                             <Star key={i} className="h-3 w-3" fill="currentColor" />
                           ))}

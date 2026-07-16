@@ -19,24 +19,24 @@ const colorStyles: Record<
     iconText: "text-primary",
   },
   green: {
-    iconBg: "bg-[#22C55E]/10",
-    iconText: "text-[#22C55E]",
+    iconBg: "bg-boga-success-500/10",
+    iconText: "text-boga-success-500",
   },
   blue: {
-    iconBg: "bg-[#3B82F6]/10",
-    iconText: "text-[#3B82F6]",
+    iconBg: "bg-boga-info-500/10",
+    iconText: "text-boga-info-500",
   },
   red: {
-    iconBg: "bg-[#EF4444]/10",
-    iconText: "text-[#EF4444]",
+    iconBg: "bg-boga-error-500/10",
+    iconText: "text-boga-error-500",
   },
   orange: {
-    iconBg: "bg-[#F59E0B]/10",
-    iconText: "text-[#F59E0B]",
+    iconBg: "bg-boga-warning-500/10",
+    iconText: "text-boga-warning-500",
   },
   gray: {
-    iconBg: "bg-gray-500/10",
-    iconText: "text-gray-400",
+    iconBg: "bg-boga-neutral-500/10",
+    iconText: "text-boga-neutral-400",
   },
 }
 
@@ -53,9 +53,9 @@ export function KpiCard({
   const TrendIcon = trend === "up" ? ArrowUp : trend === "down" ? ArrowDown : Minus
   const trendColor =
     trend === "up"
-      ? "text-[#22C55E]"
+      ? "text-boga-success-500"
       : trend === "down"
-        ? "text-[#EF4444]"
+        ? "text-boga-error-500"
         : "text-muted-foreground"
 
   return (
