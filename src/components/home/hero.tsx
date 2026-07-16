@@ -3,7 +3,6 @@
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { ShieldCheck, ArrowRight, CircleDot, LayoutGrid } from "lucide-react"
-import { cn } from "@/lib/utils"
 
 const stats = [
   { value: "500+", label: "Eventos completados" },

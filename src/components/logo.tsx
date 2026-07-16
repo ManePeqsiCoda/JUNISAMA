@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { cn } from "@/lib/utils"
 
 interface LogoProps {
@@ -12,7 +13,7 @@ export function Logo({ variant = "light", className, showTagline = true }: LogoP
   const isDark = variant === "dark"
 
   return (
-    <a
+    <Link
       href="/"
       className={cn("inline-flex items-center gap-2.5 group", className)}
       aria-label="Junisama Inversiones S.A.S - Inicio"
@@ -50,6 +51,6 @@ export function Logo({ variant = "light", className, showTagline = true }: LogoP
           </span>
         )}
       </div>
-    </a>
+    </Link>
   )
 }
