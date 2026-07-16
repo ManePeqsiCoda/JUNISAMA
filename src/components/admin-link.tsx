@@ -11,7 +11,7 @@ export function AdminLink({ className }: AdminLinkProps) {
     <Link
       href="/admin/login"
       className={cn(
-        "inline-flex items-center gap-1 text-neutral-500 hover:text-neutral-300 transition-colors",
+        "inline-flex items-center gap-1 text-white/60 hover:text-[var(--boga-lima-500)] transition-colors",
         className
       )}
       aria-label="Acceso administrativo"

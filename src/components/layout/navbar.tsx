@@ -4,7 +4,6 @@ import * as React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { buttonVariants } from "@/components/ui/button"
 import { Logo } from "@/components/logo"
 import {
   Menu,
@@ -45,10 +44,7 @@ function EmergencyButton({ className }: { className?: string }) {
   return (
     <a
       href="tel:+573507089584"
-      className={cn(
-        "btn-emergency",
-        className
-      )}
+      className={cn("btn-emergency", className)}
       aria-label="Llamar a línea de emergencia"
       title="Emergencia: +57 350 708 9584"
     >
@@ -75,12 +71,14 @@ function NavLink({
       onClick={onClick}
       className={cn(
         "relative text-sm font-medium transition-colors",
-        active ? "text-primary" : "text-body hover:text-primary"
+        active
+          ? "text-[var(--boga-electric-500)]"
+          : "text-[var(--boga-text-secondary)] hover:text-[var(--boga-electric-500)]"
       )}
     >
       {children}
       {active && (
-        <span className="absolute -bottom-1 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-primary" />
+        <span className="absolute -bottom-1 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-[var(--boga-electric-500)]" />
       )}
     </Link>
   )
@@ -139,8 +137,8 @@ export function Navbar() {
         className={cn(
           "fixed top-0 z-40 w-full transition-all duration-300",
           scrolled
-            ? "bg-white/95 shadow-md backdrop-blur-md"
-            : "bg-white"
+            ? "bg-[var(--boga-surface-canvas)]/95 shadow-[var(--boga-shadow-2)] backdrop-blur-md"
+            : "bg-[var(--boga-surface-canvas)]"
         )}
       >
         <nav
@@ -167,8 +165,8 @@ export function Navbar() {
                     className={cn(
                       "flex items-center gap-1 text-sm font-medium transition-colors",
                       isActive(link.href)
-                        ? "text-primary"
-                        : "text-body hover:text-primary"
+                        ? "text-[var(--boga-electric-500)]"
+                        : "text-[var(--boga-text-secondary)] hover:text-[var(--boga-electric-500)]"
                     )}
                     aria-expanded={productsOpen}
                     aria-haspopup="true"
@@ -187,14 +185,14 @@ export function Navbar() {
                   {productsOpen && (
                     <div
                       id="desktop-products-menu"
-                      className="absolute top-full left-1/2 mt-2 w-[420px] -translate-x-1/2 rounded-xl border border-border-subtle bg-white p-4 shadow-lg"
+                      className="absolute top-full left-1/2 mt-2 w-[420px] -translate-x-1/2 rounded-xl border border-[var(--boga-border-subtle)] bg-[var(--boga-surface-floating)] p-4 shadow-[var(--boga-shadow-4)]"
                       role="menu"
                     >
-                      <div className="mb-3 border-b border-border-subtle pb-2">
+                      <div className="mb-3 border-b border-[var(--boga-border-subtle)] pb-2">
                         <Link
                           href="/productos"
                           onClick={() => setProductsOpen(false)}
-                          className="text-sm font-semibold text-dark hover:text-primary"
+                          className="text-sm font-semibold text-[var(--boga-text-primary)] hover:text-[var(--boga-electric-500)]"
                           role="menuitem"
                         >
                           Ver todos los productos
@@ -208,10 +206,10 @@ export function Navbar() {
                               key={child.href}
                               href={child.href}
                               onClick={() => setProductsOpen(false)}
-                              className="flex items-center gap-3 rounded-lg p-2 text-sm font-medium text-body transition-colors hover:bg-bg-light hover:text-primary"
+                              className="flex items-center gap-3 rounded-lg p-2 text-sm font-medium text-[var(--boga-text-secondary)] transition-colors hover:bg-[var(--boga-surface-muted)] hover:text-[var(--boga-electric-500)]"
                               role="menuitem"
                             >
-                              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary-light text-primary">
+                              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-[var(--boga-electric-50)] text-[var(--boga-electric-500)]">
                                 <Icon className="h-4 w-4" aria-hidden="true" />
                               </span>
                               {child.name}
@@ -237,10 +235,7 @@ export function Navbar() {
           {/* CTAs */}
           <div className="hidden items-center gap-3 lg:flex">
             <EmergencyButton />
-            <Link
-              href="/cotizacion"
-              className={buttonVariants({ size: "sm" }) + " px-5 font-semibold uppercase tracking-wide"}
-            >
+            <Link href="/cotizacion" className="btn-primary px-5 text-xs">
               Cotizar
             </Link>
           </div>
@@ -249,7 +244,7 @@ export function Navbar() {
           <button
             type="button"
             onClick={() => setMobileOpen(true)}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-body hover:bg-bg-light lg:hidden"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-[var(--boga-text-secondary)] hover:bg-[var(--boga-surface-muted)] lg:hidden"
             aria-label="Abrir menú"
           >
             <Menu className="h-6 w-6" aria-hidden="true" />
@@ -266,10 +261,10 @@ export function Navbar() {
           aria-label="Menú principal"
         >
           <div
-            className="absolute inset-0 bg-secondary/95 backdrop-blur-sm"
+            className="absolute inset-0 bg-[var(--boga-deep-500)]/95 backdrop-blur-sm"
             onClick={() => setMobileOpen(false)}
           />
-          <div className="absolute inset-y-0 right-0 flex w-full max-w-sm flex-col bg-secondary p-6 shadow-xl">
+          <div className="absolute inset-y-0 right-0 flex w-full max-w-sm flex-col bg-[var(--boga-deep-500)] p-6 shadow-[var(--boga-shadow-5)]">
             <div className="flex items-center justify-between">
               <Logo variant="dark" showTagline={false} />
               <button
@@ -292,7 +287,7 @@ export function Navbar() {
                       className={cn(
                         "flex w-full items-center justify-between rounded-lg px-4 py-3 text-left text-base font-medium transition-colors",
                         isActive(link.href)
-                          ? "bg-primary/10 text-primary"
+                          ? "bg-[var(--boga-lima-500)]/10 text-[var(--boga-lima-500)]"
                           : "text-white hover:bg-white/10"
                       )}
                       aria-expanded={productsOpen}
@@ -312,7 +307,7 @@ export function Navbar() {
                         <Link
                           href="/productos"
                           onClick={() => setMobileOpen(false)}
-                          className="rounded-lg px-4 py-2 text-sm font-semibold text-text-on-dark-muted hover:bg-white/10 hover:text-white"
+                          className="rounded-lg px-4 py-2 text-sm font-semibold text-white/70 hover:bg-white/10 hover:text-white"
                         >
                           Ver todos los productos
                         </Link>
@@ -323,9 +318,9 @@ export function Navbar() {
                               key={child.href}
                               href={child.href}
                               onClick={() => setMobileOpen(false)}
-                              className="flex items-center gap-3 rounded-lg px-4 py-2 text-sm text-text-on-dark-muted transition-colors hover:bg-white/10 hover:text-white"
+                              className="flex items-center gap-3 rounded-lg px-4 py-2 text-sm text-white/70 transition-colors hover:bg-white/10 hover:text-white"
                             >
-                              <Icon className="h-4 w-4 text-primary" aria-hidden="true" />
+                              <Icon className="h-4 w-4 text-[var(--boga-lima-500)]" aria-hidden="true" />
                               {child.name}
                             </Link>
                           )
@@ -344,7 +339,7 @@ export function Navbar() {
                       className={cn(
                         "block rounded-lg px-4 py-3 text-base",
                         isActive(link.href)
-                          ? "bg-primary/10 text-primary"
+                          ? "bg-[var(--boga-lima-500)]/10 text-[var(--boga-lima-500)]"
                           : "text-white hover:bg-white/10"
                       )}
                     >
@@ -367,11 +362,11 @@ export function Navbar() {
               <Link
                 href="/cotizacion"
                 onClick={() => setMobileOpen(false)}
-                className={buttonVariants({ size: "lg" }) + " w-full text-center font-semibold uppercase tracking-wide"}
+                className="btn-primary w-full text-center"
               >
                 Cotizar
               </Link>
-              <p className="text-center text-sm text-text-on-dark-muted">
+              <p className="text-center text-sm text-white/70">
                 +57 350 708 9584
               </p>
             </div>

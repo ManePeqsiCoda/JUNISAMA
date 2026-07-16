@@ -3,7 +3,7 @@ import { MessageCircle } from "lucide-react"
 
 const WHATSAPP_NUMBER = "573507089584"
 const WHATSAPP_MESSAGE =
-  "Hola, me gustaría recibir información sobre sus servicios"
+  "Hola BOGA, me gustaría recibir información sobre sus servicios"
 
 export function WhatsAppButton() {
   const href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
