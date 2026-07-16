@@ -127,7 +127,7 @@ export default function QuienesSomosPage() {
           <FadeIn direction="left">
             <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-bg-light">
               <Image
-                src="/images/productos/placeholder.svg"
+                src="/images/quienes-somos/equipo.jpg"
                 alt="Equipo Junisama"
                 fill
                 className="object-cover"
@@ -243,7 +243,7 @@ export default function QuienesSomosPage() {
             <FadeIn direction="right">
               <div className="relative aspect-video overflow-hidden rounded-2xl bg-white/5">
                 <Image
-                  src="/images/productos/placeholder.svg"
+                  src="/images/quienes-somos/servicio-tecnico.jpg"
                   alt="Servicio técnico Junisama"
                   fill
                   className="object-cover"

@@ -116,7 +116,7 @@ export function generateOpenGraph(
     type: "website",
     images: [
       {
-        url: `${siteConfig.url}/images/og-image.png`,
+        url: `${siteConfig.url}/images/og-image.jpg`,
         width: 1200,
         height: 630,
         alt: config.title,
