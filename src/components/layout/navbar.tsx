@@ -2,10 +2,10 @@
 
 import * as React from "react"
 import Link from "next/link"
-import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
+import { Logo } from "@/components/logo"
 import {
   Menu,
   X,
@@ -18,63 +18,45 @@ import {
   Truck,
   Users,
   Leaf,
+  Phone,
 } from "lucide-react"
 
 const products = [
-  {
-    name: "Baño VIP",
-    href: "/productos/bano-vip",
-    icon: Star,
-  },
-  {
-    name: "Baño Estándar",
-    href: "/productos/bano-estandar",
-    icon: Bath,
-  },
-  {
-    name: "Discapacitados",
-    href: "/productos/discapacitados",
-    icon: Accessibility,
-  },
-  {
-    name: "Eléctricos",
-    href: "/productos/electricos",
-    icon: Zap,
-  },
-  {
-    name: "Lavamanos",
-    href: "/productos/lavamanos",
-    icon: Droplets,
-  },
-  {
-    name: "Trailer de Lujo",
-    href: "/productos/trailer-lujo",
-    icon: Truck,
-  },
-  {
-    name: "Servicio de Operarios",
-    href: "/productos/operarios",
-    icon: Users,
-  },
-  {
-    name: "Puntos Ecológicos",
-    href: "/productos/puntos-ecologicos",
-    icon: Leaf,
-  },
+  { name: "Baño VIP", href: "/productos/bano-vip", icon: Star },
+  { name: "Baño Estándar", href: "/productos/bano-estandar", icon: Bath },
+  { name: "Discapacitados", href: "/productos/discapacitados", icon: Accessibility },
+  { name: "Eléctricos", href: "/productos/electricos", icon: Zap },
+  { name: "Lavamanos", href: "/productos/lavamanos", icon: Droplets },
+  { name: "Trailer de Lujo", href: "/productos/trailer-lujo", icon: Truck },
+  { name: "Servicio de Operarios", href: "/productos/operarios", icon: Users },
+  { name: "Puntos Ecológicos", href: "/productos/puntos-ecologicos", icon: Leaf },
 ]
 
 const mainLinks = [
   { name: "Inicio", href: "/" },
-  {
-    name: "Productos",
-    href: "/productos",
-    children: products,
-  },
+  { name: "Productos", href: "/productos", children: products },
   { name: "Servicios", href: "/servicios" },
   { name: "Galería", href: "/galeria" },
-  { name: "Quienes Somos", href: "/quienes-somos" },
+  { name: "Quiénes Somos", href: "/quienes-somos" },
   { name: "Contacto", href: "/contacto" },
 ]
+
+function EmergencyButton({ className }: { className?: string }) {
+  return (
+    <a
+      href="tel:+573507089584"
+      className={cn(
+        "btn-emergency",
+        className
+      )}
+      aria-label="Llamar a línea de emergencia"
+      title="Emergencia: +57 350 708 9584"
+    >
+      <Phone className="h-4 w-4" aria-hidden="true" />
+      <span>EMERGENCIA</span>
+    </a>
+  )
+}
 
 function NavLink({
   href,
@@ -113,7 +95,7 @@ export function Navbar() {
 
   React.useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 8)
+      setScrolled(window.scrollY > 10)
     }
     handleScroll()
     window.addEventListener("scroll", handleScroll, { passive: true })
@@ -133,6 +115,19 @@ export function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
+  React.useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setProductsOpen(false)
+        setMobileOpen(false)
+      }
+    }
+    if (productsOpen || mobileOpen) {
+      document.addEventListener("keydown", handleEscape)
+      return () => document.removeEventListener("keydown", handleEscape)
+    }
+  }, [productsOpen, mobileOpen])
+
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/"
     return pathname === href || pathname.startsWith(`${href}/`)
@@ -144,24 +139,19 @@ export function Navbar() {
         className={cn(
           "fixed top-0 z-40 w-full transition-all duration-300",
           scrolled
-            ? "bg-white/95 shadow-sm backdrop-blur-sm"
+            ? "bg-white/95 shadow-md backdrop-blur-md"
             : "bg-white"
         )}
       >
-        <nav className="container mx-auto flex h-[72px] items-center justify-between px-4 lg:px-6">
+        <nav
+          className="container-junisama flex h-[var(--header-height)] items-center justify-between"
+          aria-label="Navegación principal"
+        >
           {/* Logo */}
-          <Link href="/" className="relative flex h-10 w-40 items-center">
-            <Image
-              src="/logo.svg"
-              alt="Junisama Inversiones S.A.S"
-              fill
-              className="object-contain object-left"
-              priority
-            />
-          </Link>
+          <Logo variant="light" />
 
           {/* Desktop links */}
-          <div className="hidden items-center gap-8 lg:flex">
+          <div className="hidden items-center gap-6 xl:gap-8 lg:flex">
             {mainLinks.map((link) =>
               link.children ? (
                 <div
@@ -181,6 +171,7 @@ export function Navbar() {
                         : "text-body hover:text-primary"
                     )}
                     aria-expanded={productsOpen}
+                    aria-haspopup="true"
                     aria-controls="desktop-products-menu"
                   >
                     {link.name}
@@ -189,6 +180,7 @@ export function Navbar() {
                         "h-4 w-4 transition-transform",
                         productsOpen && "rotate-180"
                       )}
+                      aria-hidden="true"
                     />
                   </button>
 
@@ -196,12 +188,14 @@ export function Navbar() {
                     <div
                       id="desktop-products-menu"
                       className="absolute top-full left-1/2 mt-2 w-[420px] -translate-x-1/2 rounded-xl border border-border-subtle bg-white p-4 shadow-lg"
+                      role="menu"
                     >
                       <div className="mb-3 border-b border-border-subtle pb-2">
                         <Link
                           href="/productos"
                           onClick={() => setProductsOpen(false)}
                           className="text-sm font-semibold text-dark hover:text-primary"
+                          role="menuitem"
                         >
                           Ver todos los productos
                         </Link>
@@ -215,9 +209,10 @@ export function Navbar() {
                               href={child.href}
                               onClick={() => setProductsOpen(false)}
                               className="flex items-center gap-3 rounded-lg p-2 text-sm font-medium text-body transition-colors hover:bg-bg-light hover:text-primary"
+                              role="menuitem"
                             >
                               <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary-light text-primary">
-                                <Icon className="h-4 w-4" />
+                                <Icon className="h-4 w-4" aria-hidden="true" />
                               </span>
                               {child.name}
                             </Link>
@@ -239,8 +234,9 @@ export function Navbar() {
             )}
           </div>
 
-          {/* CTA */}
-          <div className="hidden lg:block">
+          {/* CTAs */}
+          <div className="hidden items-center gap-3 lg:flex">
+            <EmergencyButton />
             <Link
               href="/cotizacion"
               className={buttonVariants({ size: "sm" }) + " px-5 font-semibold uppercase tracking-wide"}
@@ -256,7 +252,7 @@ export function Navbar() {
             className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-body hover:bg-bg-light lg:hidden"
             aria-label="Abrir menú"
           >
-            <Menu className="h-6 w-6" />
+            <Menu className="h-6 w-6" aria-hidden="true" />
           </button>
         </nav>
       </header>
@@ -275,25 +271,14 @@ export function Navbar() {
           />
           <div className="absolute inset-y-0 right-0 flex w-full max-w-sm flex-col bg-secondary p-6 shadow-xl">
             <div className="flex items-center justify-between">
-              <Link
-                href="/"
-                onClick={() => setMobileOpen(false)}
-                className="relative h-10 w-40"
-              >
-                <Image
-                  src="/logo.svg"
-                  alt="Junisama"
-                  fill
-                  className="object-contain object-left invert"
-                />
-              </Link>
+              <Logo variant="dark" showTagline={false} />
               <button
                 type="button"
                 onClick={() => setMobileOpen(false)}
                 className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-white hover:bg-white/10"
                 aria-label="Cerrar menú"
               >
-                <X className="h-6 w-6" />
+                <X className="h-6 w-6" aria-hidden="true" />
               </button>
             </div>
 
@@ -319,6 +304,7 @@ export function Navbar() {
                           "h-5 w-5 transition-transform",
                           productsOpen && "rotate-180"
                         )}
+                        aria-hidden="true"
                       />
                     </button>
                     {productsOpen && (
@@ -339,7 +325,7 @@ export function Navbar() {
                               onClick={() => setMobileOpen(false)}
                               className="flex items-center gap-3 rounded-lg px-4 py-2 text-sm text-text-on-dark-muted transition-colors hover:bg-white/10 hover:text-white"
                             >
-                              <Icon className="h-4 w-4 text-primary" />
+                              <Icon className="h-4 w-4 text-primary" aria-hidden="true" />
                               {child.name}
                             </Link>
                           )
@@ -369,7 +355,15 @@ export function Navbar() {
               )}
             </div>
 
-            <div className="mt-auto pt-8">
+            <div className="mt-auto flex flex-col gap-3 pt-8">
+              <a
+                href="tel:+573507089584"
+                className="btn-emergency w-full"
+                aria-label="Llamar a línea de emergencia"
+              >
+                <Phone className="h-4 w-4" aria-hidden="true" />
+                EMERGENCIA
+              </a>
               <Link
                 href="/cotizacion"
                 onClick={() => setMobileOpen(false)}
@@ -377,7 +371,7 @@ export function Navbar() {
               >
                 Cotizar
               </Link>
-              <p className="mt-4 text-center text-sm text-text-on-dark-muted">
+              <p className="text-center text-sm text-text-on-dark-muted">
                 +57 350 708 9584
               </p>
             </div>

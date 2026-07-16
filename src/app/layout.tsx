@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 import {
@@ -11,12 +10,6 @@ import {
   generateOpenGraph,
   generateTwitterCard,
 } from "@/lib/seo";
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: {
@@ -35,6 +28,10 @@ export const metadata: Metadata = {
   twitter: generateTwitterCard("home"),
   other: {
     "content-language": siteConfig.language,
+    "geo.region": "CO",
+    "geo.placename": "Medellín, Bogotá",
+    "geo.position": "6.2518;-75.5636",
+    ICBM: "6.2518, -75.5636",
   },
 };
 
@@ -55,7 +52,7 @@ export default function RootLayout({
   return (
     <html
       lang={siteConfig.language}
-      className={`${inter.variable} h-full antialiased`}
+      className="h-full antialiased"
     >
       <head>
         <meta httpEquiv="content-language" content={siteConfig.language} />

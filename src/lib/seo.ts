@@ -2,8 +2,8 @@ export const siteConfig = {
   name: "Junisama",
   fullName: "Junisama Inversiones S.A.S",
   tagline: "Infraestructura Sanitaria Industrial",
-  url: "https://junisama.com",
-  logo: "https://junisama.com/logo.svg",
+  url: "https://junisama.com.co",
+  logo: "https://junisama.com.co/logo.svg",
   phone: "+57 350 708 9584",
   email: "soporte@junisama.com",
   whatsapp: "573507089584",
@@ -30,30 +30,30 @@ export const seoConfig = {
     description:
       "Alquiler de baños portátiles y unidades sanitarias para eventos en Colombia. Servicio premium con baños VIP, estándar, eléctricos y para discapacitados. Operarios profesionales disponibles 24/7.",
     keywords:
-      "baños portátiles Colombia, alquiler baños portátiles, unidades sanitarias portátiles, baños para eventos",
+      "baños portátiles Colombia, alquiler baños portátiles, baños portátiles Medellín, baños portátiles Bogotá, baños portátiles VIP, baños portátiles eventos, unidades sanitarias portátiles, infraestructura sanitaria eventos, baños para discapacitados, tráiler de lujo sanitario",
   },
   productos: {
-    title: "Productos | Baños Portátiles y Unidades Sanitarias | Junisama",
+    title: "Productos | Baños Portátiles y Unidades Sanitarias",
     description:
       "Catálogo de baños portátiles VIP, estándar, eléctricos, para discapacitados, lavamanos, trailers de lujo y puntos ecológicos en Colombia.",
     keywords:
       "baños portátiles, baño VIP, baño estándar, lavamanos portátil, trailer de lujo",
   },
   servicios: {
-    title: "Servicios Especializados | Alquiler y Operación | Junisama",
+    title: "Servicios Especializados | Alquiler y Operación",
     description:
       "Alquiler de unidades sanitarias, mantenimiento especializado, operarios certificados e insumos biodegradables para eventos y obras.",
     keywords:
       "servicios sanitarios, operarios para baños, mantenimiento baños portátiles",
   },
   galeria: {
-    title: "Galería | Eventos Atendidos | Junisama",
+    title: "Galería | Eventos Atendidos",
     description:
       "Conoce los eventos de gran magnitud que han confiado en Junisama para su infraestructura sanitaria industrial.",
     keywords: "eventos atendidos, galería Junisama, baños para eventos",
   },
   clientes: {
-    title: "Clientes | Quiénes Confían en Junisama",
+    title: "Clientes | Quiénes Confían",
     description:
       "Empresas, festivales, conciertos y organizaciones que confían en Junisama para sus eventos en Colombia.",
     keywords: "clientes Junisama, testimonios, eventos corporativos",
@@ -65,37 +65,37 @@ export const seoConfig = {
     keywords: "Junisama, empresa baños portátiles, infraestructura sanitaria",
   },
   faq: {
-    title: "Preguntas Frecuentes | Junisama",
+    title: "Preguntas Frecuentes",
     description:
       "Resolvemos tus dudas sobre baños portátiles, servicios, cotizaciones y atención de eventos en Colombia.",
     keywords: "preguntas frecuentes, FAQ baños portátiles",
   },
   contacto: {
-    title: "Contacto | Junisama",
+    title: "Contacto",
     description:
       "Contácta a Junisama. Línea directa +57 350 708 9584, WhatsApp 24/7, sedes en Medellín y Bogotá. Solicita tu cotización.",
     keywords: "contacto Junisama, cotización baños portátiles",
   },
   cotizacion: {
-    title: "Solicitar Cotización | Junisama",
+    title: "Solicitar Cotización",
     description:
       "Solicita una cotización personalizada para tu evento u obra. Baños portátiles, lavamanos, trailers de lujo y operarios profesionales.",
     keywords: "cotizar baños portátiles, cotización eventos",
   },
   privacidad: {
-    title: "Política de Privacidad | Junisama",
+    title: "Política de Privacidad",
     description:
       "Política de privacidad de Junisama Inversiones S.A.S conforme a la Ley 1581 de 2012 de Colombia.",
     keywords: "política de privacidad, protección de datos",
   },
   terminos: {
-    title: "Términos y Condiciones | Junisama",
+    title: "Términos y Condiciones",
     description:
       "Términos y condiciones de uso del sitio web de Junisama Inversiones S.A.S.",
     keywords: "términos y condiciones",
   },
   cookies: {
-    title: "Política de Cookies | Junisama",
+    title: "Política de Cookies",
     description:
       "Política de cookies del sitio web de Junisama Inversiones S.A.S.",
     keywords: "política de cookies",
