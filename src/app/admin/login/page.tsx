@@ -40,8 +40,8 @@ function LoginForm() {
   } = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "admin@junisama.com",
-      password: "Junisama2025!",
+      email: "",
+      password: "",
     },
   })
 
@@ -68,9 +68,11 @@ function LoginForm() {
         <CardDescription className="text-muted-foreground">
           Inicia sesión para gestionar Junisama
         </CardDescription>
-        <p className="text-xs text-muted-foreground">
-          Demo: admin@junisama.com / Junisama2025!
-        </p>
+        {process.env.NODE_ENV === "development" && (
+          <p className="text-xs text-muted-foreground">
+            Modo desarrollo — revisa variables de entorno
+          </p>
+        )}
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">

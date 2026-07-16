@@ -26,6 +26,7 @@ import { cn } from "@/lib/utils"
 import {
   Loader2,
   CheckCircle2,
+  Check,
   AlertCircle,
   ChevronRight,
   ChevronLeft,
@@ -43,13 +44,13 @@ const tipoEventoOptions = [
 ]
 
 const step1Schema = z.object({
-  nombre: z.string().min(2, "El nombre es requerido"),
+  nombre: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
   empresa: z.string().optional(),
-  email: z.string().email("Ingresa un correo válido"),
+  email: z.string().email("Ingresa un correo electrónico válido"),
   telefono: z.string().min(7, "El teléfono debe tener al menos 7 dígitos"),
-  tipoEvento: z.string().min(1, "El tipo de evento es requerido"),
-  fechaEvento: z.string().min(1, "La fecha es requerida"),
-  ciudad: z.string().min(2, "La ciudad es requerida"),
+  tipoEvento: z.string().min(1, "Selecciona un tipo de evento"),
+  fechaEvento: z.string().min(1, "Selecciona una fecha"),
+  ciudad: z.string().min(2, "Indica la ciudad"),
   asistentes: z.number().int().optional(),
 })
 
@@ -89,6 +90,16 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
     formState: { errors: errorsStep1 },
   } = useForm<Step1Data>({
     resolver: zodResolver(step1Schema),
+    defaultValues: {
+      nombre: "",
+      empresa: "",
+      email: "",
+      telefono: "",
+      tipoEvento: "",
+      fechaEvento: "",
+      ciudad: "",
+      asistentes: undefined,
+    },
   })
 
   const {
@@ -228,21 +239,7 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
         <Card className="mx-auto max-w-5xl border-border-subtle bg-white shadow-lg">
           <CardContent className="p-6 md:p-8">
             {/* Step indicator */}
-            <div className="mb-8 flex items-center justify-center gap-2">
-              {[1, 2, 3].map((s) => (
-                <div
-                  key={s}
-                  className={cn(
-                    "flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold",
-                    step >= s
-                      ? "bg-primary text-white"
-                      : "bg-bg-light text-muted"
-                  )}
-                >
-                  {s}
-                </div>
-              ))}
-            </div>
+            <StepIndicator currentStep={step} totalSteps={3} />
 
             <form id="quote-form" onSubmit={(e) => e.preventDefault()}>
               {step === 1 && (
@@ -259,7 +256,7 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
                         aria-invalid={errorsStep1.nombre ? "true" : "false"}
                       />
                       {errorsStep1.nombre && (
-                        <p className="text-xs text-error">
+                        <p className="flex items-center gap-1 text-xs text-error" role="alert"><AlertCircle className="h-3 w-3" aria-hidden="true" />
                           {errorsStep1.nombre.message}
                         </p>
                       )}
@@ -280,7 +277,7 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
                         aria-invalid={errorsStep1.email ? "true" : "false"}
                       />
                       {errorsStep1.email && (
-                        <p className="text-xs text-error">
+                        <p className="flex items-center gap-1 text-xs text-error" role="alert"><AlertCircle className="h-3 w-3" aria-hidden="true" />
                           {errorsStep1.email.message}
                         </p>
                       )}
@@ -294,7 +291,7 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
                         aria-invalid={errorsStep1.telefono ? "true" : "false"}
                       />
                       {errorsStep1.telefono && (
-                        <p className="text-xs text-error">
+                        <p className="flex items-center gap-1 text-xs text-error" role="alert"><AlertCircle className="h-3 w-3" aria-hidden="true" />
                           {errorsStep1.telefono.message}
                         </p>
                       )}
@@ -309,9 +306,9 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
                         control={controlStep1}
                         render={({ field }) => (
                           <Select
-                            value={field.value}
-                            onValueChange={field.onChange}
-                          >
+                        value={field.value || undefined}
+                        onValueChange={field.onChange}
+                      >
                             <SelectTrigger id="tipoEvento" className="w-full">
                               <SelectValue placeholder="Selecciona" />
                             </SelectTrigger>
@@ -326,7 +323,7 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
                         )}
                       />
                       {errorsStep1.tipoEvento && (
-                        <p className="text-xs text-error">
+                        <p className="flex items-center gap-1 text-xs text-error" role="alert"><AlertCircle className="h-3 w-3" aria-hidden="true" />
                           {errorsStep1.tipoEvento.message}
                         </p>
                       )}
@@ -340,7 +337,7 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
                         aria-invalid={errorsStep1.fechaEvento ? "true" : "false"}
                       />
                       {errorsStep1.fechaEvento && (
-                        <p className="text-xs text-error">
+                        <p className="flex items-center gap-1 text-xs text-error" role="alert"><AlertCircle className="h-3 w-3" aria-hidden="true" />
                           {errorsStep1.fechaEvento.message}
                         </p>
                       )}
@@ -356,7 +353,7 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
                         aria-invalid={errorsStep1.ciudad ? "true" : "false"}
                       />
                       {errorsStep1.ciudad && (
-                        <p className="text-xs text-error">
+                        <p className="flex items-center gap-1 text-xs text-error" role="alert"><AlertCircle className="h-3 w-3" aria-hidden="true" />
                           {errorsStep1.ciudad.message}
                         </p>
                       )}
@@ -580,7 +577,7 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
                         </Link>
                       </Label>
                       {errorsStep3.aceptaPrivacidad && (
-                        <p className="text-xs text-error">
+                        <p className="flex items-center gap-1 text-xs text-error" role="alert"><AlertCircle className="h-3 w-3" aria-hidden="true" />
                           {errorsStep3.aceptaPrivacidad.message}
                         </p>
                       )}
@@ -622,5 +619,52 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
         </Card>
       </FadeIn>
     </section>
+  )
+}
+
+function StepIndicator({
+  currentStep,
+  totalSteps,
+}: {
+  currentStep: number
+  totalSteps: number
+}) {
+  return (
+    <div
+      className="mb-10 flex items-center justify-center gap-3"
+      aria-label={`Paso ${currentStep} de ${totalSteps}`}
+    >
+      {Array.from({ length: totalSteps }, (_, i) => {
+        const stepNum = i + 1
+        const isActive = stepNum === currentStep
+        const isCompleted = stepNum < currentStep
+
+        return (
+          <div key={stepNum} className="flex items-center gap-3">
+            <div
+              className={cn(
+                "flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold transition-all",
+                isActive &&
+                  "bg-primary-500 text-white ring-4 ring-primary-100",
+                isCompleted && "bg-primary-500 text-white",
+                !isActive && !isCompleted && "bg-neutral-200 text-neutral-500"
+              )}
+              aria-current={isActive ? "step" : undefined}
+            >
+              {isCompleted ? <Check className="h-5 w-5" /> : stepNum}
+            </div>
+            {stepNum < totalSteps && (
+              <div
+                className={cn(
+                  "h-1 w-16 rounded-full transition-colors",
+                  isCompleted ? "bg-primary-500" : "bg-neutral-200"
+                )}
+                aria-hidden="true"
+              />
+            )}
+          </div>
+        )
+      })}
+    </div>
   )
 }

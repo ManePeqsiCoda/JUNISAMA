@@ -20,7 +20,7 @@ const AuthMockContext = createContext<AuthMockContextValue | null>(null)
 
 const MOCK_USER: MockUser = {
   id: "usr_1",
-  email: "admin@junisama.com",
+  email: process.env.NEXT_PUBLIC_ADMIN_EMAIL || "",
   name: "Administrador Junisama",
   role: "ADMIN",
 }
@@ -32,9 +32,14 @@ export function AuthMockProvider({ children }: { children: ReactNode }) {
   )
 
   const signIn = async (email: string, password: string) => {
+    const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL
+    const adminPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD
+
     if (
-      email.trim().toLowerCase() === "admin@junisama.com" &&
-      password === "Junisama2025!"
+      adminEmail &&
+      adminPassword &&
+      email.trim().toLowerCase() === adminEmail.trim().toLowerCase() &&
+      password === adminPassword
     ) {
       setUser(MOCK_USER)
       setStatus("authenticated")
