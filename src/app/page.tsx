@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { Hero } from "@/components/home/hero"
 import { ClientMarquee } from "@/components/client-marquee"
+import { BogaValues } from "@/components/home/boga-values"
 import { ProductGrid } from "@/components/product-grid"
 import { WhyUs } from "@/components/home/why-us"
 import { OurNumbers } from "@/components/our-numbers"
@@ -28,10 +29,11 @@ export default function HomePage() {
     <>
       <Hero />
       <ClientMarquee />
-      <section className="bg-[var(--boga-surface-canvas)] py-16 md:py-24">
-        <div className="container-junisama">
+      <BogaValues />
+      <section className="bg-boga-surface-canvas py-16 md:py-24">
+        <div className="container-boga">
           <div className="mb-12 text-center">
-            <span className="mb-3 inline-flex items-center gap-2 text-caption uppercase tracking-wider text-[var(--boga-electric-500)]">
+            <span className="mb-3 inline-flex items-center gap-2 text-caption uppercase tracking-wider text-boga-electric-500">
               <span className="boga-circles--s boga-circles--electric">
                 <span className="circle" />
                 <span className="circle" />
@@ -39,10 +41,10 @@ export default function HomePage() {
               </span>
               Productos destacados
             </span>
-            <h2 className="font-sans text-heading-lg text-[var(--boga-text-primary)] md:text-display-md">
+            <h2 className="font-sans text-heading-lg text-boga-text-primary md:text-display-md">
               Nuestras soluciones
             </h2>
-            <p className="mx-auto mt-3 max-w-2xl text-[var(--boga-text-secondary)]">
+            <p className="mx-auto mt-3 max-w-2xl text-boga-text-secondary">
               Equipos sanitarios portátiles para todo tipo de evento
             </p>
           </div>
