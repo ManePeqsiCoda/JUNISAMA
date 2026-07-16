@@ -202,15 +202,15 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
     return (
       <section className="container mx-auto px-4 py-24 lg:px-6">
         <FadeIn>
-          <Card className="mx-auto max-w-2xl border-border-subtle bg-white shadow-lg">
+          <Card className="mx-auto max-w-2xl border-boga-border-subtle bg-boga-surface-elevated shadow-boga-4">
             <CardContent className="p-8 text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-success-bg text-success">
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-boga-success-50 text-boga-success-600">
                 <CheckCircle2 className="h-8 w-8" />
               </div>
-              <h2 className="text-2xl font-bold text-dark">
+              <h2 className="text-2xl font-bold text-boga-text-primary">
                 ¡Gracias por tu solicitud!
               </h2>
-              <p className="mt-3 text-body">
+              <p className="mt-3 text-boga-text-secondary">
                 Tu solicitud ha sido enviada. Te contactaremos en menos de 24
                 horas.
               </p>
@@ -227,24 +227,24 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
   return (
     <section className="container mx-auto px-4 py-24 lg:px-6">
       <FadeIn className="mb-8 text-center">
-        <h1 className="text-3xl font-extrabold text-dark md:text-4xl">
+        <h1 className="text-3xl font-extrabold text-boga-text-primary md:text-4xl">
           Solicitar Cotización
         </h1>
-        <p className="mx-auto mt-3 max-w-2xl text-body">
+        <p className="mx-auto mt-3 max-w-2xl text-boga-text-secondary">
           Completa el formulario en 3 pasos y recibe una propuesta personalizada
         </p>
       </FadeIn>
 
       <FadeIn delay={0.1}>
-        <Card className="mx-auto max-w-5xl border-border-subtle bg-white shadow-lg">
+        <Card className="mx-auto max-w-5xl border-boga-border-subtle bg-boga-surface-elevated shadow-boga-4">
           <CardContent className="p-6 md:p-8">
-            {/* Step indicator */}
+            {/* Step indicator — 3 círculos BOGA */}
             <StepIndicator currentStep={step} totalSteps={3} />
 
             <form id="quote-form" onSubmit={(e) => e.preventDefault()}>
               {step === 1 && (
                 <div className="space-y-5">
-                  <h2 className="text-xl font-bold text-dark">
+                  <h2 className="text-xl font-bold text-boga-text-primary">
                     Paso 1: Datos de contacto
                   </h2>
                   <div className="grid gap-5 sm:grid-cols-2">
@@ -256,7 +256,7 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
                         aria-invalid={errorsStep1.nombre ? "true" : "false"}
                       />
                       {errorsStep1.nombre && (
-                        <p className="flex items-center gap-1 text-xs text-error" role="alert"><AlertCircle className="h-3 w-3" aria-hidden="true" />
+                        <p className="flex items-center gap-1 text-xs text-boga-error-500" role="alert"><AlertCircle className="h-3 w-3" aria-hidden="true" />
                           {errorsStep1.nombre.message}
                         </p>
                       )}
@@ -277,7 +277,7 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
                         aria-invalid={errorsStep1.email ? "true" : "false"}
                       />
                       {errorsStep1.email && (
-                        <p className="flex items-center gap-1 text-xs text-error" role="alert"><AlertCircle className="h-3 w-3" aria-hidden="true" />
+                        <p className="flex items-center gap-1 text-xs text-boga-error-500" role="alert"><AlertCircle className="h-3 w-3" aria-hidden="true" />
                           {errorsStep1.email.message}
                         </p>
                       )}
@@ -291,7 +291,7 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
                         aria-invalid={errorsStep1.telefono ? "true" : "false"}
                       />
                       {errorsStep1.telefono && (
-                        <p className="flex items-center gap-1 text-xs text-error" role="alert"><AlertCircle className="h-3 w-3" aria-hidden="true" />
+                        <p className="flex items-center gap-1 text-xs text-boga-error-500" role="alert"><AlertCircle className="h-3 w-3" aria-hidden="true" />
                           {errorsStep1.telefono.message}
                         </p>
                       )}
@@ -323,7 +323,7 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
                         )}
                       />
                       {errorsStep1.tipoEvento && (
-                        <p className="flex items-center gap-1 text-xs text-error" role="alert"><AlertCircle className="h-3 w-3" aria-hidden="true" />
+                        <p className="flex items-center gap-1 text-xs text-boga-error-500" role="alert"><AlertCircle className="h-3 w-3" aria-hidden="true" />
                           {errorsStep1.tipoEvento.message}
                         </p>
                       )}
@@ -337,7 +337,7 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
                         aria-invalid={errorsStep1.fechaEvento ? "true" : "false"}
                       />
                       {errorsStep1.fechaEvento && (
-                        <p className="flex items-center gap-1 text-xs text-error" role="alert"><AlertCircle className="h-3 w-3" aria-hidden="true" />
+                        <p className="flex items-center gap-1 text-xs text-boga-error-500" role="alert"><AlertCircle className="h-3 w-3" aria-hidden="true" />
                           {errorsStep1.fechaEvento.message}
                         </p>
                       )}
@@ -353,7 +353,7 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
                         aria-invalid={errorsStep1.ciudad ? "true" : "false"}
                       />
                       {errorsStep1.ciudad && (
-                        <p className="flex items-center gap-1 text-xs text-error" role="alert"><AlertCircle className="h-3 w-3" aria-hidden="true" />
+                        <p className="flex items-center gap-1 text-xs text-boga-error-500" role="alert"><AlertCircle className="h-3 w-3" aria-hidden="true" />
                           {errorsStep1.ciudad.message}
                         </p>
                       )}
@@ -384,12 +384,12 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
 
               {step === 2 && (
                 <div className="space-y-5">
-                  <h2 className="text-xl font-bold text-dark">
+                  <h2 className="text-xl font-bold text-boga-text-primary">
                     Paso 2: Selección de productos
                   </h2>
 
                   {errorMessage && (
-                    <div className="flex items-start gap-2 rounded-lg bg-error-bg p-3 text-sm text-error">
+                    <div className="flex items-start gap-2 rounded-lg bg-boga-error-50 p-3 text-sm text-boga-error-500">
                       <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
                       {errorMessage}
                     </div>
@@ -408,13 +408,13 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
                               className={cn(
                                 "relative cursor-pointer rounded-xl border-2 p-4 transition-all",
                                 selected
-                                  ? "border-primary bg-primary-light/30"
-                                  : "border-border bg-white hover:border-primary/50"
+                                  ? "border-boga-electric-500 bg-boga-electric-50/30"
+                                  : "border-boga-border-default bg-boga-surface-elevated hover:border-boga-electric-500/50"
                               )}
                               onClick={() => toggleProduct(producto.id)}
                             >
                               <div className="flex items-start gap-3">
-                                <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-bg-light">
+                                <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-boga-surface-muted">
                                   <Image
                                     src={producto.imagenPrincipal}
                                     alt={producto.nombre}
@@ -425,10 +425,10 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
                                   />
                                 </div>
                                 <div className="flex-1">
-                                  <h3 className="font-semibold text-dark">
+                                  <h3 className="font-semibold text-boga-text-primary">
                                     {producto.nombre}
                                   </h3>
-                                  <p className="text-xs text-body">
+                                  <p className="text-xs text-boga-text-secondary">
                                     {producto.descripcionCorta}
                                   </p>
                                 </div>
@@ -466,10 +466,10 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
                       </div>
                     </div>
 
-                    <div className="rounded-xl border border-border-subtle bg-bg-light p-4">
-                      <h3 className="font-bold text-dark">Resumen</h3>
+                    <div className="rounded-xl border border-boga-border-subtle bg-boga-surface-muted p-4">
+                      <h3 className="font-bold text-boga-text-primary">Resumen</h3>
                       {selectedItems.length === 0 ? (
-                        <p className="mt-2 text-sm text-muted">
+                        <p className="mt-2 text-sm text-boga-text-tertiary">
                           Selecciona al menos un producto
                         </p>
                       ) : (
@@ -479,13 +479,13 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
                               key={item.productoId}
                               className="flex items-center justify-between text-sm"
                             >
-                              <span className="text-body">
+                              <span className="text-boga-text-secondary">
                                 {item.producto.nombre} x{item.cantidad}
                               </span>
                               <button
                                 type="button"
                                 onClick={() => removeItem(item.productoId)}
-                                className="text-muted hover:text-error"
+                                className="text-boga-text-tertiary hover:text-boga-error-500"
                                 aria-label="Eliminar"
                               >
                                 <Trash2 className="h-4 w-4" />
@@ -516,7 +516,7 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
 
               {step === 3 && (
                 <div className="space-y-5">
-                  <h2 className="text-xl font-bold text-dark">
+                  <h2 className="text-xl font-bold text-boga-text-primary">
                     Paso 3: Detalles y envío
                   </h2>
 
@@ -571,13 +571,13 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
                         Acepto la{" "}
                         <Link
                           href="/privacidad"
-                          className="font-semibold text-primary hover:underline"
+                          className="font-semibold text-boga-electric-500 hover:underline"
                         >
                           política de privacidad
                         </Link>
                       </Label>
                       {errorsStep3.aceptaPrivacidad && (
-                        <p className="flex items-center gap-1 text-xs text-error" role="alert"><AlertCircle className="h-3 w-3" aria-hidden="true" />
+                        <p className="flex items-center gap-1 text-xs text-boga-error-500" role="alert"><AlertCircle className="h-3 w-3" aria-hidden="true" />
                           {errorsStep3.aceptaPrivacidad.message}
                         </p>
                       )}
@@ -585,7 +585,7 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
                   </div>
 
                   {status === "error" && (
-                    <div className="flex items-start gap-2 rounded-lg bg-error-bg p-3 text-sm text-error">
+                    <div className="flex items-start gap-2 rounded-lg bg-boga-error-50 p-3 text-sm text-boga-error-500">
                       <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
                       {errorMessage}
                     </div>
@@ -645,9 +645,9 @@ function StepIndicator({
               className={cn(
                 "flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold transition-all",
                 isActive &&
-                  "bg-primary-500 text-white ring-4 ring-primary-100",
-                isCompleted && "bg-primary-500 text-white",
-                !isActive && !isCompleted && "bg-neutral-200 text-neutral-500"
+                  "bg-boga-lima-500 text-boga-text-on-lima ring-4 ring-boga-lima-500/30",
+                isCompleted && "bg-boga-lima-500 text-boga-text-on-lima",
+                !isActive && !isCompleted && "bg-boga-neutral-200 text-boga-neutral-500"
               )}
               aria-current={isActive ? "step" : undefined}
             >
@@ -657,7 +657,7 @@ function StepIndicator({
               <div
                 className={cn(
                   "h-1 w-16 rounded-full transition-colors",
-                  isCompleted ? "bg-primary-500" : "bg-neutral-200"
+                  isCompleted ? "bg-boga-lima-500" : "bg-boga-neutral-200"
                 )}
                 aria-hidden="true"
               />

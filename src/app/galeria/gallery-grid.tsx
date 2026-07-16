@@ -10,12 +10,13 @@ interface GalleryGridProps {
   eventos: Event[]
 }
 
+// Escala BOGA para tipos de evento
 const tipoColors: Record<string, string> = {
-  concierto: "bg-purple-500",
-  festival: "bg-pink-500",
-  feria: "bg-blue-500",
-  corporativo: "bg-emerald-500",
-  privado: "bg-indigo-500",
+  concierto: "bg-boga-electric-500",
+  festival: "bg-boga-lima-500",
+  feria: "bg-boga-deep-500",
+  corporativo: "bg-boga-neutral-500",
+  privado: "bg-boga-electric-700",
 }
 
 export function GalleryGrid({ eventos }: GalleryGridProps) {
@@ -43,15 +44,15 @@ export function GalleryGrid({ eventos }: GalleryGridProps) {
   return (
     <>
       {/* Hero */}
-      <section className="bg-secondary pb-20 pt-32">
+      <section className="bg-boga-deep-500 pb-20 pt-32">
         <div className="container mx-auto px-4 text-center lg:px-6">
-          <h1 className="text-3xl font-extrabold text-white md:text-5xl">
+          <h1 className="text-3xl font-extrabold text-boga-text-inverted md:text-5xl">
             Nuestra Experiencia
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-text-on-dark-muted">
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-boga-text-inverted/70">
             Eventos de gran magnitud que respaldan nuestra trayectoria
           </p>
-          <p className="mx-auto mt-2 inline-block rounded-full bg-white/10 px-6 py-2 text-sm font-medium text-text-on-dark-muted">
+          <p className="mx-auto mt-2 inline-block rounded-full bg-boga-text-inverted/10 px-6 py-2 text-sm font-medium text-boga-text-inverted/70">
             {eventos.length} eventos verificables · cobertura nacional
           </p>
         </div>
@@ -60,7 +61,7 @@ export function GalleryGrid({ eventos }: GalleryGridProps) {
       {/* Filters */}
       <section className="container mx-auto -mt-8 px-4 lg:px-6">
         <FadeIn>
-          <div className="rounded-2xl bg-white p-4 shadow-md">
+          <div className="rounded-2xl bg-boga-surface-elevated p-4 shadow-boga-3">
             <div className="mb-3 flex flex-wrap justify-center gap-2">
               <button
                 type="button"
@@ -68,8 +69,8 @@ export function GalleryGrid({ eventos }: GalleryGridProps) {
                 className={cn(
                   "rounded-xl px-4 py-2 text-sm font-medium transition-colors",
                   activeYear === "todos"
-                    ? "bg-primary text-white"
-                    : "text-body hover:bg-bg-light"
+                    ? "bg-boga-electric-500 text-boga-text-on-electric"
+                    : "text-boga-text-secondary hover:bg-boga-surface-muted"
                 )}
               >
                 Todos los años
@@ -82,8 +83,8 @@ export function GalleryGrid({ eventos }: GalleryGridProps) {
                   className={cn(
                     "rounded-xl px-4 py-2 text-sm font-medium transition-colors",
                     activeYear === year.toString()
-                      ? "bg-primary text-white"
-                      : "text-body hover:bg-bg-light"
+                      ? "bg-boga-electric-500 text-boga-text-on-electric"
+                      : "text-boga-text-secondary hover:bg-boga-surface-muted"
                   )}
                 >
                   {year}
@@ -97,8 +98,8 @@ export function GalleryGrid({ eventos }: GalleryGridProps) {
                 className={cn(
                   "rounded-xl px-4 py-2 text-sm font-medium transition-colors",
                   activeType === "todos"
-                    ? "bg-secondary text-white"
-                    : "text-body hover:bg-bg-light"
+                    ? "bg-boga-deep-500 text-boga-text-inverted"
+                    : "text-boga-text-secondary hover:bg-boga-surface-muted"
                 )}
               >
                 Todos los tipos
@@ -111,8 +112,8 @@ export function GalleryGrid({ eventos }: GalleryGridProps) {
                   className={cn(
                     "rounded-xl px-4 py-2 text-sm font-medium transition-colors",
                     activeType === type
-                      ? "bg-secondary text-white"
-                      : "text-body hover:bg-bg-light"
+                      ? "bg-boga-deep-500 text-boga-text-inverted"
+                      : "text-boga-text-secondary hover:bg-boga-surface-muted"
                   )}
                 >
                   {eventTypeLabels[type] || type}
@@ -130,7 +131,7 @@ export function GalleryGrid({ eventos }: GalleryGridProps) {
               delay={index < 10 ? index * 0.03 : 0}
               className="mb-4 break-inside-avoid"
             >
-              <div className="group relative overflow-hidden rounded-xl bg-bg-light">
+              <div className="group relative overflow-hidden rounded-xl bg-boga-surface-muted">
                 <div
                   className={cn(
                     "relative aspect-[4/3] w-full",
@@ -138,11 +139,11 @@ export function GalleryGrid({ eventos }: GalleryGridProps) {
                   )}
                 >
                   {/* Placeholder con texto descriptivo — sin foto genérica */}
-                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-secondary-800 to-secondary-900 p-4 text-center">
-                    <span className="font-outfit text-lg font-semibold text-white">
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-boga-deep-800 to-boga-deep-900 p-4 text-center">
+                    <span className="font-heading text-lg font-semibold text-boga-text-inverted">
                       {evento.name}
                     </span>
-                    <span className="mt-1 text-sm text-neutral-400">
+                    <span className="mt-1 text-sm text-boga-neutral-400">
                       {evento.years.join(", ")}
                     </span>
                     {/* TODO: Reemplazar por foto real del evento */}
@@ -152,16 +153,16 @@ export function GalleryGrid({ eventos }: GalleryGridProps) {
                   <div className="absolute left-3 top-3">
                     <Badge
                       className={cn(
-                        "border-0 text-xs font-semibold text-white",
-                        tipoColors[evento.type] || "bg-primary"
+                        "border-0 text-xs font-semibold text-boga-text-inverted",
+                        tipoColors[evento.type] || "bg-boga-electric-500"
                       )}
                     >
                       {eventTypeLabels[evento.type] || evento.type}
                     </Badge>
                   </div>
                   <div className="absolute inset-x-3 bottom-3">
-                    <p className="text-lg font-bold text-white">{evento.name}</p>
-                    <p className="text-sm text-white/80">{evento.years.join(", ")}</p>
+                    <p className="text-lg font-bold text-boga-text-inverted">{evento.name}</p>
+                    <p className="text-sm text-boga-text-inverted/80">{evento.years.join(", ")}</p>
                   </div>
                 </div>
               </div>
@@ -171,7 +172,7 @@ export function GalleryGrid({ eventos }: GalleryGridProps) {
 
         {filteredEvents.length === 0 && (
           <div className="py-20 text-center">
-            <p className="text-muted">No hay eventos con los filtros seleccionados.</p>
+            <p className="text-boga-text-tertiary">No hay eventos con los filtros seleccionados.</p>
           </div>
         )}
       </section>

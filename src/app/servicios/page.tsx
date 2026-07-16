@@ -104,10 +104,10 @@ const differentiators = [
 const serviceJsonLd = {
   "@context": "https://schema.org",
   "@type": "Service",
-  name: "Servicios Especializados Junisama",
+  name: "Servicios Especializados BOGA",
   provider: {
     "@type": "Organization",
-    name: "Junisama Inversiones S.A.S",
+    name: "BOGA Ingeniería Portátil",
   },
   hasOfferCatalog: {
     "@type": "OfferCatalog",
@@ -160,7 +160,7 @@ export default function ServiciosPage() {
   ])
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-boga-surface-canvas">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -169,15 +169,15 @@ export default function ServiciosPage() {
       />
 
       {/* Hero */}
-      <section className="bg-secondary pb-16 pt-32">
+      <section className="bg-boga-deep-500 pb-16 pt-32">
         <div className="container mx-auto px-4 text-center lg:px-6">
-          <Badge className="mb-4 border-0 bg-accent-gold/15 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-accent-gold hover:bg-accent-gold/15">
+          <Badge className="mb-4 border-0 bg-boga-lima-500/15 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-boga-lima-500 hover:bg-boga-lima-500/15">
             Servicios Especializados
           </Badge>
-          <h1 className="text-3xl font-extrabold text-white md:text-5xl">
+          <h1 className="text-3xl font-extrabold text-boga-text-inverted md:text-5xl">
             Servicios Especializados
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-text-on-dark-muted">
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-boga-text-inverted/70">
             Soluciones integrales de infraestructura sanitaria para eventos,
             obras y proyectos industriales
           </p>
@@ -191,22 +191,22 @@ export default function ServiciosPage() {
             const Icon = service.icon
             return (
               <FadeIn key={service.title} delay={index * 0.1}>
-                <Card className="group h-full border-border-subtle bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-md">
+                <Card className="group h-full border-boga-border-subtle bg-boga-surface-elevated shadow-boga-2 transition-all hover:-translate-y-1 hover:shadow-boga-3">
                   <CardContent className="flex h-full flex-col p-6 md:p-8">
-                    <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary-light text-primary">
+                    <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-boga-electric-50 text-boga-electric-500">
                       <Icon className="h-7 w-7" />
                     </div>
-                    <h2 className="text-xl font-bold text-dark md:text-2xl">
+                    <h2 className="text-xl font-bold text-boga-text-primary md:text-2xl">
                       {service.title}
                     </h2>
-                    <p className="mt-3 text-body">{service.description}</p>
+                    <p className="mt-3 text-boga-text-secondary">{service.description}</p>
                     <ul className="mt-5 flex-1 space-y-2">
                       {service.items.map((item) => (
                         <li
                           key={item}
-                          className="flex items-center gap-2 text-sm text-body"
+                          className="flex items-center gap-2 text-sm text-boga-text-secondary"
                         >
-                          <CheckCircle2 className="h-4 w-4 shrink-0 text-primary" />
+                          <CheckCircle2 className="h-4 w-4 shrink-0 text-boga-electric-500" />
                           {item}
                         </li>
                       ))}
@@ -230,10 +230,10 @@ export default function ServiciosPage() {
       </section>
 
       {/* Differentiators */}
-      <section className="bg-bg-light py-16 lg:py-24">
+      <section className="bg-boga-surface-muted py-16 lg:py-24">
         <div className="container mx-auto px-4 lg:px-6">
           <FadeIn className="mb-12 text-center">
-            <h2 className="text-2xl font-bold text-dark md:text-3xl">
+            <h2 className="text-2xl font-bold text-boga-text-primary md:text-3xl">
               ¿Por qué confiar en nuestros servicios?
             </h2>
           </FadeIn>
@@ -242,13 +242,13 @@ export default function ServiciosPage() {
               const Icon = diff.icon
               return (
                 <FadeIn key={diff.title} delay={index * 0.1}>
-                  <Card className="h-full border-border-subtle bg-white text-center shadow-sm">
+                  <Card className="h-full border-boga-border-subtle bg-boga-surface-elevated text-center shadow-boga-2">
                     <CardContent className="p-6">
-                      <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary-light text-primary">
+                      <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-boga-electric-50 text-boga-electric-500">
                         <Icon className="h-7 w-7" />
                       </div>
-                      <h3 className="text-lg font-bold text-dark">{diff.title}</h3>
-                      <p className="mt-2 text-sm text-body">{diff.description}</p>
+                      <h3 className="text-lg font-bold text-boga-text-primary">{diff.title}</h3>
+                      <p className="mt-2 text-sm text-boga-text-secondary">{diff.description}</p>
                     </CardContent>
                   </Card>
                 </FadeIn>

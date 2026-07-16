@@ -28,7 +28,7 @@ export default function CotizacionPage() {
   ])
 
   return (
-    <div className="min-h-screen bg-bg-light">
+    <div className="min-h-screen bg-boga-surface-muted">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}

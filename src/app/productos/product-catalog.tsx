@@ -26,15 +26,15 @@ export function ProductCatalog({ productos, categorias }: ProductCatalogProps) {
     <section className="container mx-auto -mt-8 px-4 pb-20 lg:px-6">
       {/* Filter tabs */}
       <FadeIn>
-        <div className="mb-10 flex flex-wrap justify-center gap-2 rounded-2xl bg-white p-3 shadow-md">
+        <div className="mb-10 flex flex-wrap justify-center gap-2 rounded-2xl bg-boga-surface-elevated p-3 shadow-boga-2">
           <button
             type="button"
             onClick={() => setActiveCategory("todos")}
             className={cn(
               "rounded-xl px-4 py-2 text-sm font-medium transition-colors",
               activeCategory === "todos"
-                ? "bg-primary text-white"
-                : "text-body hover:bg-bg-light"
+                ? "bg-boga-electric-500 text-boga-text-on-electric"
+                : "text-boga-text-secondary hover:bg-boga-surface-muted"
             )}
           >
             Todos
@@ -47,8 +47,8 @@ export function ProductCatalog({ productos, categorias }: ProductCatalogProps) {
               className={cn(
                 "rounded-xl px-4 py-2 text-sm font-medium transition-colors",
                 activeCategory === cat.slug
-                  ? "bg-primary text-white"
-                  : "text-body hover:bg-bg-light"
+                  ? "bg-boga-electric-500 text-boga-text-on-electric"
+                  : "text-boga-text-secondary hover:bg-boga-surface-muted"
               )}
             >
               {cat.nombre}
@@ -63,17 +63,17 @@ export function ProductCatalog({ productos, categorias }: ProductCatalogProps) {
 
       {filteredProducts.length === 0 && (
         <div className="py-20 text-center">
-          <p className="text-muted">No hay productos en esta categoría.</p>
+          <p className="text-boga-text-tertiary">No hay productos en esta categoría.</p>
         </div>
       )}
 
       {/* CTA */}
       <FadeIn delay={0.2} className="mt-16 text-center">
-        <div className="rounded-2xl bg-bg-light px-6 py-10 md:px-12">
-          <h2 className="text-xl font-bold text-dark md:text-2xl">
+        <div className="rounded-2xl bg-boga-surface-muted px-6 py-10 md:px-12">
+          <h2 className="text-xl font-bold text-boga-text-primary md:text-2xl">
             ¿Necesitas una solución personalizada?
           </h2>
-          <p className="mx-auto mt-2 max-w-xl text-body">
+          <p className="mx-auto mt-2 max-w-xl text-boga-text-secondary">
             Contáctanos y diseñamos juntos la infraestructura sanitaria ideal
             para tu evento.
           </p>

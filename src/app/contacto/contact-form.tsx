@@ -129,14 +129,14 @@ export default function ContactForm() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-boga-surface-canvas">
       {/* Hero */}
-      <section className="bg-secondary pb-16 pt-32">
+      <section className="bg-boga-deep-500 pb-16 pt-32">
         <div className="container mx-auto px-4 text-center lg:px-6">
-          <h1 className="text-3xl font-extrabold text-white md:text-5xl">
+          <h1 className="text-3xl font-extrabold text-boga-text-inverted md:text-5xl">
             Contacto
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-text-on-dark-muted">
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-boga-text-inverted/70">
             Estamos listos para atender tu evento u obra en cualquier parte de
             Colombia
           </p>
@@ -147,13 +147,13 @@ export default function ContactForm() {
         <div className="grid gap-8 lg:grid-cols-2">
           {/* Form */}
           <FadeIn direction="left">
-            <Card className="border-border-subtle bg-white shadow-lg">
+            <Card className="border-boga-border-subtle bg-boga-surface-elevated shadow-boga-4">
               <CardContent className="p-6 md:p-8">
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                   <div className="grid gap-5 sm:grid-cols-2">
                     <div className="space-y-2">
                       <Label htmlFor="nombre">
-                        Nombre completo <span className="text-error">*</span>
+                        Nombre completo <span className="text-boga-error-500">*</span>
                       </Label>
                       <Input
                         id="nombre"
@@ -162,7 +162,7 @@ export default function ContactForm() {
                         aria-invalid={errors.nombre ? "true" : "false"}
                       />
                       {errors.nombre && (
-                        <p className="text-xs text-error">
+                        <p className="text-xs text-boga-error-500">
                           {errors.nombre.message}
                         </p>
                       )}
@@ -180,7 +180,7 @@ export default function ContactForm() {
                   <div className="grid gap-5 sm:grid-cols-2">
                     <div className="space-y-2">
                       <Label htmlFor="email">
-                        Correo electrónico <span className="text-error">*</span>
+                        Correo electrónico <span className="text-boga-error-500">*</span>
                       </Label>
                       <Input
                         id="email"
@@ -190,14 +190,14 @@ export default function ContactForm() {
                         aria-invalid={errors.email ? "true" : "false"}
                       />
                       {errors.email && (
-                        <p className="text-xs text-error">
+                        <p className="text-xs text-boga-error-500">
                           {errors.email.message}
                         </p>
                       )}
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="telefono">
-                        Teléfono <span className="text-error">*</span>
+                        Teléfono <span className="text-boga-error-500">*</span>
                       </Label>
                       <Input
                         id="telefono"
@@ -207,7 +207,7 @@ export default function ContactForm() {
                         aria-invalid={errors.telefono ? "true" : "false"}
                       />
                       {errors.telefono && (
-                        <p className="text-xs text-error">
+                        <p className="text-xs text-boga-error-500">
                           {errors.telefono.message}
                         </p>
                       )}
@@ -251,7 +251,7 @@ export default function ContactForm() {
 
                   <div className="space-y-2">
                     <Label htmlFor="mensaje">
-                      Mensaje <span className="text-error">*</span>
+                      Mensaje <span className="text-boga-error-500">*</span>
                     </Label>
                     <Textarea
                       id="mensaje"
@@ -261,7 +261,7 @@ export default function ContactForm() {
                       aria-invalid={errors.mensaje ? "true" : "false"}
                     />
                     {errors.mensaje && (
-                      <p className="text-xs text-error">
+                      <p className="text-xs text-boga-error-500">
                         {errors.mensaje.message}
                       </p>
                     )}
@@ -282,7 +282,7 @@ export default function ContactForm() {
                   </Button>
 
                   {status === "success" && (
-                    <div className="flex items-start gap-2 rounded-lg bg-success-bg p-3 text-sm text-success">
+                    <div className="flex items-start gap-2 rounded-lg bg-boga-success-50 p-3 text-sm text-boga-success-600">
                       <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
                       Gracias por contactarnos. Te responderemos en menos de 24
                       horas.
@@ -301,11 +301,11 @@ export default function ContactForm() {
                   const Icon = item.icon
                   const content = (
                     <>
-                      <Icon className="mb-3 h-6 w-6 text-primary" />
-                      <p className="text-xs font-medium uppercase tracking-wider text-muted">
+                      <Icon className="mb-3 h-6 w-6 text-boga-electric-500" />
+                      <p className="text-xs font-medium uppercase tracking-wider text-boga-text-tertiary">
                         {item.label}
                       </p>
-                      <p className="mt-1 font-semibold text-dark">
+                      <p className="mt-1 font-semibold text-boga-text-primary">
                         {item.value}
                       </p>
                     </>
@@ -320,14 +320,14 @@ export default function ContactForm() {
                           ? "noopener noreferrer"
                           : undefined
                       }
-                      className="block rounded-xl border border-border bg-white p-5 shadow-sm transition-all hover:-translate-y-1 hover:border-primary/30 hover:shadow-md"
+                      className="block rounded-xl border border-boga-border-default bg-boga-surface-elevated p-5 shadow-boga-2 transition-all hover:-translate-y-1 hover:border-boga-electric-500/30 hover:shadow-boga-3"
                     >
                       {content}
                     </a>
                   ) : (
                     <div
                       key={item.label}
-                      className="rounded-xl border border-border bg-white p-5 shadow-sm"
+                      className="rounded-xl border border-boga-border-default bg-boga-surface-elevated p-5 shadow-boga-2"
                     >
                       {content}
                     </div>
@@ -338,14 +338,14 @@ export default function ContactForm() {
               {sedes.map((sede) => (
                 <Card
                   key={sede.city}
-                  className="overflow-hidden border-border-subtle bg-white shadow-sm"
+                  className="overflow-hidden border-boga-border-subtle bg-boga-surface-elevated shadow-boga-2"
                 >
                   <CardContent className="p-0">
                     <div className="flex items-start gap-3 p-5">
-                      <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+                      <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-boga-electric-500" />
                       <div>
-                        <h3 className="font-bold text-dark">{sede.city}</h3>
-                        <p className="text-sm text-body">{sede.address}</p>
+                        <h3 className="font-bold text-boga-text-primary">{sede.city}</h3>
+                        <p className="text-sm text-boga-text-secondary">{sede.address}</p>
                       </div>
                     </div>
                     <iframe

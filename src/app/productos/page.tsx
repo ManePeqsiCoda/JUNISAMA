@@ -30,19 +30,19 @@ export default function ProductosPage() {
   ])
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-boga-surface-canvas">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
 
       {/* Hero */}
-      <section className="bg-secondary pb-16 pt-32">
+      <section className="bg-boga-deep-500 pb-16 pt-32">
         <div className="container mx-auto px-4 text-center lg:px-6">
-          <h1 className="text-3xl font-extrabold text-white md:text-5xl">
+          <h1 className="text-3xl font-extrabold text-boga-text-inverted md:text-5xl">
             Nuestros Productos
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-text-on-dark-muted">
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-boga-text-inverted/70">
             Soluciones sanitarias portátiles para todo tipo de evento
           </p>
         </div>

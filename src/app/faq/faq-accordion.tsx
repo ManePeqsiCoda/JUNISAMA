@@ -32,15 +32,15 @@ export function FaqAccordion({
   return (
     <>
       <FadeIn>
-        <div className="mb-8 flex flex-wrap justify-center gap-2 rounded-2xl bg-white p-3 shadow-md">
+        <div className="mb-8 flex flex-wrap justify-center gap-2 rounded-2xl bg-boga-surface-elevated p-3 shadow-boga-3">
           <button
             type="button"
             onClick={() => setActiveCategory("TODOS")}
             className={cn(
               "rounded-xl px-4 py-2 text-sm font-medium transition-colors",
               activeCategory === "TODOS"
-                ? "bg-primary text-white"
-                : "text-body hover:bg-bg-light"
+                ? "bg-boga-electric-500 text-boga-text-on-electric"
+                : "text-boga-text-secondary hover:bg-boga-surface-muted"
             )}
           >
             Todos
@@ -53,8 +53,8 @@ export function FaqAccordion({
               className={cn(
                 "rounded-xl px-4 py-2 text-sm font-medium transition-colors",
                 activeCategory === cat
-                  ? "bg-primary text-white"
-                  : "text-body hover:bg-bg-light"
+                  ? "bg-boga-electric-500 text-boga-text-on-electric"
+                  : "text-boga-text-secondary hover:bg-boga-surface-muted"
               )}
             >
               {categoryLabels[cat] || cat}
@@ -64,22 +64,22 @@ export function FaqAccordion({
       </FadeIn>
 
       <FadeIn delay={0.1}>
-        <div className="rounded-2xl border border-border-subtle bg-white p-4 shadow-sm md:p-6">
+        <div className="rounded-2xl border border-boga-border-subtle bg-boga-surface-elevated p-4 shadow-boga-2 md:p-6">
           <Accordion>
             {filteredFaqs.map((faq) => (
               <AccordionItem key={faq.id} value={faq.id}>
-                <AccordionTrigger className="text-base font-semibold text-dark hover:text-primary">
+                <AccordionTrigger className="text-base font-semibold text-boga-text-primary hover:text-boga-electric-500">
                   {faq.pregunta}
                 </AccordionTrigger>
                 <AccordionContent>
-                  <p className="text-body">{faq.respuesta}</p>
+                  <p className="text-boga-text-secondary">{faq.respuesta}</p>
                 </AccordionContent>
               </AccordionItem>
             ))}
           </Accordion>
 
           {filteredFaqs.length === 0 && (
-            <p className="py-8 text-center text-muted">
+            <p className="py-8 text-center text-boga-text-tertiary">
               No hay preguntas en esta categoría.
             </p>
           )}

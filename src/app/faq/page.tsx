@@ -63,7 +63,7 @@ export default function FaqPage() {
   ])
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-boga-surface-canvas">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -72,12 +72,12 @@ export default function FaqPage() {
       />
 
       {/* Hero */}
-      <section className="bg-secondary pb-16 pt-32">
+      <section className="bg-boga-deep-500 pb-16 pt-32">
         <div className="container mx-auto px-4 text-center lg:px-6">
-          <h1 className="text-3xl font-extrabold text-white md:text-5xl">
+          <h1 className="text-3xl font-extrabold text-boga-text-inverted md:text-5xl">
             Preguntas Frecuentes
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-text-on-dark-muted">
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-boga-text-inverted/70">
             Resolvemos tus dudas sobre nuestros productos y servicios
           </p>
         </div>
@@ -92,11 +92,11 @@ export default function FaqPage() {
         />
 
         <FadeIn delay={0.2} className="mt-16 text-center">
-          <div className="rounded-2xl bg-bg-light px-6 py-10 md:px-12">
-            <h2 className="text-xl font-bold text-dark md:text-2xl">
+          <div className="rounded-2xl bg-boga-surface-muted px-6 py-10 md:px-12">
+            <h2 className="text-xl font-bold text-boga-text-primary md:text-2xl">
               ¿Tienes otra pregunta?
             </h2>
-            <p className="mx-auto mt-2 max-w-xl text-body">
+            <p className="mx-auto mt-2 max-w-xl text-boga-text-secondary">
               Nuestro equipo está listo para ayudarte. Escríbenos y te
               responderemos en menos de 24 horas.
             </p>

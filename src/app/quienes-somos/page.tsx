@@ -99,22 +99,22 @@ export default function QuienesSomosPage() {
   ])
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-boga-surface-canvas">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
 
       {/* Hero */}
-      <section className="bg-secondary pb-16 pt-32">
+      <section className="bg-boga-deep-500 pb-16 pt-32">
         <div className="container mx-auto px-4 text-center lg:px-6">
-          <Badge className="mb-4 border-0 bg-accent-gold/15 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-accent-gold hover:bg-accent-gold/15">
+          <Badge className="mb-4 border-0 bg-boga-lima-500/15 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-boga-lima-500 hover:bg-boga-lima-500/15">
             Más de 10 años de experiencia
           </Badge>
-          <h1 className="text-3xl font-extrabold text-white md:text-5xl">
+          <h1 className="text-3xl font-extrabold text-boga-text-inverted md:text-5xl">
             Nuestra Empresa
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-text-on-dark-muted">
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-boga-text-inverted/70">
             Infraestructura sanitaria industrial con respaldo, tecnología y
             compromiso ambiental
           </p>
@@ -125,22 +125,23 @@ export default function QuienesSomosPage() {
       <section className="container mx-auto px-4 py-16 lg:px-6 lg:py-24">
         <div className="grid items-center gap-12 lg:grid-cols-2">
           <FadeIn direction="left">
-            <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-bg-light">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-boga-surface-muted">
               <Image
                 src="/images/quienes-somos/equipo.jpg"
-                alt="Equipo Junisama"
+                alt="Equipo BOGA"
                 fill
                 className="object-cover"
                 sizes="(max-width: 1024px) 100vw, 50vw"
               />
+              {/* TODO: Reemplazar por foto real del equipo */}
             </div>
           </FadeIn>
           <FadeIn direction="right">
             <div className="space-y-5">
-              <h2 className="text-2xl font-bold text-dark md:text-3xl">
+              <h2 className="text-2xl font-bold text-boga-text-primary md:text-3xl">
                 Nuestra Empresa
               </h2>
-              <p className="text-body">
+              <p className="text-boga-text-secondary">
                 Somos una empresa especializada en el alquiler y operación de
                 unidades sanitarias portátiles para eventos de diversa magnitud.
                 Desde conciertos masivos y ferias corporativas hasta obras de
@@ -148,7 +149,7 @@ export default function QuienesSomosPage() {
                 confiables que cumplen con los más altos estándares de higiene y
                 servicio.
               </p>
-              <p className="text-body">
+              <p className="text-boga-text-secondary">
                 Con más de una década de trayectoria en Colombia, hemos
                 acompañado eventos icónicos como la Feria de las Flores,
                 conciertos internacionales y visitas de alto perfil. Nuestra
@@ -161,10 +162,10 @@ export default function QuienesSomosPage() {
       </section>
 
       {/* Commitments */}
-      <section className="bg-bg-light py-16 lg:py-24">
+      <section className="bg-boga-surface-muted py-16 lg:py-24">
         <div className="container mx-auto px-4 lg:px-6">
           <FadeIn className="mb-12 text-center">
-            <h2 className="text-2xl font-bold text-dark md:text-3xl">
+            <h2 className="text-2xl font-bold text-boga-text-primary md:text-3xl">
               Nuestro Compromiso
             </h2>
           </FadeIn>
@@ -173,13 +174,13 @@ export default function QuienesSomosPage() {
               const Icon = item.icon
               return (
                 <FadeIn key={item.title} delay={index * 0.1}>
-                  <Card className="h-full border-border-subtle bg-white text-center shadow-sm">
+                  <Card className="h-full border-boga-border-subtle bg-boga-surface-elevated text-center shadow-boga-2">
                     <CardContent className="p-6">
-                      <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary-light text-primary">
+                      <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-boga-electric-50 text-boga-electric-500">
                         <Icon className="h-7 w-7" />
                       </div>
-                      <h3 className="text-lg font-bold text-dark">{item.title}</h3>
-                      <p className="mt-2 text-sm text-body">{item.description}</p>
+                      <h3 className="text-lg font-bold text-boga-text-primary">{item.title}</h3>
+                      <p className="mt-2 text-sm text-boga-text-secondary">{item.description}</p>
                     </CardContent>
                   </Card>
                 </FadeIn>
@@ -192,10 +193,10 @@ export default function QuienesSomosPage() {
       {/* Equipment */}
       <section className="container mx-auto px-4 py-16 lg:px-6 lg:py-24">
         <FadeIn className="mb-12 text-center">
-          <h2 className="text-2xl font-bold text-dark md:text-3xl">
+          <h2 className="text-2xl font-bold text-boga-text-primary md:text-3xl">
             Equipos Disponibles
           </h2>
-          <p className="mx-auto mt-3 max-w-2xl text-body">
+          <p className="mx-auto mt-3 max-w-2xl text-boga-text-secondary">
             Contamos con una flota diversa para cubrir cualquier necesidad
           </p>
         </FadeIn>
@@ -204,10 +205,10 @@ export default function QuienesSomosPage() {
             const Icon = item.icon
             return (
               <FadeIn key={item.label} delay={index * 0.1}>
-                <Card className="border-border-subtle bg-white text-center shadow-sm transition-all hover:-translate-y-1 hover:shadow-md">
+                <Card className="border-boga-border-subtle bg-boga-surface-elevated text-center shadow-boga-2 transition-all hover:-translate-y-1 hover:shadow-boga-3">
                   <CardContent className="flex flex-col items-center p-6">
-                    <Icon className="h-10 w-10 text-primary" />
-                    <span className="mt-3 font-semibold text-dark">{item.label}</span>
+                    <Icon className="h-10 w-10 text-boga-electric-500" />
+                    <span className="mt-3 font-semibold text-boga-text-primary">{item.label}</span>
                   </CardContent>
                 </Card>
               </FadeIn>
@@ -217,15 +218,15 @@ export default function QuienesSomosPage() {
       </section>
 
       {/* Technical service */}
-      <section className="bg-secondary py-16 lg:py-24">
+      <section className="bg-boga-deep-500 py-16 lg:py-24">
         <div className="container mx-auto px-4 lg:px-6">
           <div className="grid items-center gap-12 lg:grid-cols-2">
             <FadeIn direction="left">
               <div className="space-y-5">
-                <h2 className="text-2xl font-bold text-white md:text-3xl">
+                <h2 className="text-2xl font-bold text-boga-text-inverted md:text-3xl">
                   Servicio Técnico
                 </h2>
-                <p className="text-text-on-dark-muted">
+                <p className="text-boga-text-inverted/70">
                   Nuestro equipo de mantenimiento cuenta con vehículos tipo
                   vactor y unidades móviles equipadas para atender cualquier
                   situación en campo. Realizamos limpieza profunda,
@@ -233,7 +234,7 @@ export default function QuienesSomosPage() {
                   preventiva para garantizar el funcionamiento óptimo de cada
                   unidad.
                 </p>
-                <p className="text-text-on-dark-muted">
+                <p className="text-boga-text-inverted/70">
                   Operamos con turnos flexibles y cobertura 24/7, asegurando
                   que tu evento u obra nunca se detenga por problemas de
                   infraestructura sanitaria.
@@ -241,14 +242,15 @@ export default function QuienesSomosPage() {
               </div>
             </FadeIn>
             <FadeIn direction="right">
-              <div className="relative aspect-video overflow-hidden rounded-2xl bg-white/5">
+              <div className="relative aspect-video overflow-hidden rounded-2xl bg-boga-text-inverted/5">
                 <Image
                   src="/images/quienes-somos/servicio-tecnico.jpg"
-                  alt="Servicio técnico Junisama"
+                  alt="Servicio técnico BOGA"
                   fill
                   className="object-cover"
                   sizes="(max-width: 1024px) 100vw, 50vw"
                 />
+                {/* TODO: Reemplazar por foto real del servicio técnico */}
               </div>
             </FadeIn>
           </div>
@@ -258,10 +260,10 @@ export default function QuienesSomosPage() {
       {/* Environmental commitment */}
       <section className="container mx-auto px-4 py-16 lg:px-6 lg:py-24">
         <FadeIn className="mb-12 text-center">
-          <h2 className="text-2xl font-bold text-dark md:text-3xl">
+          <h2 className="text-2xl font-bold text-boga-text-primary md:text-3xl">
             Compromiso Ambiental
           </h2>
-          <p className="mx-auto mt-3 max-w-2xl text-body">
+          <p className="mx-auto mt-3 max-w-2xl text-boga-text-secondary">
             Prácticas sostenibles que cuidan el entorno sin comprometer la calidad
           </p>
         </FadeIn>
@@ -270,11 +272,11 @@ export default function QuienesSomosPage() {
             const Icon = item.icon
             return (
               <FadeIn key={item.title} delay={index * 0.1}>
-                <Card className="h-full border-border-subtle bg-white shadow-sm">
+                <Card className="h-full border-boga-border-subtle bg-boga-surface-elevated shadow-boga-2">
                   <CardContent className="p-6">
-                    <Icon className="h-10 w-10 text-accent-gold" />
-                    <h3 className="mt-4 text-lg font-bold text-dark">{item.title}</h3>
-                    <p className="mt-2 text-sm text-body">{item.description}</p>
+                    <Icon className="h-10 w-10 text-boga-lima-500" />
+                    <h3 className="mt-4 text-lg font-bold text-boga-text-primary">{item.title}</h3>
+                    <p className="mt-2 text-sm text-boga-text-secondary">{item.description}</p>
                   </CardContent>
                 </Card>
               </FadeIn>
@@ -284,21 +286,21 @@ export default function QuienesSomosPage() {
       </section>
 
       {/* Locations */}
-      <section className="bg-bg-light py-16 lg:py-24">
+      <section className="bg-boga-surface-muted py-16 lg:py-24">
         <div className="container mx-auto px-4 lg:px-6">
           <FadeIn className="mb-12 text-center">
-            <h2 className="text-2xl font-bold text-dark md:text-3xl">
+            <h2 className="text-2xl font-bold text-boga-text-primary md:text-3xl">
               Nuestras Sedes
             </h2>
           </FadeIn>
           <div className="grid gap-8 lg:grid-cols-2">
             {sedes.map((sede, index) => (
               <FadeIn key={sede.city} delay={index * 0.1}>
-                <Card className="overflow-hidden border-border-subtle bg-white shadow-sm">
+                <Card className="overflow-hidden border-boga-border-subtle bg-boga-surface-elevated shadow-boga-2">
                   <CardContent className="p-0">
                     <div className="p-6">
-                      <h3 className="text-xl font-bold text-dark">{sede.city}</h3>
-                      <p className="mt-1 text-body">{sede.address}</p>
+                      <h3 className="text-xl font-bold text-boga-text-primary">{sede.city}</h3>
+                      <p className="mt-1 text-boga-text-secondary">{sede.address}</p>
                     </div>
                     <iframe
                       src={sede.mapUrl}
