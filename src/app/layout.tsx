@@ -13,7 +13,7 @@ import {
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | Junisama",
+    template: "%s | BOGA",
     default: seoConfig.home.title,
   },
   description: seoConfig.home.description,
