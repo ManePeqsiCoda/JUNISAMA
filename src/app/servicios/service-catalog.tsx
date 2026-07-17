@@ -9,22 +9,21 @@ import { FadeIn } from "@/components/home/fade-in"
 import { cn } from "@/lib/utils"
 import { ArrowRight } from "lucide-react"
 
-interface ProductCatalogProps {
-  productos: Producto[]
+interface ServiceCatalogProps {
+  servicios: Producto[]
   categorias: Categoria[]
 }
 
-export function ProductCatalog({ productos, categorias }: ProductCatalogProps) {
+export function ServiceCatalog({ servicios, categorias }: ServiceCatalogProps) {
   const [activeCategory, setActiveCategory] = useState<string>("todos")
 
-  const filteredProducts =
+  const filtered =
     activeCategory === "todos"
-      ? productos
-      : productos.filter((p) => p.categoria.slug === activeCategory)
+      ? servicios
+      : servicios.filter((p) => p.categoria.slug === activeCategory)
 
   return (
-    <section className="container mx-auto -mt-8 px-4 pb-20 lg:px-6">
-      {/* Filter tabs */}
+    <section className="container-boga relative z-10 -mt-8 pb-20">
       <FadeIn>
         <div className="mb-10 flex flex-wrap justify-center gap-2 rounded-2xl bg-boga-surface-elevated p-3 shadow-boga-2">
           <button
@@ -57,17 +56,15 @@ export function ProductCatalog({ productos, categorias }: ProductCatalogProps) {
         </div>
       </FadeIn>
 
-      {/* Product grid */}
-      <h2 className="sr-only">Catálogo de productos</h2>
-      <ProductGrid productos={filteredProducts} columns={4} />
+      <h2 className="sr-only">Catálogo de servicios</h2>
+      <ProductGrid productos={filtered} columns={2} />
 
-      {filteredProducts.length === 0 && (
+      {filtered.length === 0 && (
         <div className="py-20 text-center">
-          <p className="text-boga-text-tertiary">No hay productos en esta categoría.</p>
+          <p className="text-boga-text-tertiary">No hay servicios en esta categoría.</p>
         </div>
       )}
 
-      {/* CTA */}
       <FadeIn delay={0.2} className="mt-16 text-center">
         <div className="rounded-2xl bg-boga-surface-muted px-6 py-10 md:px-12">
           <h2 className="text-xl font-bold text-boga-text-primary md:text-2xl">
@@ -79,7 +76,10 @@ export function ProductCatalog({ productos, categorias }: ProductCatalogProps) {
           </p>
           <Link
             href="/cotizacion"
-            className={cn(buttonVariants({ size: "lg" }), "mt-6 px-8")}
+            className={cn(
+              buttonVariants({ size: "lg" }),
+              "btn-primary mt-6 px-8"
+            )}
           >
             Contáctanos
             <ArrowRight className="ml-2 h-4 w-4" />

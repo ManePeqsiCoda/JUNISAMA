@@ -11,6 +11,8 @@ import { Toaster } from "@/components/ui/sonner"
 export function Providers({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const isAdmin = pathname?.startsWith("/admin")
+  // Home: sin padding superior para que el hero quede bajo el navbar glass
+  const isHome = pathname === "/"
 
   return (
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
@@ -26,7 +28,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
         {!isAdmin && <Navbar />}
         <main
           id="main-content"
-          className={isAdmin ? "flex-1" : "flex-1 pt-[72px]"}
+          className={
+            isAdmin ? "flex-1" : isHome ? "flex-1" : "flex-1 pt-[72px]"
+          }
           tabIndex={-1}
         >
           {children}

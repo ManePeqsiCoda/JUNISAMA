@@ -72,6 +72,10 @@
   --color-boga-neutral-900: #272331;
   --color-boga-neutral-950: #17141e;
 
+  /* Brand kit neutrals */
+  --color-boga-cream: #e9eac1;
+  --color-boga-silver: #d8d8d8;
+
   /* Surfaces */
   --color-boga-surface-canvas: #ffffff;
   --color-boga-surface-elevated: #ffffff;
@@ -393,8 +397,8 @@
 
   /* Animations */
   --animate-boga-pulse-emergency: boga-pulse-emergency 2s ease-in-out infinite;
-  --animate-boga-marquee: boga-marquee 20s linear infinite;
-  --animate-boga-marquee-reverse: boga-marquee-reverse 20s linear infinite;
+  --animate-boga-marquee: boga-marquee 90s linear infinite;
+  --animate-boga-marquee-reverse: boga-marquee-reverse 100s linear infinite;
   --animate-boga-fade-up: boga-fade-up 400ms cubic-bezier(0.4, 0, 0.2, 1) both;
   --animate-boga-spin-circles: boga-spin-circles 800ms linear infinite;
 
@@ -1007,32 +1011,54 @@
   .marquee-track {
     display: flex;
     width: max-content;
-    animation: boga-marquee 20s linear infinite;
+    animation: boga-marquee 90s linear infinite;
   }
 
   .marquee-track-reverse {
     display: flex;
     width: max-content;
-    animation: boga-marquee-reverse 20s linear infinite;
+    animation: boga-marquee-reverse 100s linear infinite;
   }
 
-  /* Signature 3 circles */
-  .boga-circles {
+  /* Signature 3 circles — 2 filled + 1 hollow center
+     Modifiers (--s/--m/--l/--electric/…) also set base layout so they work alone. */
+  .boga-circles,
+  .boga-circles--s,
+  .boga-circles--m,
+  .boga-circles--l,
+  .boga-circles--electric,
+  .boga-circles--dark,
+  .boga-circles--white {
     display: inline-flex;
     align-items: center;
     gap: 6px;
   }
 
-  .boga-circles .circle {
+  .boga-circles .circle,
+  .boga-circles--s .circle,
+  .boga-circles--m .circle,
+  .boga-circles--l .circle,
+  .boga-circles--electric .circle,
+  .boga-circles--dark .circle,
+  .boga-circles--white .circle {
     width: 10px;
     height: 10px;
     border-radius: 9999px;
     background: var(--boga-lima-500);
+    border: 2px solid transparent;
+    box-sizing: border-box;
+    flex-shrink: 0;
   }
 
-  .boga-circles .circle:nth-child(2) {
+  .boga-circles .circle:nth-child(2),
+  .boga-circles--s .circle:nth-child(2),
+  .boga-circles--m .circle:nth-child(2),
+  .boga-circles--l .circle:nth-child(2),
+  .boga-circles--electric .circle:nth-child(2),
+  .boga-circles--dark .circle:nth-child(2),
+  .boga-circles--white .circle:nth-child(2) {
     background: transparent;
-    border: 2px solid var(--boga-lima-500);
+    border-color: var(--boga-lima-500);
   }
 
   .boga-circles--s .circle { width: 6px; height: 6px; }
@@ -1041,18 +1067,58 @@
 
   .boga-circles--electric .circle {
     background: var(--boga-electric-500);
-    border-color: var(--boga-electric-500);
   }
   .boga-circles--electric .circle:nth-child(2) {
     background: transparent;
+    border-color: var(--boga-electric-500);
   }
 
   .boga-circles--dark .circle {
     background: var(--boga-deep-500);
-    border-color: var(--boga-deep-500);
   }
   .boga-circles--dark .circle:nth-child(2) {
     background: transparent;
+    border-color: var(--boga-deep-500);
+  }
+
+  .boga-circles--white .circle {
+    background: #ffffff;
+  }
+  .boga-circles--white .circle:nth-child(2) {
+    background: transparent;
+    border-color: #ffffff;
+  }
+
+  /* Loading: 3 circles pulse */
+  .boga-loading-circles {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .boga-loading-circles .circle {
+    width: 8px;
+    height: 8px;
+    border-radius: 9999px;
+    background: var(--boga-lima-500);
+    animation: boga-pulse-circle 1s ease-in-out infinite;
+  }
+  .boga-loading-circles .circle:nth-child(2) {
+    background: transparent;
+    border: 2px solid var(--boga-lima-500);
+    animation-delay: 0.15s;
+  }
+  .boga-loading-circles .circle:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+
+  .boga-diagonal {
+    background: linear-gradient(
+      135deg,
+      var(--boga-electric-500) 0%,
+      var(--boga-electric-500) 48%,
+      var(--boga-lima-500) 48%,
+      var(--boga-lima-500) 100%
+    );
   }
 }
 

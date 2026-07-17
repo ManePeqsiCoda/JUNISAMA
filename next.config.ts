@@ -9,45 +9,51 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
-      // Redirecciones de servicios antiguos a productos
+      // Unificación: productos → servicios
+      {
+        source: "/productos",
+        destination: "/servicios",
+        permanent: true,
+      },
+      {
+        source: "/productos/:slug",
+        destination: "/servicios/:slug",
+        permanent: true,
+      },
+      // Slugs legacy de servicios antiguos
       {
         source: "/servicios/banos-portatiles-vip",
-        destination: "/productos/bano-vip",
+        destination: "/servicios/bano-vip",
         permanent: true,
       },
       {
         source: "/servicios/banos-portatiles-estandar",
-        destination: "/productos/bano-estandar",
+        destination: "/servicios/bano-estandar",
         permanent: true,
       },
       {
         source: "/servicios/banos-para-discapacitados",
-        destination: "/productos/discapacitados",
+        destination: "/servicios/discapacitados",
         permanent: true,
       },
       {
         source: "/servicios/banos-portatiles-electricos",
-        destination: "/productos/electricos",
+        destination: "/servicios/electricos",
         permanent: true,
       },
       {
         source: "/servicios/lavamanos-aquastand-aquapop",
-        destination: "/productos/lavamanos",
+        destination: "/servicios/lavamanos",
         permanent: true,
       },
       {
         source: "/servicios/trailer-de-lujo",
-        destination: "/productos/trailer-lujo",
+        destination: "/servicios/trailer-lujo",
         permanent: true,
       },
       {
         source: "/servicios/servicio-de-operarios",
-        destination: "/productos/operarios",
-        permanent: true,
-      },
-      {
-        source: "/servicios/puntos-ecologicos",
-        destination: "/productos/puntos-ecologicos",
+        destination: "/servicios/operarios",
         permanent: true,
       },
       // Alias de cotización

@@ -24,7 +24,7 @@ export default function GaleriaPage() {
   ])
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-boga-surface-canvas">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}

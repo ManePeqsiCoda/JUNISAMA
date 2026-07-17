@@ -3,6 +3,8 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { FadeIn } from "./fade-in"
 import { ShieldCheck, Clock, MapPin, Leaf } from "lucide-react"
+import { BogaCircles } from "@/components/brand/boga-circles"
+import { BogaDecor } from "@/components/brand/boga-decor"
 
 const reasons = [
   {
@@ -29,15 +31,16 @@ const reasons = [
 
 export function WhyUs() {
   return (
-    <section className="bg-[var(--boga-deep-500)] py-16 md:py-24">
-      <div className="container mx-auto px-4 lg:px-6">
+    <section className="relative overflow-hidden bg-[var(--boga-deep-500)] py-16 md:py-24">
+      <BogaDecor
+        variant="waves"
+        tone="lima"
+        className="absolute left-6 top-8 h-10 w-24 opacity-30"
+      />
+      <div className="container-boga relative z-10">
         <FadeIn className="mb-12 text-center">
           <span className="mb-3 inline-flex items-center gap-2 text-caption uppercase tracking-wider text-[var(--boga-lima-500)]">
-            <span className="boga-circles--s">
-              <span className="circle" />
-              <span className="circle" />
-              <span className="circle" />
-            </span>
+            <BogaCircles size="s" tone="lima" />
             Por qué BOGA
           </span>
           <h2 className="text-2xl font-bold text-white md:text-4xl">
@@ -55,8 +58,8 @@ export function WhyUs() {
               <FadeIn key={reason.title} delay={index * 0.1}>
                 <Card className="h-full border-white/10 bg-white/5 text-white backdrop-blur-sm transition-all hover:border-[var(--boga-lima-500)]/30 hover:bg-white/10">
                   <CardContent className="flex flex-col items-center p-6 text-center">
-                    <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--boga-lima-500)]/15 text-[var(--boga-lima-500)]">
-                      <Icon className="h-7 w-7" />
+                    <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full border-2 border-[var(--boga-lima-500)]/40 text-[var(--boga-lima-500)]">
+                      <Icon className="h-7 w-7" strokeWidth={1.75} />
                     </div>
                     <h3 className="text-lg font-bold text-white">
                       {reason.title}

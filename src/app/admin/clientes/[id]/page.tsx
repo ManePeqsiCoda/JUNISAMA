@@ -67,11 +67,12 @@ export default async function ClienteDetailPage({
             variant="ghost"
             size="icon"
             aria-label="Volver a clientes"
-            render={(
+            nativeButton={false}
+            render={
               <Link href="/admin/clientes">
                 <ArrowLeft className="h-5 w-5" />
               </Link>
-            )}
+            }
           />
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -89,12 +90,13 @@ export default async function ClienteDetailPage({
         </div>
         <Button
           className="bg-primary font-semibold text-primary-foreground hover:bg-primary-hover"
-          render={(
+          nativeButton={false}
+          render={
             <Link href={`/admin/cotizaciones/nueva?clienteId=${cliente.id}`}>
               <Plus className="mr-2 h-4 w-4" />
               Nueva cotización
             </Link>
-          )}
+          }
         />
       </div>
 
@@ -201,11 +203,12 @@ export default async function ClienteDetailPage({
                         variant="ghost"
                         size="sm"
                         className="text-primary hover:text-primary-hover"
-                        render={(
+                        nativeButton={false}
+                        render={
                           <Link href={`/admin/cotizaciones/${cot.id}`}>
                             Ver
                           </Link>
-                        )}
+                        }
                       />
                     </TableCell>
                   </TableRow>

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
+import Image from "next/image"
 import { eventTypeLabels, type Event } from "@/data/events"
 import { Badge } from "@/components/ui/badge"
 import { FadeIn } from "@/components/home/fade-in"
@@ -10,10 +11,9 @@ interface GalleryGridProps {
   eventos: Event[]
 }
 
-// Escala BOGA para tipos de evento
 const tipoColors: Record<string, string> = {
   concierto: "bg-boga-electric-500",
-  festival: "bg-boga-lima-500",
+  festival: "bg-boga-lima-500 text-boga-text-on-lima",
   feria: "bg-boga-deep-500",
   corporativo: "bg-boga-neutral-500",
   privado: "bg-boga-electric-700",
@@ -43,9 +43,8 @@ export function GalleryGrid({ eventos }: GalleryGridProps) {
 
   return (
     <>
-      {/* Hero */}
       <section className="bg-boga-deep-500 pb-20 pt-32">
-        <div className="container mx-auto px-4 text-center lg:px-6">
+        <div className="container-boga text-center">
           <h1 className="text-3xl font-extrabold text-boga-text-inverted md:text-5xl">
             Nuestra Experiencia
           </h1>
@@ -58,8 +57,7 @@ export function GalleryGrid({ eventos }: GalleryGridProps) {
         </div>
       </section>
 
-      {/* Filters */}
-      <section className="container mx-auto -mt-8 px-4 lg:px-6">
+      <section className="container-boga relative z-10 -mt-8 pb-20">
         <FadeIn>
           <div className="rounded-2xl bg-boga-surface-elevated p-4 shadow-boga-3">
             <div className="mb-3 flex flex-wrap justify-center gap-2">
@@ -123,7 +121,6 @@ export function GalleryGrid({ eventos }: GalleryGridProps) {
           </div>
         </FadeIn>
 
-        {/* Masonry grid */}
         <div className="mt-10 columns-1 gap-4 sm:columns-2 lg:columns-3 xl:columns-4">
           {filteredEvents.map((evento, index) => (
             <FadeIn
@@ -138,18 +135,15 @@ export function GalleryGrid({ eventos }: GalleryGridProps) {
                     evento.highlighted && "aspect-square"
                   )}
                 >
-                  {/* Placeholder con texto descriptivo — sin foto genérica */}
-                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-boga-deep-800 to-boga-deep-900 p-4 text-center">
-                    <span className="font-heading text-lg font-semibold text-boga-text-inverted">
-                      {evento.name}
-                    </span>
-                    <span className="mt-1 text-sm text-boga-neutral-400">
-                      {evento.years.join(", ")}
-                    </span>
-                    {/* TODO: Reemplazar por foto real del evento */}
-                  </div>
+                  <Image
+                    src={evento.image}
+                    alt={`Ambiente de evento: ${evento.name}`}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                  />
 
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent" />
                   <div className="absolute left-3 top-3">
                     <Badge
                       className={cn(
@@ -161,8 +155,12 @@ export function GalleryGrid({ eventos }: GalleryGridProps) {
                     </Badge>
                   </div>
                   <div className="absolute inset-x-3 bottom-3">
-                    <p className="text-lg font-bold text-boga-text-inverted">{evento.name}</p>
-                    <p className="text-sm text-boga-text-inverted/80">{evento.years.join(", ")}</p>
+                    <p className="text-lg font-bold text-boga-text-inverted">
+                      {evento.name}
+                    </p>
+                    <p className="text-sm text-boga-text-inverted/80">
+                      {evento.years.join(", ")}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -172,7 +170,9 @@ export function GalleryGrid({ eventos }: GalleryGridProps) {
 
         {filteredEvents.length === 0 && (
           <div className="py-20 text-center">
-            <p className="text-boga-text-tertiary">No hay eventos con los filtros seleccionados.</p>
+            <p className="text-boga-text-tertiary">
+              No hay eventos con los filtros seleccionados.
+            </p>
           </div>
         )}
       </section>

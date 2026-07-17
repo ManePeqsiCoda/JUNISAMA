@@ -7,7 +7,6 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? siteConfig.url;
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes: { path: string; priority: number; changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"] }[] = [
     { path: "/", priority: 1.0, changeFrequency: "weekly" },
-    { path: "/productos", priority: 0.9, changeFrequency: "weekly" },
     { path: "/servicios", priority: 0.9, changeFrequency: "weekly" },
     { path: "/quienes-somos", priority: 0.8, changeFrequency: "monthly" },
     { path: "/galeria", priority: 0.8, changeFrequency: "monthly" },
@@ -29,7 +28,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...productos
       .filter((producto) => producto.estado === "ACTIVO")
       .map((producto) => ({
-        url: `${BASE_URL}/productos/${producto.slug}`,
+        url: `${BASE_URL}/servicios/${producto.slug}`,
         changeFrequency: "monthly" as const,
         priority: 0.8,
       })),

@@ -272,11 +272,12 @@ export default function ClientesAdminPage() {
                             size="icon"
                             aria-label="Ver cliente"
                             className="text-muted-foreground hover:text-foreground"
-                            render={(
+                            nativeButton={false}
+                            render={
                               <Link href={`/admin/clientes/${cliente.id}`}>
                                 <Eye className="h-4 w-4" />
                               </Link>
-                            )}
+                            }
                           />
                           <Button
                             variant="ghost"

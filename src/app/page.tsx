@@ -4,8 +4,8 @@ import { ClientMarquee } from "@/components/client-marquee"
 import { BogaValues } from "@/components/home/boga-values"
 import { ProductGrid } from "@/components/product-grid"
 import { WhyUs } from "@/components/home/why-us"
-import { OurNumbers } from "@/components/our-numbers"
 import { Contact } from "@/components/home/contact"
+import { BogaCircles } from "@/components/brand/boga-circles"
 import { getProductosDestacados } from "@/lib/mocks"
 import {
   seoConfig,
@@ -34,12 +34,8 @@ export default function HomePage() {
         <div className="container-boga">
           <div className="mb-12 text-center">
             <span className="mb-3 inline-flex items-center gap-2 text-caption uppercase tracking-wider text-boga-electric-500">
-              <span className="boga-circles--s boga-circles--electric">
-                <span className="circle" />
-                <span className="circle" />
-                <span className="circle" />
-              </span>
-              Productos destacados
+              <BogaCircles size="s" tone="electric" />
+              Servicios destacados
             </span>
             <h2 className="font-sans text-heading-lg text-boga-text-primary md:text-display-md">
               Nuestras soluciones
@@ -48,11 +44,10 @@ export default function HomePage() {
               Equipos sanitarios portátiles para todo tipo de evento
             </p>
           </div>
-          <ProductGrid productos={productosDestacados} columns={4} />
+          <ProductGrid productos={productosDestacados} columns={2} />
         </div>
       </section>
       <WhyUs />
-      <OurNumbers />
       <Contact />
     </>
   )

@@ -1,21 +1,11 @@
 import type { Metadata } from "next"
-import Link from "next/link"
 import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { buttonVariants } from "@/components/ui/button"
 import { FadeIn } from "@/components/home/fade-in"
-import { cn } from "@/lib/utils"
-import {
-  Truck,
-  Wrench,
-  Users,
-  Leaf,
-  ShieldCheck,
-  MapPin,
-  Award,
-  CheckCircle2,
-  ArrowRight,
-} from "lucide-react"
+import { PageHero } from "@/components/brand/page-hero"
+import { BogaCircles } from "@/components/brand/boga-circles"
+import { ServiceCatalog } from "./service-catalog"
+import { productos, categorias } from "@/lib/mocks"
+import { ShieldCheck, MapPin, Award } from "lucide-react"
 import {
   seoConfig,
   generateOpenGraph,
@@ -31,57 +21,6 @@ export const metadata: Metadata = {
   openGraph: generateOpenGraph("servicios", "/servicios"),
   twitter: generateTwitterCard("servicios"),
 }
-
-const services = [
-  {
-    icon: Truck,
-    title: "Alquiler de Unidades",
-    description:
-      "Flota completa de unidades sanitarias portátiles de grado industrial. Disponibilidad inmediata y mantenimiento incluido.",
-    items: [
-      "Unidades estándar",
-      "Unidades premium",
-      "Unidades accesibles",
-      "Instalación incluida",
-    ],
-  },
-  {
-    icon: Wrench,
-    title: "Mantenimiento Especializado",
-    description:
-      "Servicio técnico profesional con protocolos de higiene industrial. Monitoreo continuo y respuesta inmediata.",
-    items: [
-      "Limpieza profunda",
-      "Desinfección certificada",
-      "Reposición de insumos",
-      "Monitoreo 24/7",
-    ],
-  },
-  {
-    icon: Users,
-    title: "Operarios Certificados",
-    description:
-      "Personal técnico altamente capacitado con turnos flexibles. Cobertura completa durante todo el evento.",
-    items: [
-      "Turnos de 8 horas",
-      "Turnos de 12 horas",
-      "Personal certificado",
-      "Supervisión técnica",
-    ],
-  },
-  {
-    icon: Leaf,
-    title: "Insumos Biodegradables",
-    description:
-      "Productos eco-friendly de grado industrial. Cumplimiento normativo ambiental garantizado.",
-    items: [
-      "Papel higiénico eco",
-      "Desinfectantes bio",
-      "Jabones orgánicos",
-      "Certificación ambiental",
-    ],
-  },
-]
 
 const differentiators = [
   {
@@ -101,63 +40,40 @@ const differentiators = [
   },
 ]
 
-const serviceJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Service",
-  name: "Servicios Especializados BOGA",
-  provider: {
-    "@type": "Organization",
-    name: "BOGA Ingeniería Portátil",
-  },
-  hasOfferCatalog: {
-    "@type": "OfferCatalog",
-    name: "Servicios de infraestructura sanitaria",
-    itemListElement: [
-      {
-        "@type": "Offer",
-        itemOffered: {
-          "@type": "Service",
-          name: "Alquiler de Unidades",
-          description:
-            "Flota completa de unidades sanitarias portátiles de grado industrial.",
-        },
-      },
-      {
-        "@type": "Offer",
-        itemOffered: {
-          "@type": "Service",
-          name: "Mantenimiento Especializado",
-          description:
-            "Servicio técnico profesional con protocolos de higiene industrial.",
-        },
-      },
-      {
-        "@type": "Offer",
-        itemOffered: {
-          "@type": "Service",
-          name: "Operarios Certificados",
-          description:
-            "Personal técnico altamente capacitado con turnos flexibles.",
-        },
-      },
-      {
-        "@type": "Offer",
-        itemOffered: {
-          "@type": "Service",
-          name: "Insumos Biodegradables",
-          description:
-            "Productos eco-friendly de grado industrial.",
-        },
-      },
-    ],
-  },
-}
-
 export default function ServiciosPage() {
+  const activeServicios = productos
+    .filter((p) => p.estado === "ACTIVO")
+    .sort((a, b) => a.orden - b.orden)
+
+  const activeCategorias = categorias.sort((a, b) => a.orden - b.orden)
+
   const breadcrumbJsonLd = generateBreadcrumbJsonLd([
     { name: "Inicio", path: "/" },
     { name: "Servicios", path: "/servicios" },
   ])
+
+  const serviceJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: "Servicios BOGA",
+    provider: {
+      "@type": "Organization",
+      name: "BOGA Ingeniería Portátil",
+    },
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: "Infraestructura sanitaria portátil",
+      itemListElement: activeServicios.map((item) => ({
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: item.nombre,
+          description: item.descripcionCorta,
+          url: `https://boga.com.co/servicios/${item.slug}`,
+        },
+      })),
+    },
+  }
 
   return (
     <div className="min-h-screen bg-boga-surface-canvas">
@@ -168,71 +84,24 @@ export default function ServiciosPage() {
         }}
       />
 
-      {/* Hero */}
-      <section className="bg-boga-deep-500 pb-16 pt-32">
-        <div className="container mx-auto px-4 text-center lg:px-6">
-          <Badge className="mb-4 border-0 bg-boga-lima-500/15 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-boga-lima-500 hover:bg-boga-lima-500/15">
-            Servicios Especializados
-          </Badge>
-          <h1 className="text-3xl font-extrabold text-boga-text-inverted md:text-5xl">
-            Servicios Especializados
-          </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-boga-text-inverted/70">
-            Soluciones integrales de infraestructura sanitaria para eventos,
-            obras y proyectos industriales
-          </p>
-        </div>
-      </section>
+      <PageHero
+        overline="Catálogo"
+        title="Nuestros Servicios"
+        description="Soluciones sanitarias portátiles para eventos, obras y proyectos industriales"
+      />
 
-      {/* Services grid */}
-      <section className="container mx-auto -mt-8 px-4 pb-16 lg:px-6">
-        <div className="grid gap-6 md:grid-cols-2">
-          {services.map((service, index) => {
-            const Icon = service.icon
-            return (
-              <FadeIn key={service.title} delay={index * 0.1}>
-                <Card className="group h-full border-boga-border-subtle bg-boga-surface-elevated shadow-boga-2 transition-all hover:-translate-y-1 hover:shadow-boga-3">
-                  <CardContent className="flex h-full flex-col p-6 md:p-8">
-                    <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-boga-electric-50 text-boga-electric-500">
-                      <Icon className="h-7 w-7" />
-                    </div>
-                    <h2 className="text-xl font-bold text-boga-text-primary md:text-2xl">
-                      {service.title}
-                    </h2>
-                    <p className="mt-3 text-boga-text-secondary">{service.description}</p>
-                    <ul className="mt-5 flex-1 space-y-2">
-                      {service.items.map((item) => (
-                        <li
-                          key={item}
-                          className="flex items-center gap-2 text-sm text-boga-text-secondary"
-                        >
-                          <CheckCircle2 className="h-4 w-4 shrink-0 text-boga-electric-500" />
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                    <Link
-                      href="/cotizacion"
-                      className={cn(
-                        buttonVariants({ size: "default" }),
-                        "mt-6 w-full sm:w-auto"
-                      )}
-                    >
-                      Solicitar info
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </CardContent>
-                </Card>
-              </FadeIn>
-            )
-          })}
-        </div>
-      </section>
+      <ServiceCatalog
+        servicios={activeServicios}
+        categorias={activeCategorias}
+      />
 
-      {/* Differentiators */}
       <section className="bg-boga-surface-muted py-16 lg:py-24">
-        <div className="container mx-auto px-4 lg:px-6">
+        <div className="container-boga">
           <FadeIn className="mb-12 text-center">
+            <span className="mb-3 inline-flex items-center gap-2 text-caption uppercase tracking-wider text-boga-electric-500">
+              <BogaCircles size="s" tone="electric" />
+              Diferenciales
+            </span>
             <h2 className="text-2xl font-bold text-boga-text-primary md:text-3xl">
               ¿Por qué confiar en nuestros servicios?
             </h2>
@@ -244,11 +113,15 @@ export default function ServiciosPage() {
                 <FadeIn key={diff.title} delay={index * 0.1}>
                   <Card className="h-full border-boga-border-subtle bg-boga-surface-elevated text-center shadow-boga-2">
                     <CardContent className="p-6">
-                      <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-boga-electric-50 text-boga-electric-500">
-                        <Icon className="h-7 w-7" />
+                      <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border-2 border-boga-electric-500/30 text-boga-electric-500">
+                        <Icon className="h-7 w-7" strokeWidth={1.75} />
                       </div>
-                      <h3 className="text-lg font-bold text-boga-text-primary">{diff.title}</h3>
-                      <p className="mt-2 text-sm text-boga-text-secondary">{diff.description}</p>
+                      <h3 className="text-lg font-bold text-boga-text-primary">
+                        {diff.title}
+                      </h3>
+                      <p className="mt-2 text-sm text-boga-text-secondary">
+                        {diff.description}
+                      </p>
                     </CardContent>
                   </Card>
                 </FadeIn>

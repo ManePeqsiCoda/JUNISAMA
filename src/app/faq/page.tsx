@@ -103,12 +103,13 @@ export default function FaqPage() {
             <Button
               size="lg"
               className="mt-6 px-8"
-              render={(
+              nativeButton={false}
+              render={
                 <Link href="/contacto">
                   Contáctanos
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
-              )}
+              }
             />
           </div>
         </FadeIn>

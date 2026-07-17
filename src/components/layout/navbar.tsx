@@ -20,21 +20,20 @@ import {
   Phone,
 } from "lucide-react"
 
-const products = [
-  { name: "Baño VIP", href: "/productos/bano-vip", icon: Star },
-  { name: "Baño Estándar", href: "/productos/bano-estandar", icon: Bath },
-  { name: "Discapacitados", href: "/productos/discapacitados", icon: Accessibility },
-  { name: "Eléctricos", href: "/productos/electricos", icon: Zap },
-  { name: "Lavamanos", href: "/productos/lavamanos", icon: Droplets },
-  { name: "Trailer de Lujo", href: "/productos/trailer-lujo", icon: Truck },
-  { name: "Servicio de Operarios", href: "/productos/operarios", icon: Users },
-  { name: "Puntos Ecológicos", href: "/productos/puntos-ecologicos", icon: Leaf },
+const serviceItems = [
+  { name: "Baño VIP", href: "/servicios/bano-vip", icon: Star },
+  { name: "Baño Estándar", href: "/servicios/bano-estandar", icon: Bath },
+  { name: "Discapacitados", href: "/servicios/discapacitados", icon: Accessibility },
+  { name: "Eléctricos", href: "/servicios/electricos", icon: Zap },
+  { name: "Lavamanos", href: "/servicios/lavamanos", icon: Droplets },
+  { name: "Trailer de Lujo", href: "/servicios/trailer-lujo", icon: Truck },
+  { name: "Servicio de Operarios", href: "/servicios/operarios", icon: Users },
+  { name: "Puntos Ecológicos", href: "/servicios/puntos-ecologicos", icon: Leaf },
 ]
 
 const mainLinks = [
   { name: "Inicio", href: "/" },
-  { name: "Productos", href: "/productos", children: products },
-  { name: "Servicios", href: "/servicios" },
+  { name: "Servicios", href: "/servicios", children: serviceItems },
   { name: "Galería", href: "/galeria" },
   { name: "Quiénes Somos", href: "/quienes-somos" },
   { name: "Contacto", href: "/contacto" },
@@ -59,11 +58,13 @@ function NavLink({
   children,
   active,
   onClick,
+  overHero,
 }: {
   href: string
   children: React.ReactNode
   active?: boolean
   onClick?: () => void
+  overHero?: boolean
 }) {
   return (
     <Link
@@ -71,14 +72,23 @@ function NavLink({
       onClick={onClick}
       className={cn(
         "relative text-sm font-medium transition-colors",
-        active
-          ? "text-[var(--boga-electric-500)]"
-          : "text-[var(--boga-text-secondary)] hover:text-[var(--boga-electric-500)]"
+        overHero
+          ? active
+            ? "text-[var(--boga-lima-500)]"
+            : "text-white/90 hover:text-white"
+          : active
+            ? "text-[var(--boga-electric-500)]"
+            : "text-[var(--boga-text-secondary)] hover:text-[var(--boga-electric-500)]"
       )}
     >
       {children}
       {active && (
-        <span className="absolute -bottom-1 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-[var(--boga-electric-500)]" />
+        <span
+          className={cn(
+            "absolute -bottom-1 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full",
+            overHero ? "bg-[var(--boga-lima-500)]" : "bg-[var(--boga-electric-500)]"
+          )}
+        />
       )}
     </Link>
   )
@@ -90,10 +100,12 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = React.useState(false)
   const [productsOpen, setProductsOpen] = React.useState(false)
   const productsRef = React.useRef<HTMLDivElement>(null)
+  const isHome = pathname === "/"
+  const overHero = isHome && !scrolled
 
   React.useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 10)
+      setScrolled(window.scrollY > 24)
     }
     handleScroll()
     window.addEventListener("scroll", handleScroll, { passive: true })
@@ -136,20 +148,22 @@ export function Navbar() {
       <header
         className={cn(
           "fixed top-0 z-40 w-full transition-all duration-300",
-          scrolled
-            ? "bg-[var(--boga-surface-canvas)]/95 shadow-[var(--boga-shadow-2)] backdrop-blur-md"
-            : "bg-[var(--boga-surface-canvas)]"
+          overHero
+            ? "bg-transparent"
+            : scrolled
+              ? "bg-[var(--boga-surface-canvas)]/95 shadow-[var(--boga-shadow-2)] backdrop-blur-md"
+              : "bg-[var(--boga-surface-canvas)]"
         )}
       >
         <nav
-          className="container-boga flex h-[var(--header-height)] items-center justify-between"
+          className="container-boga flex h-[var(--header-height)] items-center justify-between gap-4"
           aria-label="Navegación principal"
         >
           {/* Logo */}
-          <Logo variant="light" />
+          <Logo variant={overHero ? "dark" : "light"} />
 
-          {/* Desktop links */}
-          <div className="hidden items-center gap-6 xl:gap-8 lg:flex">
+          {/* Desktop links — desde ~960px (antes lg:1024 dejaba hamburguesa en viewports grandes) */}
+          <div className="hidden items-center gap-4 min-[960px]:flex xl:gap-7">
             {mainLinks.map((link) =>
               link.children ? (
                 <div
@@ -159,14 +173,18 @@ export function Navbar() {
                   onMouseEnter={() => setProductsOpen(true)}
                   onMouseLeave={() => setProductsOpen(false)}
                 >
-                  <button
-                    type="button"
-                    onClick={() => setProductsOpen((prev) => !prev)}
+                  <Link
+                    href={link.href}
+                    onClick={() => setProductsOpen(false)}
                     className={cn(
-                      "flex items-center gap-1 text-sm font-medium transition-colors",
-                      isActive(link.href)
-                        ? "text-[var(--boga-electric-500)]"
-                        : "text-[var(--boga-text-secondary)] hover:text-[var(--boga-electric-500)]"
+                      "flex items-center gap-1 py-3 text-sm font-medium transition-colors",
+                      overHero
+                        ? isActive(link.href)
+                          ? "text-[var(--boga-lima-500)]"
+                          : "text-white/90 hover:text-white"
+                        : isActive(link.href)
+                          ? "text-[var(--boga-electric-500)]"
+                          : "text-[var(--boga-text-secondary)] hover:text-[var(--boga-electric-500)]"
                     )}
                     aria-expanded={productsOpen}
                     aria-haspopup="true"
@@ -180,42 +198,34 @@ export function Navbar() {
                       )}
                       aria-hidden="true"
                     />
-                  </button>
+                  </Link>
 
                   {productsOpen && (
                     <div
+                      className="absolute top-full left-1/2 z-50 w-[420px] -translate-x-1/2 pt-3"
                       id="desktop-products-menu"
-                      className="absolute top-full left-1/2 mt-2 w-[420px] -translate-x-1/2 rounded-xl border border-[var(--boga-border-subtle)] bg-[var(--boga-surface-floating)] p-4 shadow-[var(--boga-shadow-4)]"
                       role="menu"
                     >
-                      <div className="mb-3 border-b border-[var(--boga-border-subtle)] pb-2">
-                        <Link
-                          href="/productos"
-                          onClick={() => setProductsOpen(false)}
-                          className="text-sm font-semibold text-[var(--boga-text-primary)] hover:text-[var(--boga-electric-500)]"
-                          role="menuitem"
-                        >
-                          Ver todos los productos
-                        </Link>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        {link.children.map((child) => {
-                          const Icon = child.icon
-                          return (
-                            <Link
-                              key={child.href}
-                              href={child.href}
-                              onClick={() => setProductsOpen(false)}
-                              className="flex items-center gap-3 rounded-lg p-2 text-sm font-medium text-[var(--boga-text-secondary)] transition-colors hover:bg-[var(--boga-surface-muted)] hover:text-[var(--boga-electric-500)]"
-                              role="menuitem"
-                            >
-                              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-[var(--boga-electric-50)] text-[var(--boga-electric-500)]">
-                                <Icon className="h-4 w-4" aria-hidden="true" />
-                              </span>
-                              {child.name}
-                            </Link>
-                          )
-                        })}
+                      <div className="rounded-xl border border-[var(--boga-border-subtle)] bg-[var(--boga-surface-floating)] p-4 shadow-[var(--boga-shadow-4)]">
+                        <div className="grid grid-cols-2 gap-2">
+                          {link.children.map((child) => {
+                            const Icon = child.icon
+                            return (
+                              <Link
+                                key={child.href}
+                                href={child.href}
+                                onClick={() => setProductsOpen(false)}
+                                className="flex items-center gap-3 rounded-lg p-2 text-sm font-medium text-[var(--boga-text-secondary)] transition-colors hover:bg-[var(--boga-surface-muted)] hover:text-[var(--boga-electric-500)]"
+                                role="menuitem"
+                              >
+                                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-[var(--boga-electric-50)] text-[var(--boga-electric-500)]">
+                                  <Icon className="h-4 w-4" aria-hidden="true" />
+                                </span>
+                                {child.name}
+                              </Link>
+                            )
+                          })}
+                        </div>
                       </div>
                     </div>
                   )}
@@ -225,6 +235,7 @@ export function Navbar() {
                   key={link.name}
                   href={link.href}
                   active={isActive(link.href)}
+                  overHero={overHero}
                 >
                   {link.name}
                 </NavLink>
@@ -233,18 +244,23 @@ export function Navbar() {
           </div>
 
           {/* CTAs */}
-          <div className="hidden items-center gap-3 lg:flex">
+          <div className="hidden items-center gap-3 min-[960px]:flex">
             <EmergencyButton />
             <Link href="/cotizacion" className="btn-primary px-5 text-xs">
               Cotizar
             </Link>
           </div>
 
-          {/* Mobile hamburger */}
+          {/* Mobile hamburger — solo bajo 960px */}
           <button
             type="button"
             onClick={() => setMobileOpen(true)}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-[var(--boga-text-secondary)] hover:bg-[var(--boga-surface-muted)] lg:hidden"
+            className={cn(
+              "inline-flex h-10 w-10 items-center justify-center rounded-lg min-[960px]:hidden",
+              overHero
+                ? "text-white hover:bg-white/10"
+                : "text-[var(--boga-text-secondary)] hover:bg-[var(--boga-surface-muted)]"
+            )}
             aria-label="Abrir menú"
           >
             <Menu className="h-6 w-6" aria-hidden="true" />
@@ -255,7 +271,7 @@ export function Navbar() {
       {/* Mobile menu full-screen overlay */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-50 lg:hidden"
+          className="fixed inset-0 z-50 min-[960px]:hidden"
           role="dialog"
           aria-modal="true"
           aria-label="Menú principal"
@@ -281,36 +297,40 @@ export function Navbar() {
               {mainLinks.map((link) =>
                 link.children ? (
                   <div key={link.name}>
-                    <button
-                      type="button"
-                      onClick={() => setProductsOpen((prev) => !prev)}
+                    <div
                       className={cn(
-                        "flex w-full items-center justify-between rounded-lg px-4 py-3 text-left text-base font-medium transition-colors",
+                        "flex items-center rounded-lg",
                         isActive(link.href)
                           ? "bg-[var(--boga-lima-500)]/10 text-[var(--boga-lima-500)]"
-                          : "text-white hover:bg-white/10"
+                          : "text-white"
                       )}
-                      aria-expanded={productsOpen}
-                      aria-controls="mobile-products-menu"
                     >
-                      {link.name}
-                      <ChevronDown
-                        className={cn(
-                          "h-5 w-5 transition-transform",
-                          productsOpen && "rotate-180"
-                        )}
-                        aria-hidden="true"
-                      />
-                    </button>
+                      <Link
+                        href={link.href}
+                        onClick={() => setMobileOpen(false)}
+                        className="flex-1 px-4 py-3 text-base font-medium hover:bg-white/10"
+                      >
+                        {link.name}
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => setProductsOpen((prev) => !prev)}
+                        className="rounded-lg px-3 py-3 hover:bg-white/10"
+                        aria-expanded={productsOpen}
+                        aria-controls="mobile-products-menu"
+                        aria-label="Abrir submenú de servicios"
+                      >
+                        <ChevronDown
+                          className={cn(
+                            "h-5 w-5 transition-transform",
+                            productsOpen && "rotate-180"
+                          )}
+                          aria-hidden="true"
+                        />
+                      </button>
+                    </div>
                     {productsOpen && (
                       <div id="mobile-products-menu" className="mt-1 grid gap-1 px-2">
-                        <Link
-                          href="/productos"
-                          onClick={() => setMobileOpen(false)}
-                          className="rounded-lg px-4 py-2 text-sm font-semibold text-white/70 hover:bg-white/10 hover:text-white"
-                        >
-                          Ver todos los productos
-                        </Link>
                         {link.children.map((child) => {
                           const Icon = child.icon
                           return (

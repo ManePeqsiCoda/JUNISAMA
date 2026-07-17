@@ -12,6 +12,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { buttonVariants } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { FadeIn } from "@/components/home/fade-in"
+import { BogaCircles } from "@/components/brand/boga-circles"
 import { cn } from "@/lib/utils"
 import {
   ChevronRight,
@@ -53,7 +54,7 @@ export async function generateMetadata({
 
   if (!producto) {
     return {
-      title: "Producto no encontrado",
+      title: "Servicio no encontrado",
     }
   }
 
@@ -67,11 +68,11 @@ export async function generateMetadata({
   return {
     title,
     description,
-    alternates: { canonical: `/productos/${slug}` },
+    alternates: { canonical: `/servicios/${slug}` },
     openGraph: {
       title,
       description,
-      url: `${siteConfig.url}/productos/${slug}`,
+      url: `${siteConfig.url}/servicios/${slug}`,
       siteName: siteConfig.fullName,
       locale: siteConfig.locale,
       type: "website",
@@ -130,8 +131,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   const breadcrumbJsonLd = generateBreadcrumbJsonLd([
     { name: "Inicio", path: "/" },
-    { name: "Productos", path: "/productos" },
-    { name: producto.nombre, path: `/productos/${slug}` },
+    { name: "Servicios", path: "/servicios" },
+    { name: producto.nombre, path: `/servicios/${slug}` },
   ])
 
   const productJsonLd = {
@@ -146,7 +147,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     },
     offers: {
       "@type": "Offer",
-      url: `${siteConfig.url}/productos/${slug}`,
+      url: `${siteConfig.url}/servicios/${slug}`,
       priceCurrency: "COP",
       price: producto.precioBase?.toString() || "0",
       availability: "https://schema.org/InStock",
@@ -175,7 +176,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               <ChevronRight className="h-4 w-4 text-boga-text-tertiary" />
               <li>
                 <Link
-                  href="/productos"
+                  href="/servicios"
                   className="text-boga-text-tertiary hover:text-boga-electric-500"
                 >
                   Productos
@@ -218,13 +219,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
                   Solicitar cotización
                 </Link>
                 <Link
-                  href="/productos"
+                  href="/servicios"
                   className={cn(
                     buttonVariants({ variant: "outline", size: "lg" }),
                     "px-8"
                   )}
                 >
-                  Ver todos los productos
+                  Ver todos los servicios
                 </Link>
               </div>
             </div>
@@ -233,7 +234,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           <FadeIn direction="right">
             <div className="relative aspect-square overflow-hidden rounded-2xl bg-boga-surface-muted lg:aspect-[4/3]">
               <Image
-                src={producto.imagenPrincipal || "/images/productos/placeholder.svg"}
+                src={producto.imagenPrincipal || "/images/products/bano-estandar.jpg"}
                 alt={producto.nombre}
                 fill
                 className="object-cover"
@@ -301,7 +302,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <FadeIn key={`${imagen}-${index}`} delay={index * 0.1}>
               <div className="group relative aspect-square overflow-hidden rounded-xl bg-boga-surface-muted">
                 <Image
-                  src={imagen || "/images/productos/placeholder.svg"}
+                  src={imagen || "/images/products/bano-estandar.jpg"}
                   alt={`${producto.nombre} - imagen ${index + 1}`}
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -319,7 +320,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           <div className="container mx-auto px-4 lg:px-6">
             <FadeIn>
               <h2 className="mb-8 text-center text-2xl font-bold text-boga-text-primary md:text-3xl">
-                Productos relacionados
+                Servicios relacionados
               </h2>
             </FadeIn>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -329,10 +330,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 return (
                   <FadeIn key={related.id} delay={index * 0.1}>
                     <Card className="group h-full overflow-hidden border-boga-border-subtle bg-boga-surface-elevated shadow-boga-2 transition-all hover:-translate-y-1 hover:shadow-boga-3">
-                      <Link href={`/productos/${related.slug}`}>
+                      <Link href={`/servicios/${related.slug}`}>
                         <div className="relative h-48 overflow-hidden bg-boga-surface-muted">
                           <Image
-                            src={related.imagenPrincipal || "/images/productos/placeholder.svg"}
+                            src={related.imagenPrincipal || "/images/products/bano-estandar.jpg"}
                             alt={related.nombre}
                             fill
                             className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -347,7 +348,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                         </div>
                         <h3 className="text-lg font-bold text-boga-text-primary">
                           <Link
-                            href={`/productos/${related.slug}`}
+                            href={`/servicios/${related.slug}`}
                             className="hover:text-boga-electric-600"
                           >
                             {related.nombre}
@@ -357,7 +358,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                           {related.descripcionCorta}
                         </p>
                         <Link
-                          href={`/productos/${related.slug}`}
+                          href={`/servicios/${related.slug}`}
                           className="mt-4 inline-flex items-center text-sm font-semibold text-boga-electric-500 hover:text-boga-electric-600"
                         >
                           Ver más
@@ -375,8 +376,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
       {/* Final CTA */}
       <section className="bg-boga-deep-500 py-16 lg:py-24">
-        <div className="container mx-auto px-4 text-center lg:px-6">
+        <div className="container-boga text-center">
           <FadeIn>
+            <span className="mb-4 inline-flex items-center gap-2 text-caption uppercase tracking-wider text-boga-lima-500">
+              <BogaCircles size="s" tone="lima" />
+              Cotización
+            </span>
             <h2 className="text-2xl font-bold text-boga-text-inverted md:text-4xl">
               ¿Listo para tu evento?
             </h2>
@@ -388,7 +393,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               href="/cotizacion"
               className={cn(
                 buttonVariants({ size: "lg" }),
-                "mt-8 px-8 font-semibold"
+                "btn-primary mt-8 px-8 font-semibold"
               )}
             >
               Solicita una cotización

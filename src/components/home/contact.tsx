@@ -21,6 +21,8 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { siteConfig } from "@/lib/site"
+import { BogaCircles } from "@/components/brand/boga-circles"
+import { BogaDecor } from "@/components/brand/boga-decor"
 
 const contactSchema = z.object({
   nombre: z.string().min(2, "El nombre es requerido"),
@@ -100,15 +102,16 @@ export function Contact() {
   }
 
   return (
-    <section className="bg-[var(--boga-deep-500)] py-16 md:py-24">
-      <div className="container mx-auto px-4 lg:px-6">
+    <section className="relative overflow-hidden bg-[var(--boga-deep-500)] py-16 md:py-24">
+      <BogaDecor
+        variant="bars"
+        tone="lima"
+        className="absolute bottom-10 right-8 opacity-40"
+      />
+      <div className="container-boga relative z-10">
         <FadeIn className="mb-12 text-center">
           <span className="mb-3 inline-flex items-center gap-2 text-caption uppercase tracking-wider text-[var(--boga-lima-500)]">
-            <span className="boga-circles--s">
-              <span className="circle" />
-              <span className="circle" />
-              <span className="circle" />
-            </span>
+            <BogaCircles size="s" tone="lima" />
             Contacto
           </span>
           <h2 className="text-2xl font-bold text-white md:text-4xl">
@@ -264,11 +267,16 @@ export function Contact() {
                       }
                       className="group rounded-xl border border-white/10 bg-white/5 p-4 text-white transition-colors hover:border-[var(--boga-lima-500)]/30 hover:bg-white/10"
                     >
-                      <Icon className="mb-3 h-6 w-6 text-[var(--boga-lima-500)]" />
+                      <Icon
+                        className="mb-3 h-6 w-6 text-[var(--boga-lima-500)]"
+                        strokeWidth={1.75}
+                      />
                       <p className="text-xs font-medium uppercase tracking-wider text-white/70">
                         {item.label}
                       </p>
-                      <p className="mt-1 text-sm font-semibold">{item.value}</p>
+                      <p className="mt-1 text-sm font-semibold text-[var(--boga-lima-500)]">
+                        {item.value}
+                      </p>
                     </a>
                   )
                 })}
@@ -276,7 +284,10 @@ export function Contact() {
 
               <div className="rounded-xl border border-white/10 bg-white/5 p-6">
                 <div className="mb-4 flex items-center gap-2">
-                  <MapPin className="h-5 w-5 text-[var(--boga-lima-500)]" />
+                  <MapPin
+                    className="h-5 w-5 text-[var(--boga-lima-500)]"
+                    strokeWidth={1.75}
+                  />
                   <h3 className="font-semibold text-white">Nuestras sedes</h3>
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2">
@@ -297,7 +308,7 @@ export function Contact() {
                   "inline-flex items-center justify-center gap-2 rounded-full bg-[var(--boga-lima-500)] px-6 py-3 text-sm font-bold uppercase tracking-wider text-[var(--boga-text-on-lima)] transition-colors hover:bg-[var(--boga-lima-600)]",
                 )}
               >
-                <MessageCircle className="h-5 w-5 fill-current" />
+                <MessageCircle className="h-5 w-5" strokeWidth={1.75} />
                 Escríbenos por WhatsApp
               </a>
             </div>

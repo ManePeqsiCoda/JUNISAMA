@@ -22,6 +22,8 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { FadeIn } from "@/components/home/fade-in"
+import { PageHero } from "@/components/brand/page-hero"
+import { BogaCircles } from "@/components/brand/boga-circles"
 import { cn } from "@/lib/utils"
 import {
   Loader2,
@@ -225,19 +227,19 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
   }
 
   return (
-    <section className="container mx-auto px-4 py-24 lg:px-6">
-      <FadeIn className="mb-8 text-center">
-        <h1 className="text-3xl font-extrabold text-boga-text-primary md:text-4xl">
-          Solicitar Cotización
-        </h1>
-        <p className="mx-auto mt-3 max-w-2xl text-boga-text-secondary">
-          Completa el formulario en 3 pasos y recibe una propuesta personalizada
-        </p>
-      </FadeIn>
-
+    <>
+      <PageHero
+        overline="Cotización"
+        title="Solicitar Cotización"
+        description="Completa el formulario en 3 pasos y recibe una propuesta personalizada"
+      />
+      <section className="container-boga relative z-10 -mt-8 pb-24">
       <FadeIn delay={0.1}>
         <Card className="mx-auto max-w-5xl border-boga-border-subtle bg-boga-surface-elevated shadow-boga-4">
           <CardContent className="p-6 md:p-8">
+            <div className="mb-6 flex justify-center">
+              <BogaCircles size="m" tone="electric" />
+            </div>
             {/* Step indicator — 3 círculos BOGA */}
             <StepIndicator currentStep={step} totalSteps={3} />
 
@@ -603,6 +605,7 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
                     </Button>
                     <Button
                       type="button"
+                      className="btn-primary"
                       onClick={handleSubmitStep3(onSubmitStep3)}
                       disabled={status === "loading"}
                     >
@@ -619,6 +622,7 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
         </Card>
       </FadeIn>
     </section>
+    </>
   )
 }
 
@@ -631,33 +635,35 @@ function StepIndicator({
 }) {
   return (
     <div
-      className="mb-10 flex items-center justify-center gap-3"
+      className="mb-10 flex items-center justify-center gap-4"
       aria-label={`Paso ${currentStep} de ${totalSteps}`}
     >
       {Array.from({ length: totalSteps }, (_, i) => {
         const stepNum = i + 1
         const isActive = stepNum === currentStep
         const isCompleted = stepNum < currentStep
+        const isEmpty = !isActive && !isCompleted
 
         return (
-          <div key={stepNum} className="flex items-center gap-3">
+          <div key={stepNum} className="flex items-center gap-4">
             <div
               className={cn(
-                "flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold transition-all",
+                "flex h-11 w-11 items-center justify-center rounded-full text-sm font-bold transition-all",
                 isActive &&
-                  "bg-boga-lima-500 text-boga-text-on-lima ring-4 ring-boga-lima-500/30",
-                isCompleted && "bg-boga-lima-500 text-boga-text-on-lima",
-                !isActive && !isCompleted && "bg-boga-neutral-200 text-boga-neutral-500"
+                  "bg-boga-lima-500 text-boga-text-on-lima ring-4 ring-boga-lima-500/25",
+                isCompleted && "bg-boga-electric-500 text-white",
+                isEmpty &&
+                  "border-2 border-boga-electric-500 bg-transparent text-boga-electric-500"
               )}
               aria-current={isActive ? "step" : undefined}
             >
-              {isCompleted ? <Check className="h-5 w-5" /> : stepNum}
+              {isCompleted ? <Check className="h-5 w-5" strokeWidth={2.5} /> : stepNum}
             </div>
             {stepNum < totalSteps && (
               <div
                 className={cn(
-                  "h-1 w-16 rounded-full transition-colors",
-                  isCompleted ? "bg-boga-lima-500" : "bg-boga-neutral-200"
+                  "h-0.5 w-12 rounded-full transition-colors sm:w-16",
+                  isCompleted ? "bg-boga-lima-500" : "bg-boga-silver"
                 )}
                 aria-hidden="true"
               />

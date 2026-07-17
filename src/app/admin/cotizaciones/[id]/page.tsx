@@ -82,11 +82,12 @@ export default function CotizacionDetailPage() {
             variant="ghost"
             size="icon"
             aria-label="Volver a cotizaciones"
-            render={(
+            nativeButton={false}
+            render={
               <Link href="/admin/cotizaciones">
                 <ArrowLeft className="h-5 w-5" />
               </Link>
-            )}
+            }
           />
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -119,12 +120,13 @@ export default function CotizacionDetailPage() {
           ))}
           <Button
             variant="outline"
-            render={(
+            nativeButton={false}
+            render={
               <Link href={`/admin/cotizaciones/nueva?id=${id}`}>
                 <Pencil className="mr-2 h-4 w-4" />
                 Editar
               </Link>
-            )}
+            }
           />
         </div>
       </div>

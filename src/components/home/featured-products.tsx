@@ -65,7 +65,7 @@ export function FeaturedProducts({ productos }: FeaturedProductsProps) {
                   </CardHeader>
                   <CardContent className="mt-auto">
                     <Link
-                      href={`/productos/${producto.slug}`}
+                      href={`/servicios/${producto.slug}`}
                       className="inline-flex items-center text-sm font-semibold text-[var(--boga-electric-500)] hover:text-[var(--boga-electric-600)]"
                     >
                       Ver más
@@ -80,10 +80,10 @@ export function FeaturedProducts({ productos }: FeaturedProductsProps) {
 
         <FadeIn delay={0.4} className="mt-12 text-center">
           <Link
-            href="/productos"
+            href="/servicios"
             className="inline-flex items-center rounded-full border-2 border-[var(--boga-electric-500)] px-6 py-3 text-sm font-semibold text-[var(--boga-electric-500)] transition-colors hover:bg-[var(--boga-electric-50)]"
           >
-            Ver todos los productos
+            Ver todos los servicios
             <ArrowRight className="ml-2 h-4 w-4" />
           </Link>
         </FadeIn>

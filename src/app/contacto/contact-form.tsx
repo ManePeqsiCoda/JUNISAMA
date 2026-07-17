@@ -18,6 +18,8 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { FadeIn } from "@/components/home/fade-in"
+import { PageHero } from "@/components/brand/page-hero"
+import { BogaCircles } from "@/components/brand/boga-circles"
 import { siteConfig } from "@/lib/site"
 import {
   Phone,
@@ -131,25 +133,22 @@ export default function ContactForm() {
 
   return (
     <div className="min-h-screen bg-boga-surface-canvas">
-      {/* Hero */}
-      <section className="bg-boga-deep-500 pb-16 pt-32">
-        <div className="container mx-auto px-4 text-center lg:px-6">
-          <h1 className="text-3xl font-extrabold text-boga-text-inverted md:text-5xl">
-            Contacto
-          </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-boga-text-inverted/70">
-            Estamos listos para atender tu evento u obra en cualquier parte de
-            Colombia
-          </p>
-        </div>
-      </section>
+      <PageHero
+        overline="Contacto"
+        title="Contacto"
+        description="Estamos listos para atender tu evento u obra en cualquier parte de Colombia"
+      />
 
-      <section className="container mx-auto -mt-8 px-4 pb-20 lg:px-6">
+      <section className="container-boga relative z-10 -mt-8 pb-20">
         <div className="grid gap-8 lg:grid-cols-2">
           {/* Form */}
           <FadeIn direction="left">
             <Card className="border-boga-border-subtle bg-boga-surface-elevated shadow-boga-4">
               <CardContent className="p-6 md:p-8">
+                <span className="mb-4 inline-flex items-center gap-2 text-caption uppercase tracking-wider text-boga-electric-500">
+                  <BogaCircles size="s" tone="electric" />
+                  Escríbenos
+                </span>
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                   <div className="grid gap-5 sm:grid-cols-2">
                     <div className="space-y-2">
@@ -271,7 +270,7 @@ export default function ContactForm() {
                   <Button
                     type="submit"
                     disabled={status === "loading" || status === "success"}
-                    className="w-full"
+                    className="btn-primary w-full"
                     size="lg"
                   >
                     {status === "loading" && (
@@ -302,11 +301,14 @@ export default function ContactForm() {
                   const Icon = item.icon
                   const content = (
                     <>
-                      <Icon className="mb-3 h-6 w-6 text-boga-electric-500" />
+                      <Icon
+                        className="mb-3 h-6 w-6 text-boga-electric-500"
+                        strokeWidth={1.75}
+                      />
                       <p className="text-xs font-medium uppercase tracking-wider text-boga-text-tertiary">
                         {item.label}
                       </p>
-                      <p className="mt-1 font-semibold text-boga-text-primary">
+                      <p className="mt-1 font-semibold text-boga-lima-600">
                         {item.value}
                       </p>
                     </>

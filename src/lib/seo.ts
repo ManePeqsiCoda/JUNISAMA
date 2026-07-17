@@ -11,18 +11,18 @@ export const seoConfig = {
       "baños portátiles Colombia, alquiler baños portátiles, baños portátiles Medellín, baños portátiles Bogotá, baños portátiles VIP, baños portátiles eventos, unidades sanitarias portátiles, ingeniería portátil, baños para discapacitados, tráiler de lujo sanitario",
   },
   productos: {
-    title: "Productos | Baños Portátiles y Unidades Sanitarias BOGA",
+    title: "Servicios | Baños Portátiles y Unidades Sanitarias BOGA",
     description:
-      "Catálogo BOGA de baños portátiles VIP, estándar, eléctricos, para discapacitados, lavamanos, trailers de lujo y puntos ecológicos en Colombia.",
+      "Catálogo BOGA de baños portátiles VIP, estándar, eléctricos, para discapacitados, lavamanos, trailers de lujo, operarios y puntos ecológicos en Colombia.",
     keywords:
-      "baños portátiles, baño VIP, baño estándar, lavamanos portátil, trailer de lujo",
+      "baños portátiles, baño VIP, baño estándar, lavamanos portátil, trailer de lujo, servicios sanitarios",
   },
   servicios: {
-    title: "Servicios Especializados | Alquiler y Operación BOGA",
+    title: "Servicios | Baños Portátiles y Unidades Sanitarias BOGA",
     description:
-      "Alquiler de unidades sanitarias, mantenimiento especializado, operarios certificados e insumos biodegradables para eventos y obras.",
+      "Catálogo BOGA de baños portátiles VIP, estándar, eléctricos, para discapacitados, lavamanos, trailers de lujo, operarios y puntos ecológicos en Colombia.",
     keywords:
-      "servicios sanitarios, operarios para baños, mantenimiento baños portátiles",
+      "baños portátiles, baño VIP, servicios sanitarios, operarios para baños, lavamanos portátil",
   },
   galeria: {
     title: "Galería | Eventos Atendidos por BOGA",
@@ -171,7 +171,7 @@ export function generateWebsiteJsonLd() {
       "@type": "SearchAction",
       target: {
         "@type": "EntryPoint",
-        urlTemplate: `${siteConfig.url}/productos?search={search_term_string}`,
+        urlTemplate: `${siteConfig.url}/servicios?search={search_term_string}`,
       },
       "query-input": "required name=search_term_string",
     },

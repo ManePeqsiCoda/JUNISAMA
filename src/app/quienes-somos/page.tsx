@@ -1,8 +1,10 @@
 import type { Metadata } from "next"
 import Image from "next/image"
 import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { FadeIn } from "@/components/home/fade-in"
+import { PageHero } from "@/components/brand/page-hero"
+import { BogaCircles } from "@/components/brand/boga-circles"
+import { BogaDecor } from "@/components/brand/boga-decor"
 import {
   Sparkles,
   Zap,
@@ -105,25 +107,20 @@ export default function QuienesSomosPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
 
-      {/* Hero */}
-      <section className="bg-boga-deep-500 pb-16 pt-32">
-        <div className="container mx-auto px-4 text-center lg:px-6">
-          <Badge className="mb-4 border-0 bg-boga-lima-500/15 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-boga-lima-500 hover:bg-boga-lima-500/15">
-            Más de 10 años de experiencia
-          </Badge>
-          <h1 className="text-3xl font-extrabold text-boga-text-inverted md:text-5xl">
-            Nuestra Empresa
-          </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-boga-text-inverted/70">
-            Infraestructura sanitaria industrial con respaldo, tecnología y
-            compromiso ambiental
-          </p>
-        </div>
-      </section>
+      <PageHero
+        overline="Más de 10 años de experiencia"
+        title="Nuestra Empresa"
+        description="Infraestructura sanitaria industrial con respaldo, tecnología y compromiso ambiental"
+      />
 
       {/* About — scrollytelling: imagen antes y sticky, texto se desplaza */}
-      <section className="container mx-auto px-4 py-16 lg:px-6 lg:py-24">
-        <div className="grid gap-12 lg:grid-cols-2 lg:items-start">
+      <section className="container-boga relative py-16 lg:py-24">
+        <BogaDecor
+          variant="bubbles"
+          tone="electric"
+          className="absolute right-0 top-8 h-40 w-40 opacity-40"
+        />
+        <div className="relative z-10 grid gap-12 lg:grid-cols-2 lg:items-start">
           {/* Imagen del equipo: aparece primero y se mantiene visible en desktop */}
           <div className="order-1 lg:sticky lg:top-24">
             <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-boga-surface-muted">
@@ -140,6 +137,10 @@ export default function QuienesSomosPage() {
 
           {/* Texto de la empresa: se desplaza junto a la imagen fija */}
           <div className="order-2 space-y-5 lg:py-12">
+            <span className="inline-flex items-center gap-2 text-caption uppercase tracking-wider text-boga-electric-500">
+              <BogaCircles size="s" tone="electric" />
+              Trayectoria
+            </span>
             <h2 className="text-2xl font-bold text-boga-text-primary md:text-3xl">
               Nuestra Empresa
             </h2>
@@ -176,8 +177,12 @@ export default function QuienesSomosPage() {
 
       {/* Commitments */}
       <section className="bg-boga-surface-muted py-16 lg:py-24">
-        <div className="container mx-auto px-4 lg:px-6">
+        <div className="container-boga">
           <FadeIn className="mb-12 text-center">
+            <span className="mb-3 inline-flex items-center gap-2 text-caption uppercase tracking-wider text-boga-electric-500">
+              <BogaCircles size="s" tone="electric" />
+              Compromiso
+            </span>
             <h2 className="text-2xl font-bold text-boga-text-primary md:text-3xl">
               Nuestro Compromiso
             </h2>
@@ -189,8 +194,8 @@ export default function QuienesSomosPage() {
                 <FadeIn key={item.title} delay={index * 0.1}>
                   <Card className="h-full border-boga-border-subtle bg-boga-surface-elevated text-center shadow-boga-2">
                     <CardContent className="p-6">
-                      <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-boga-electric-50 text-boga-electric-500">
-                        <Icon className="h-7 w-7" />
+                      <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border-2 border-boga-electric-500/30 text-boga-electric-500">
+                        <Icon className="h-7 w-7" strokeWidth={1.75} />
                       </div>
                       <h3 className="text-lg font-bold text-boga-text-primary">{item.title}</h3>
                       <p className="mt-2 text-sm text-boga-text-secondary">{item.description}</p>
@@ -204,8 +209,12 @@ export default function QuienesSomosPage() {
       </section>
 
       {/* Equipment */}
-      <section className="container mx-auto px-4 py-16 lg:px-6 lg:py-24">
+      <section className="container-boga py-16 lg:py-24">
         <FadeIn className="mb-12 text-center">
+          <span className="mb-3 inline-flex items-center gap-2 text-caption uppercase tracking-wider text-boga-electric-500">
+            <BogaCircles size="s" tone="electric" />
+            Flota
+          </span>
           <h2 className="text-2xl font-bold text-boga-text-primary md:text-3xl">
             Equipos Disponibles
           </h2>
@@ -220,7 +229,10 @@ export default function QuienesSomosPage() {
               <FadeIn key={item.label} delay={index * 0.1}>
                 <Card className="border-boga-border-subtle bg-boga-surface-elevated text-center shadow-boga-2 transition-all hover:-translate-y-1 hover:shadow-boga-3">
                   <CardContent className="flex flex-col items-center p-6">
-                    <Icon className="h-10 w-10 text-boga-electric-500" />
+                    <Icon
+                      className="h-10 w-10 text-boga-electric-500"
+                      strokeWidth={1.75}
+                    />
                     <span className="mt-3 font-semibold text-boga-text-primary">{item.label}</span>
                   </CardContent>
                 </Card>
@@ -231,11 +243,20 @@ export default function QuienesSomosPage() {
       </section>
 
       {/* Technical service */}
-      <section className="bg-boga-deep-500 py-16 lg:py-24">
-        <div className="container mx-auto px-4 lg:px-6">
+      <section className="relative overflow-hidden bg-boga-deep-500 py-16 lg:py-24">
+        <BogaDecor
+          variant="waves"
+          tone="lima"
+          className="absolute left-8 top-10 h-10 w-24 opacity-30"
+        />
+        <div className="container-boga relative z-10">
           <div className="grid items-center gap-12 lg:grid-cols-2">
             <FadeIn direction="left">
               <div className="space-y-5">
+                <span className="inline-flex items-center gap-2 text-caption uppercase tracking-wider text-boga-lima-500">
+                  <BogaCircles size="s" tone="lima" />
+                  Operación
+                </span>
                 <h2 className="text-2xl font-bold text-boga-text-inverted md:text-3xl">
                   Servicio Técnico
                 </h2>
@@ -263,7 +284,6 @@ export default function QuienesSomosPage() {
                   className="object-cover"
                   sizes="(max-width: 1024px) 100vw, 50vw"
                 />
-                {/* TODO: Reemplazar por foto real del servicio técnico */}
               </div>
             </FadeIn>
           </div>
@@ -271,8 +291,12 @@ export default function QuienesSomosPage() {
       </section>
 
       {/* Environmental commitment */}
-      <section className="container mx-auto px-4 py-16 lg:px-6 lg:py-24">
+      <section className="container-boga py-16 lg:py-24">
         <FadeIn className="mb-12 text-center">
+          <span className="mb-3 inline-flex items-center gap-2 text-caption uppercase tracking-wider text-boga-electric-500">
+            <BogaCircles size="s" tone="electric" />
+            Sostenibilidad
+          </span>
           <h2 className="text-2xl font-bold text-boga-text-primary md:text-3xl">
             Compromiso Ambiental
           </h2>
@@ -287,7 +311,10 @@ export default function QuienesSomosPage() {
               <FadeIn key={item.title} delay={index * 0.1}>
                 <Card className="h-full border-boga-border-subtle bg-boga-surface-elevated shadow-boga-2">
                   <CardContent className="p-6">
-                    <Icon className="h-10 w-10 text-boga-lima-500" />
+                    <Icon
+                      className="h-10 w-10 text-boga-lima-500"
+                      strokeWidth={1.75}
+                    />
                     <h3 className="mt-4 text-lg font-bold text-boga-text-primary">{item.title}</h3>
                     <p className="mt-2 text-sm text-boga-text-secondary">{item.description}</p>
                   </CardContent>
@@ -300,8 +327,12 @@ export default function QuienesSomosPage() {
 
       {/* Locations */}
       <section className="bg-boga-surface-muted py-16 lg:py-24">
-        <div className="container mx-auto px-4 lg:px-6">
+        <div className="container-boga">
           <FadeIn className="mb-12 text-center">
+            <span className="mb-3 inline-flex items-center gap-2 text-caption uppercase tracking-wider text-boga-electric-500">
+              <BogaCircles size="s" tone="electric" />
+              Cobertura
+            </span>
             <h2 className="text-2xl font-bold text-boga-text-primary md:text-3xl">
               Nuestras Sedes
             </h2>

@@ -3,8 +3,9 @@
 import Link from "next/link"
 import Image from "next/image"
 import { useState } from "react"
-import { Check, ArrowRight } from "lucide-react"
+import { CheckCircle2, ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { buttonVariants } from "@/components/ui/button"
 import type { Producto } from "@/lib/mocks"
 
 interface ProductCardProps {
@@ -12,10 +13,9 @@ interface ProductCardProps {
   className?: string
 }
 
-// Mapeo de imágenes reales según el plan técnico.
-// TODO: Subir las fotos a /public/images/products/ para reemplazar el placeholder.
 function getProductImagePath(slug: string): string {
-  return `/images/products/${slug}.jpg`
+  // Sufijo -photo: archivos nuevos (evita caché de placeholders antiguos)
+  return `/images/products/${slug}-photo.jpg`
 }
 
 function ProductImagePlaceholder({ producto }: { producto: Producto }) {
@@ -32,7 +32,6 @@ function ProductImagePlaceholder({ producto }: { producto: Producto }) {
           {firstSpec[0]}: {firstSpec[1]}
         </span>
       )}
-      {/* TODO: Reemplazar por foto real del producto (mín. 800x600px) */}
     </div>
   )
 }
@@ -55,20 +54,18 @@ export function ProductCard({ producto, className }: ProductCardProps) {
   const [imageLoaded, setImageLoaded] = useState(false)
 
   const specs = (producto.especificaciones as Record<string, string> | undefined) || {}
-  const specEntries = Object.entries(specs).slice(0, 3)
-
+  const specEntries = Object.entries(specs).slice(0, 4)
   const imagePath = getProductImagePath(producto.slug)
+  const detailHref = `/servicios/${producto.slug}`
 
   return (
-    <Link
-      href={`/productos/${producto.slug}`}
+    <article
       className={cn(
-        "card-product group block",
+        "group flex h-full flex-col overflow-hidden rounded-2xl border border-boga-border-subtle bg-boga-surface-elevated shadow-boga-2 transition-all hover:-translate-y-1 hover:shadow-boga-3",
         className
       )}
     >
-      {/* Imagen con aspect ratio 4:3 */}
-      <div className="card-product__image relative">
+      <Link href={detailHref} className="relative block aspect-[4/3] overflow-hidden">
         {!imageError ? (
           <Image
             src={imagePath}
@@ -88,50 +85,77 @@ export function ProductCard({ producto, className }: ProductCardProps) {
 
         {!imageLoaded && !imageError && (
           <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[var(--boga-surface-muted)] to-[var(--boga-surface-inset)]">
-            <span className="text-sm font-medium text-[var(--boga-text-tertiary)]">{producto.nombre}</span>
+            <span className="text-sm font-medium text-[var(--boga-text-tertiary)]">
+              {producto.nombre}
+            </span>
           </div>
         )}
 
-        {/* Badge flotante */}
         {producto.badge && (
-          <span className={cn("absolute left-4 top-4 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wider", getBadgeColor(producto.badge))}>
+          <span
+            className={cn(
+              "absolute left-4 top-4 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wider",
+              getBadgeColor(producto.badge)
+            )}
+          >
             {producto.badge}
           </span>
         )}
 
-        {/* Overlay en hover */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[var(--boga-deep-500)]/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-      </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-[var(--boga-deep-500)]/50 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+      </Link>
 
-      {/* Contenido */}
-      <div className="p-6">
-        <h3 className="font-sans text-heading-sm text-[var(--boga-text-primary)] transition-colors group-hover:text-[var(--boga-electric-500)]">
-          {producto.nombre}
-        </h3>
-        <p className="mt-2 line-clamp-2 text-body-sm text-[var(--boga-text-secondary)]">
-          {producto.descripcionCorta}
-        </p>
+      <div className="flex flex-1 flex-col p-6 md:p-7">
+        <Link href={detailHref}>
+          <h3 className="font-sans text-xl font-bold text-boga-text-primary transition-colors group-hover:text-boga-electric-500 md:text-2xl">
+            {producto.nombre}
+          </h3>
+        </Link>
+        <p className="mt-3 text-boga-text-secondary">{producto.descripcionCorta}</p>
 
-        {/* Specs técnicos inline */}
         {specEntries.length > 0 && (
-          <div className="mt-4 flex flex-wrap gap-2">
+          <ul className="mt-5 flex-1 space-y-2">
             {specEntries.map(([label, value]) => (
-              <span
+              <li
                 key={label}
-                className="inline-flex items-center gap-1 rounded-md bg-[var(--boga-surface-muted)] px-2 py-1 text-xs text-[var(--boga-text-secondary)]"
+                className="flex items-center gap-2 text-sm text-boga-text-secondary"
               >
-                <Check className="h-3 w-3 text-[var(--boga-electric-500)]" aria-hidden="true" />
-                {value}
-              </span>
+                <CheckCircle2
+                  className="h-4 w-4 shrink-0 text-boga-electric-500"
+                  strokeWidth={1.75}
+                  aria-hidden="true"
+                />
+                <span>
+                  <span className="sr-only">{label}: </span>
+                  {value}
+                </span>
+              </li>
             ))}
-          </div>
+          </ul>
         )}
 
-        <div className="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-[var(--boga-electric-500)] transition-all group-hover:gap-2">
-          Ver detalles
-          <ArrowRight className="h-4 w-4" aria-hidden="true" />
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+          <Link
+            href={detailHref}
+            className={cn(
+              buttonVariants({ variant: "outline", size: "default" }),
+              "w-full sm:flex-1"
+            )}
+          >
+            Ver detalles
+            <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
+          </Link>
+          <Link
+            href="/cotizacion"
+            className={cn(
+              buttonVariants({ size: "default" }),
+              "btn-primary w-full sm:flex-1"
+            )}
+          >
+            Solicitar info
+          </Link>
         </div>
       </div>
-    </Link>
+    </article>
   )
 }

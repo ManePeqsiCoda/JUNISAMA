@@ -1,19 +1,20 @@
 import Link from "next/link"
 import { Logo } from "@/components/logo"
 import { AdminLink } from "@/components/admin-link"
+import { BogaCircles } from "@/components/brand/boga-circles"
+import { BogaDecor } from "@/components/brand/boga-decor"
 import { siteConfig } from "@/lib/site"
 import { Phone, Mail, MapPin } from "lucide-react"
 
 const footerServices = [
-  { name: "Alquiler de unidades", href: "/servicios" },
-  { name: "Mantenimiento 24/7", href: "/servicios" },
-  { name: "Operarios certificados", href: "/servicios" },
-  { name: "Insumos eco-friendly", href: "/servicios" },
+  { name: "Baño VIP", href: "/servicios/bano-vip" },
+  { name: "Baño Estándar", href: "/servicios/bano-estandar" },
+  { name: "Operarios certificados", href: "/servicios/operarios" },
+  { name: "Puntos ecológicos", href: "/servicios/puntos-ecologicos" },
 ]
 
 const footerLinks = [
   { name: "Inicio", href: "/" },
-  { name: "Productos", href: "/productos" },
   { name: "Servicios", href: "/servicios" },
   { name: "FAQ", href: "/faq" },
   { name: "Privacidad", href: "/privacidad" },
@@ -35,9 +36,22 @@ export function Footer() {
       role="contentinfo"
     >
       {/* CTA Banner */}
-      <div className="border-y border-white/10 bg-gradient-to-r from-[var(--boga-electric-500)] to-[var(--boga-electric-600)]">
-        <div className="container-boga flex flex-col items-center justify-between gap-6 py-12 md:flex-row md:py-16">
+      <div className="relative overflow-hidden border-y border-white/10 bg-gradient-to-r from-[var(--boga-electric-500)] to-[var(--boga-electric-600)]">
+        <BogaDecor
+          variant="waves"
+          tone="lima"
+          className="absolute left-4 top-4 h-10 w-24 opacity-40 md:left-8"
+        />
+        <BogaDecor
+          variant="arrows"
+          tone="lima"
+          className="absolute bottom-2 right-4 h-16 w-16 opacity-50 md:right-8"
+        />
+        <div className="container-boga relative z-10 flex flex-col items-center justify-between gap-6 py-12 md:flex-row md:py-16">
           <div>
+            <div className="mb-3">
+              <BogaCircles size="s" tone="white" />
+            </div>
             <h3 className="font-sans text-heading-lg text-white">
               ¿Listo para elevar tu evento?
             </h3>
@@ -45,7 +59,7 @@ export function Footer() {
               Cotiza con BOGA y asegura una experiencia sanitaria impecable.
             </p>
           </div>
-          <div className="flex flex-col gap-4 sm:flex-row">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
             <a
               href={`tel:+${siteConfig.phoneRaw}`}
               className="flex items-center gap-3 rounded-xl bg-white/10 px-5 py-3 transition-colors hover:bg-white/20"
@@ -53,21 +67,18 @@ export function Footer() {
               <Phone className="h-5 w-5 text-[var(--boga-lima-500)]" aria-hidden="true" />
               <div>
                 <div className="text-xs uppercase tracking-wider text-white/70">Línea directa</div>
-                <div className="font-semibold">+57 350 708 9584</div>
+                <div className="font-semibold text-[var(--boga-lima-500)]">{siteConfig.phone}</div>
               </div>
             </a>
-            <a
-              href={`mailto:${siteConfig.email}`}
-              className="flex items-center gap-3 rounded-xl bg-white/10 px-5 py-3 transition-colors hover:bg-white/20"
-            >
-              <Mail className="h-5 w-5 text-[var(--boga-lima-500)]" aria-hidden="true" />
-              <div>
-                <div className="text-xs uppercase tracking-wider text-white/70">Email</div>
-                <div className="font-semibold">{siteConfig.email}</div>
-              </div>
-            </a>
+            <Link href="/cotizacion" className="btn-primary text-center">
+              Cotizar ahora
+            </Link>
           </div>
         </div>
+      </div>
+
+      <div className="flex justify-center bg-[var(--boga-deep-500)] py-4">
+        <BogaCircles size="m" tone="lima" />
       </div>
 
       {/* Main Footer */}

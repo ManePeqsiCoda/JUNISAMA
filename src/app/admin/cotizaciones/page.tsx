@@ -179,12 +179,13 @@ export default function CotizacionesAdminPage() {
         </div>
         <Button
           className="bg-primary font-semibold text-primary-foreground hover:bg-primary-hover"
-          render={(
+          nativeButton={false}
+          render={
             <Link href="/admin/cotizaciones/nueva">
               <Plus className="mr-2 h-4 w-4" />
               Nueva cotización
             </Link>
-          )}
+          }
         />
       </div>
 
@@ -318,24 +319,26 @@ export default function CotizacionesAdminPage() {
                           size="icon"
                           aria-label="Ver cotización"
                           className="text-muted-foreground hover:text-foreground"
-                          render={(
+                          nativeButton={false}
+                          render={
                             <Link href={`/admin/cotizaciones/${cotizacion.id}`}>
                               <Eye className="h-4 w-4" />
                             </Link>
-                          )}
+                          }
                         />
                         <Button
                           variant="ghost"
                           size="icon"
                           aria-label="Editar cotización"
                           className="text-muted-foreground hover:text-foreground"
-                          render={(
+                          nativeButton={false}
+                          render={
                             <Link
                               href={`/admin/cotizaciones/nueva?id=${cotizacion.id}`}
                             >
                               <Pencil className="h-4 w-4" />
                             </Link>
-                          )}
+                          }
                         />
                         <Button
                           variant="ghost"
