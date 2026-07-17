@@ -49,12 +49,15 @@ function LoginForm() {
 
   const onSubmit = async (data: LoginForm) => {
     setError("")
-    const ok = await signIn(data.email, data.password)
-    if (ok) {
-      router.push("/admin")
-      router.refresh()
-    } else {
-      setError("Credenciales inválidas. Inténtalo de nuevo.")
+    try {
+      const ok = await signIn(data.email, data.password)
+      if (ok) {
+        router.replace("/admin")
+      } else {
+        setError("Credenciales inválidas. Inténtalo de nuevo.")
+      }
+    } catch {
+      setError("No se pudo iniciar sesión. Inténtalo de nuevo.")
     }
   }
 

@@ -1,7 +1,13 @@
 "use client"
 
-import { createContext, useContext, useState, ReactNode } from "react"
-import { loginAdmin } from "@/app/admin/login/actions"
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
+} from "react"
+import { verifyAdminCredentials } from "@/lib/auth"
 import { siteConfig } from "@/lib/site"
 
 interface MockUser {
@@ -11,14 +17,18 @@ interface MockUser {
   role: "ADMIN"
 }
 
+type AuthStatus = "loading" | "authenticated" | "unauthenticated"
+
 interface AuthMockContextValue {
   user: MockUser | null
-  status: "authenticated" | "unauthenticated"
+  status: AuthStatus
   signIn: (email: string, password: string) => Promise<boolean>
   signOut: () => void
 }
 
 const AuthMockContext = createContext<AuthMockContextValue | null>(null)
+
+const STORAGE_KEY = "boga-admin-auth"
 
 const MOCK_USER: MockUser = {
   id: "usr_1",
@@ -29,14 +39,31 @@ const MOCK_USER: MockUser = {
 
 export function AuthMockProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<MockUser | null>(null)
-  const [status, setStatus] = useState<"authenticated" | "unauthenticated">(
-    "unauthenticated"
-  )
+  const [status, setStatus] = useState<AuthStatus>("loading")
+
+  useEffect(() => {
+    try {
+      const stored = sessionStorage.getItem(STORAGE_KEY)
+      if (stored === "1") {
+        setUser(MOCK_USER)
+        setStatus("authenticated")
+        return
+      }
+    } catch {
+      // sessionStorage puede fallar en modo privado estricto
+    }
+    setStatus("unauthenticated")
+  }, [])
 
   const signIn = async (email: string, password: string) => {
-    const ok = await loginAdmin(email, password)
+    const ok = verifyAdminCredentials(email, password)
 
     if (ok) {
+      try {
+        sessionStorage.setItem(STORAGE_KEY, "1")
+      } catch {
+        // continuar aunque no se pueda persistir
+      }
       setUser({ ...MOCK_USER, email })
       setStatus("authenticated")
       return true
@@ -45,6 +72,11 @@ export function AuthMockProvider({ children }: { children: ReactNode }) {
   }
 
   const signOut = () => {
+    try {
+      sessionStorage.removeItem(STORAGE_KEY)
+    } catch {
+      // ignore
+    }
     setUser(null)
     setStatus("unauthenticated")
   }

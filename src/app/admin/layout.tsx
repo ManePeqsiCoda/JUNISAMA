@@ -20,7 +20,10 @@ export default function AdminLayout({
 
   useEffect(() => {
     if (status === "unauthenticated" && !isLoginPage) {
-      router.push("/admin/login")
+      router.replace("/admin/login")
+    }
+    if (status === "authenticated" && isLoginPage) {
+      router.replace("/admin")
     }
   }, [status, isLoginPage, router])
 
@@ -35,7 +38,7 @@ export default function AdminLayout({
     )
   }
 
-  if (!user) {
+  if (status === "loading" || !user) {
     return (
       <div
         data-admin-theme="dark"

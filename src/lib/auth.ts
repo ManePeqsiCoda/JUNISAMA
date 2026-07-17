@@ -1,9 +1,9 @@
 import { siteConfig } from "@/lib/site"
 
-export async function verifyAdminCredentials(
+export function verifyAdminCredentials(
   email: string,
   password: string
-): Promise<boolean> {
+): boolean {
   const adminEmail = siteConfig.admin.email
   const adminPassword = siteConfig.admin.password
 
