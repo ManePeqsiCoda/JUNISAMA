@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
-import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
@@ -14,171 +13,93 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
 import { KpiCard } from "@/components/admin/kpi-card"
-import { StatusBadge } from "@/components/admin/status-badge"
 import {
   Search,
   Plus,
   Eye,
   Pencil,
-  Trash2,
-  ChevronLeft,
-  ChevronRight,
   FileText,
-  Clock,
-  CheckCircle,
-  DollarSign,
-  Loader2,
+  Percent,
+  Inbox,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { cotizaciones as cotizacionesMock } from "@/lib/mocks"
-import type { Cotizacion, Cliente, EstadoCotizacion } from "@/lib/mocks"
+import { formatCOP } from "@/lib/cotizador/calc"
+import { getCotizaciones, getSolicitudes } from "@/lib/cotizador/storage"
+import type {
+  EstadoCotizacionPaquete,
+  PaqueteEvento,
+} from "@/types/cotizador-boga"
 
-type CotizacionWithCliente = Cotizacion & {
-  cliente: Cliente
-}
-
-const estados: { value: EstadoCotizacion | "TODOS"; label: string }[] = [
-  { value: "TODOS", label: "Todos" },
-  { value: "BORRADOR", label: "Borrador" },
-  { value: "ENVIADA", label: "Enviada" },
-  { value: "APROBADA", label: "Aprobada" },
-  { value: "RECHAZADA", label: "Rechazada" },
+const estados: { value: EstadoCotizacionPaquete | "todos"; label: string }[] = [
+  { value: "todos", label: "Todos" },
+  { value: "borrador", label: "Borrador" },
+  { value: "enviada", label: "Enviada" },
+  { value: "aceptada", label: "Aceptada" },
+  { value: "rechazada", label: "Rechazada" },
+  { value: "vencida", label: "Vencida" },
 ]
 
-function formatCurrency(value: number | null | undefined) {
-  if (value == null) return "—"
-  return new Intl.NumberFormat("es-CO", {
-    style: "currency",
-    currency: "COP",
-    maximumFractionDigits: 0,
-  }).format(Number(value))
+const estadoClass: Record<EstadoCotizacionPaquete, string> = {
+  borrador: "bg-muted text-muted-foreground",
+  enviada: "bg-boga-info-500/15 text-boga-info-500",
+  en_revision: "bg-boga-warning-500/15 text-boga-warning-500",
+  aceptada: "bg-boga-success-500/15 text-boga-success-500",
+  rechazada: "bg-boga-error-500/15 text-boga-error-500",
+  vencida: "bg-muted text-muted-foreground",
 }
 
-function formatDate(date: string | Date | null | undefined) {
-  if (!date) return "—"
-  return new Intl.DateTimeFormat("es-CO", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  }).format(new Date(date))
-}
-
-interface Stats {
-  totalCotizaciones: number
-  pendientes: number
-  aprobadasMes: number
-  ingresosEstimados: number
-}
-
-export default function CotizacionesAdminPage() {
-  const [cotizaciones, setCotizaciones] = useState<CotizacionWithCliente[]>([])
-  const [loading, setLoading] = useState(true)
+export default function CotizacionesPage() {
+  const [rows, setRows] = useState<PaqueteEvento[]>([])
   const [search, setSearch] = useState("")
-  const [debouncedSearch, setDebouncedSearch] = useState("")
-  const [estadoFiltro, setEstadoFiltro] = useState<EstadoCotizacion | "TODOS">(
-    "TODOS"
+  const [estado, setEstado] = useState<EstadoCotizacionPaquete | "todos">(
+    "todos"
   )
-  const [page, setPage] = useState(1)
-  const [deleteDialog, setDeleteDialog] = useState<{
-    open: boolean
-    cotizacion: CotizacionWithCliente | null
-  }>({ open: false, cotizacion: null })
-
-  const limit = 10
+  const [solicitudesNuevas, setSolicitudesNuevas] = useState(0)
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(search)
-      setPage(1)
-    }, 300)
-    return () => clearTimeout(timer)
-  }, [search])
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setCotizaciones(cotizacionesMock as CotizacionWithCliente[])
-      setLoading(false)
-    }, 300)
-    return () => clearTimeout(timer)
+    setRows(getCotizaciones())
+    setSolicitudesNuevas(
+      getSolicitudes().filter((s) => s.estado === "nueva").length
+    )
   }, [])
 
-  const filteredCotizaciones = useMemo(() => {
-    const term = debouncedSearch.toLowerCase()
-    return cotizaciones.filter((c) => {
-      const matchesSearch =
-        c.codigo.toLowerCase().includes(term) ||
-        c.cliente.nombreEmpresa.toLowerCase().includes(term) ||
-        c.nombre.toLowerCase().includes(term)
-      const matchesEstado = estadoFiltro === "TODOS" || c.estado === estadoFiltro
-      return matchesSearch && matchesEstado
-    })
-  }, [cotizaciones, debouncedSearch, estadoFiltro])
-
-  const totalPages = Math.max(1, Math.ceil(filteredCotizaciones.length / limit))
-  const paginatedCotizaciones = useMemo(() => {
-    const start = (page - 1) * limit
-    return filteredCotizaciones.slice(start, start + limit)
-  }, [filteredCotizaciones, page])
-
-  const stats = useMemo<Stats>(() => {
-    const now = new Date()
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
-    const aprobadasMes = cotizaciones.filter((c) => {
-      if (c.estado !== "APROBADA") return false
-      const date = new Date(c.createdAt)
-      return date >= startOfMonth
-    }).length
-    const ingresosEstimados = cotizaciones
-      .filter((c) => {
-        if (c.estado !== "APROBADA") return false
-        const date = new Date(c.createdAt)
-        return date >= startOfMonth
-      })
-      .reduce((sum, c) => sum + (c.precioVenta ?? 0), 0)
-    return {
-      totalCotizaciones: cotizaciones.length,
-      pendientes: cotizaciones.filter((c) =>
-        ["BORRADOR", "ENVIADA"].includes(c.estado)
-      ).length,
-      aprobadasMes,
-      ingresosEstimados,
-    }
-  }, [cotizaciones])
-
-  const handleDelete = () => {
-    if (!deleteDialog.cotizacion) return
-    setCotizaciones((prev) =>
-      prev.map((c) =>
-        c.id === deleteDialog.cotizacion!.id ? { ...c, estado: "EXPIRADA" as const } : c
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase()
+    return rows.filter((r) => {
+      if (estado !== "todos" && r.estado !== estado) return false
+      if (!q) return true
+      return (
+        r.nombre.toLowerCase().includes(q) ||
+        r.numero.toLowerCase().includes(q) ||
+        (r.cliente?.nombre ?? "").toLowerCase().includes(q) ||
+        (r.cliente?.empresa ?? "").toLowerCase().includes(q)
       )
-    )
-    toast.success("Cotización marcada como expirada")
-    setDeleteDialog({ open: false, cotizacion: null })
-  }
+    })
+  }, [rows, search, estado])
+
+  const margenPromedio =
+    rows.length > 0
+      ? Math.round(
+          rows.reduce((s, r) => s + r.margenPorcentaje, 0) / rows.length
+        )
+      : 0
+  const pipeline = rows
+    .filter((r) => r.estado === "enviada" || r.estado === "borrador")
+    .reduce((s, r) => s + r.precioCliente, 0)
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-sm font-extrabold uppercase tracking-widest text-foreground">
+          <h1 className="text-xl font-extrabold text-foreground">
             Cotizaciones
           </h1>
           <p className="text-sm text-muted-foreground">
-            Gestión y seguimiento de cotizaciones
+            Paquetes de evento por cliente
           </p>
         </div>
         <Button
-          className="bg-primary font-semibold text-primary-foreground hover:bg-primary-hover"
           nativeButton={false}
           render={
             <Link href="/admin/cotizaciones/nueva">
@@ -189,243 +110,136 @@ export default function CotizacionesAdminPage() {
         />
       </div>
 
-      {/* KPIs */}
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-3">
         <KpiCard
-          title="Total cotizaciones"
-          value={stats.totalCotizaciones}
+          title="Pipeline"
+          value={formatCOP(pipeline)}
           icon={FileText}
-          trend="neutral"
-          trendValue="Todas las cotizaciones"
-          color="primary"
         />
         <KpiCard
-          title="Pendientes"
-          value={stats.pendientes}
-          icon={Clock}
-          trend={stats.pendientes > 0 ? "down" : "neutral"}
-          trendValue={stats.pendientes > 0 ? "Por gestionar" : "Al día"}
-          color="orange"
+          title="Margen promedio"
+          value={`${margenPromedio}%`}
+          icon={Percent}
         />
         <KpiCard
-          title="Aprobadas este mes"
-          value={stats.aprobadasMes}
-          icon={CheckCircle}
-          trend="neutral"
-          trendValue="Este mes"
-          color="green"
-        />
-        <KpiCard
-          title="Ingresos estimados"
-          value={formatCurrency(stats.ingresosEstimados)}
-          icon={DollarSign}
-          trend="neutral"
-          trendValue="Aprobadas del mes"
-          color="blue"
+          title="Solicitudes nuevas"
+          value={String(solicitudesNuevas)}
+          icon={Inbox}
         />
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-        <div className="relative max-w-sm flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Buscar por código, cliente..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="border-input bg-background pl-9 text-foreground"
-          />
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {estados.map((e) => (
-            <button
-              key={e.value}
-              onClick={() => setEstadoFiltro(e.value)}
-              className={cn(
-                "rounded-full px-3 py-1 text-xs font-medium transition-colors",
-                estadoFiltro === e.value
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted/20 text-muted-foreground hover:bg-muted/30"
-              )}
-            >
-              {e.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Table */}
       <Card className="bg-card ring-1 ring-foreground/10">
-        <CardContent className="p-0">
+        <CardContent className="space-y-4 p-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="relative max-w-sm flex-1">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                className="pl-9"
+                placeholder="Buscar…"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {estados.map((e) => (
+                <button
+                  key={e.value}
+                  type="button"
+                  onClick={() => setEstado(e.value)}
+                  className={cn(
+                    "rounded-full px-3 py-1 text-xs font-medium",
+                    estado === e.value
+                      ? "bg-primary/15 text-primary"
+                      : "bg-muted text-muted-foreground"
+                  )}
+                >
+                  {e.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <Table>
             <TableHeader>
               <TableRow className="border-border hover:bg-transparent">
-                <TableHead className="text-muted-foreground">Código</TableHead>
-                <TableHead className="text-muted-foreground">Cliente</TableHead>
-                <TableHead className="text-muted-foreground">Evento</TableHead>
-                <TableHead className="text-muted-foreground">Productos</TableHead>
-                <TableHead className="text-muted-foreground">Total</TableHead>
-                <TableHead className="text-muted-foreground">Estado</TableHead>
-                <TableHead className="text-muted-foreground">Fecha</TableHead>
-                <TableHead className="text-right text-muted-foreground">
-                  Acciones
-                </TableHead>
+                <TableHead>Número</TableHead>
+                <TableHead>Nombre</TableHead>
+                <TableHead>Cliente</TableHead>
+                <TableHead>Estado</TableHead>
+                <TableHead>Precio</TableHead>
+                <TableHead>Margen</TableHead>
+                <TableHead className="w-24" />
               </TableRow>
             </TableHeader>
             <TableBody>
-              {loading ? (
-                <TableRow className="border-border hover:bg-transparent">
-                  <TableCell colSpan={8} className="py-12 text-center">
-                    <Loader2 className="mx-auto h-6 w-6 animate-spin text-primary" />
+              {filtered.map((r) => (
+                <TableRow key={r.id} className="border-border">
+                  <TableCell className="font-medium">{r.numero}</TableCell>
+                  <TableCell>{r.nombre}</TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {r.cliente?.empresa || r.cliente?.nombre || "—"}
+                  </TableCell>
+                  <TableCell>
+                    <span
+                      className={cn(
+                        "rounded-full px-2 py-0.5 text-xs font-medium capitalize",
+                        estadoClass[r.estado]
+                      )}
+                    >
+                      {r.estado.replace("_", " ")}
+                    </span>
+                  </TableCell>
+                  <TableCell>{formatCOP(r.precioCliente)}</TableCell>
+                  <TableCell
+                    className={cn(
+                      "font-semibold",
+                      r.margenPorcentaje < 25
+                        ? "text-boga-warning-500"
+                        : "text-boga-success-500"
+                    )}
+                  >
+                    {r.margenPorcentaje}%
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex gap-1">
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        nativeButton={false}
+                        render={
+                          <Link href={`/admin/cotizaciones/${r.id}`}>
+                            <Eye className="h-4 w-4" />
+                          </Link>
+                        }
+                      />
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        nativeButton={false}
+                        render={
+                          <Link href={`/admin/cotizaciones/nueva?id=${r.id}`}>
+                            <Pencil className="h-4 w-4" />
+                          </Link>
+                        }
+                      />
+                    </div>
                   </TableCell>
                 </TableRow>
-              ) : paginatedCotizaciones.length === 0 ? (
-                <TableRow className="border-border hover:bg-transparent">
-                  <TableCell colSpan={8} className="py-12 text-center text-muted-foreground">
-                    No se encontraron cotizaciones.
+              ))}
+              {filtered.length === 0 && (
+                <TableRow>
+                  <TableCell
+                    colSpan={7}
+                    className="py-10 text-center text-muted-foreground"
+                  >
+                    Sin cotizaciones
                   </TableCell>
                 </TableRow>
-              ) : (
-                paginatedCotizaciones.map((cotizacion) => (
-                  <TableRow key={cotizacion.id} className="border-border">
-                    <TableCell className="font-mono text-xs text-foreground">
-                      {cotizacion.codigo}
-                    </TableCell>
-                    <TableCell className="text-foreground">
-                      {cotizacion.cliente.nombreEmpresa}
-                    </TableCell>
-                    <TableCell>
-                      <div className="text-foreground">{cotizacion.nombre}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {formatDate(cotizacion.fechaEvento)}
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-foreground">
-                      {cotizacion.items?.length ?? "—"}
-                    </TableCell>
-                    <TableCell className="font-medium text-foreground">
-                      {formatCurrency(Number(cotizacion.precioVenta))}
-                    </TableCell>
-                    <TableCell>
-                      <StatusBadge status={cotizacion.estado} />
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {formatDate(cotizacion.createdAt)}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-1">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          aria-label="Ver cotización"
-                          className="text-muted-foreground hover:text-foreground"
-                          nativeButton={false}
-                          render={
-                            <Link href={`/admin/cotizaciones/${cotizacion.id}`}>
-                              <Eye className="h-4 w-4" />
-                            </Link>
-                          }
-                        />
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          aria-label="Editar cotización"
-                          className="text-muted-foreground hover:text-foreground"
-                          nativeButton={false}
-                          render={
-                            <Link
-                              href={`/admin/cotizaciones/nueva?id=${cotizacion.id}`}
-                            >
-                              <Pencil className="h-4 w-4" />
-                            </Link>
-                          }
-                        />
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          aria-label="Eliminar cotización"
-                          onClick={() =>
-                            setDeleteDialog({ open: true, cotizacion })
-                          }
-                          className="text-muted-foreground hover:text-error"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
               )}
             </TableBody>
           </Table>
-
-          {!loading && paginatedCotizaciones.length > 0 && (
-            <div className="flex items-center justify-between border-t border-border px-4 py-3">
-              <p className="text-sm text-muted-foreground">
-                Página {page} de {totalPages}
-              </p>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  aria-label="Página anterior"
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  disabled={page <= 1}
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  aria-label="Página siguiente"
-                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                  disabled={page >= totalPages}
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          )}
         </CardContent>
       </Card>
-
-      {/* Delete dialog */}
-      <Dialog
-        open={deleteDialog.open}
-        onOpenChange={(open) =>
-          setDeleteDialog((prev) => ({ ...prev, open }))
-        }
-      >
-        <DialogContent className="sm:max-w-sm">
-          <DialogHeader>
-            <DialogTitle className="text-base font-semibold">
-              ¿Eliminar cotización?
-            </DialogTitle>
-            <DialogDescription>
-              Esta acción marcará la cotización{" "}
-              <strong>{deleteDialog.cotizacion?.codigo}</strong> como expirada.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="flex-col-reverse gap-2 sm:flex-row">
-            <Button
-              variant="outline"
-              onClick={() =>
-                setDeleteDialog({ open: false, cotizacion: null })
-              }
-              className="w-full sm:w-auto"
-            >
-              Cancelar
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={handleDelete}
-              className="w-full sm:w-auto"
-            >
-              Eliminar
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   )
 }

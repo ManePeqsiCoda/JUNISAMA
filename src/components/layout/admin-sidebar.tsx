@@ -9,13 +9,17 @@ import {
   Users,
   Calendar,
   Settings,
+  Layers,
+  Inbox,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/cotizaciones", label: "Cotizaciones", icon: FileText },
   { href: "/admin/productos", label: "Productos", icon: Package },
+  { href: "/admin/paquetes", label: "Paquetes", icon: Layers },
+  { href: "/admin/cotizaciones", label: "Cotizaciones", icon: FileText },
+  { href: "/admin/solicitudes", label: "Solicitudes", icon: Inbox },
   { href: "/admin/clientes", label: "Clientes", icon: Users },
   { href: "/admin/eventos", label: "Eventos", icon: Calendar },
 ]

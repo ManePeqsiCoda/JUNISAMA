@@ -4,6 +4,7 @@ import { Suspense, useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useAuthMock } from "@/lib/auth-mock"
 import { siteConfig } from "@/lib/site"
@@ -17,7 +18,7 @@ import {
   CardHeader,
 } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Loader2 } from "lucide-react"
+import { ArrowLeft, Loader2 } from "lucide-react"
 
 const loginSchema = z.object({
   email: z.string().min(1, "El correo es obligatorio").email("Correo inválido"),
@@ -62,98 +63,112 @@ function LoginForm() {
   }
 
   return (
-    <Card className="w-full max-w-md border-border bg-card text-card-foreground shadow-xl">
-      <CardHeader className="space-y-2 text-center">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground font-extrabold text-xl">
-          B
-        </div>
-        <h1 className="text-2xl font-extrabold uppercase tracking-wider text-foreground">
-          Panel de Administración
-        </h1>
-        <CardDescription className="text-muted-foreground">
-          Inicia sesión para gestionar BOGA
-        </CardDescription>
-        <div className="rounded-md border border-dashed border-border bg-muted/40 p-3 text-left">
-          <p className="text-xs text-muted-foreground">
-            <strong>Acceso demo:</strong>
-          </p>
-          <p className="text-xs text-muted-foreground">
-            {siteConfig.admin.email} / {siteConfig.admin.password}
-          </p>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="mt-2 w-full text-xs"
-            onClick={() => {
-              setValue("email", siteConfig.admin.email)
-              setValue("password", siteConfig.admin.password)
-            }}
-          >
-            Autocompletar credenciales
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {error && (
-            <Alert
-              variant="destructive"
-              className="border-error/30 bg-error-bg text-error"
+    <div className="w-full max-w-md space-y-4">
+      <Button
+        variant="ghost"
+        size="sm"
+        className="text-muted-foreground hover:text-foreground"
+        nativeButton={false}
+        render={
+          <Link href="/">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Volver al inicio
+          </Link>
+        }
+      />
+      <Card className="w-full border-border bg-card text-card-foreground shadow-xl">
+        <CardHeader className="space-y-2 text-center">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground font-extrabold text-xl">
+            B
+          </div>
+          <h1 className="text-2xl font-extrabold uppercase tracking-wider text-foreground">
+            Panel de Administración
+          </h1>
+          <CardDescription className="text-muted-foreground">
+            Inicia sesión para gestionar BOGA
+          </CardDescription>
+          <div className="rounded-md border border-dashed border-border bg-muted/40 p-3 text-left">
+            <p className="text-xs text-muted-foreground">
+              <strong>Acceso demo:</strong>
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {siteConfig.admin.email} / {siteConfig.admin.password}
+            </p>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="mt-2 w-full text-xs"
+              onClick={() => {
+                setValue("email", siteConfig.admin.email)
+                setValue("password", siteConfig.admin.password)
+              }}
             >
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
-
-          <div className="space-y-2">
-            <Label htmlFor="email" className="text-foreground">
-              Correo electrónico
-            </Label>
-            <Input
-              id="email"
-              type="email"
-              autoComplete="email"
-              className="border-input bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-primary"
-              {...register("email")}
-            />
-            {errors.email && (
-              <p className="text-xs text-error">{errors.email.message}</p>
-            )}
+              Autocompletar credenciales
+            </Button>
           </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="password" className="text-foreground">
-              Contraseña
-            </Label>
-            <Input
-              id="password"
-              type="password"
-              autoComplete="current-password"
-              className="border-input bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-primary"
-              {...register("password")}
-            />
-            {errors.password && (
-              <p className="text-xs text-error">{errors.password.message}</p>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {error && (
+              <Alert
+                variant="destructive"
+                className="border-error/30 bg-error-bg text-error"
+              >
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
             )}
-          </div>
 
-          <Button
-            type="submit"
-            className="w-full bg-primary font-semibold text-primary-foreground hover:bg-primary-hover"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Ingresando...
-              </>
-            ) : (
-              "Iniciar sesión"
-            )}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-foreground">
+                Correo electrónico
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                autoComplete="email"
+                className="border-input bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-primary"
+                {...register("email")}
+              />
+              {errors.email && (
+                <p className="text-xs text-error">{errors.email.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-foreground">
+                Contraseña
+              </Label>
+              <Input
+                id="password"
+                type="password"
+                autoComplete="current-password"
+                className="border-input bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-primary"
+                {...register("password")}
+              />
+              {errors.password && (
+                <p className="text-xs text-error">{errors.password.message}</p>
+              )}
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full bg-primary font-semibold text-primary-foreground hover:bg-primary-hover"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Ingresando...
+                </>
+              ) : (
+                "Iniciar sesión"
+              )}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
   )
 }
 

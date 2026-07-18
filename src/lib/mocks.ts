@@ -809,3 +809,14 @@ export function getCurrentTimestamp(): string {
 export function parseDateToISO(dateString: string): string {
   return new Date(dateString).toISOString()
 }
+
+// Cotizador BOGA (admin) — catálogo con tarifas; no reemplaza `productos` públicos
+export {
+  CATALOGO_VERSION,
+  DEFAULT_CATALOGO,
+  PLANTILLAS_PAQUETE,
+  COTIZACIONES_DEMO,
+  SOLICITUDES_DEMO,
+  getCatalogItemBySlug,
+  getCatalogItemById,
+} from "@/lib/mocks/cotizador-boga"

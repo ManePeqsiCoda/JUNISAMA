@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useRef, useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { useForm, Controller } from "react-hook-form"
@@ -45,7 +45,13 @@ const tipoEventoOptions = [
   "Otro",
 ]
 
-const step1Schema = z.object({
+const detailsSchema = z.object({
+  duracionDias: z.number().int().optional(),
+  ubicacionEvento: z.string().optional(),
+  notasAdicionales: z.string().optional(),
+})
+
+const contactSchema = z.object({
   nombre: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
   empresa: z.string().optional(),
   email: z.string().email("Ingresa un correo electrónico válido"),
@@ -54,19 +60,13 @@ const step1Schema = z.object({
   fechaEvento: z.string().min(1, "Selecciona una fecha"),
   ciudad: z.string().min(2, "Indica la ciudad"),
   asistentes: z.number().int().optional(),
-})
-
-const step3Schema = z.object({
-  duracionDias: z.number().int().optional(),
-  ubicacionEvento: z.string().optional(),
-  notasAdicionales: z.string().optional(),
   aceptaPrivacidad: z.boolean().refine((value) => value === true, {
     message: "Debes aceptar la política de privacidad",
   }),
 })
 
-type Step1Data = z.infer<typeof step1Schema>
-type Step3Data = z.infer<typeof step3Schema>
+type DetailsData = z.infer<typeof detailsSchema>
+type ContactData = z.infer<typeof contactSchema>
 
 interface QuoteItem {
   productoId: string
@@ -84,14 +84,39 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
     "idle"
   )
   const [errorMessage, setErrorMessage] = useState("")
+  const formTopRef = useRef<HTMLDivElement>(null)
+
+  const goToStep = (next: number) => {
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur()
+    }
+    setStep(next)
+    requestAnimationFrame(() => {
+      formTopRef.current?.scrollIntoView({ behavior: "auto", block: "start" })
+    })
+  }
 
   const {
-    register: registerStep1,
-    handleSubmit: handleSubmitStep1,
-    control: controlStep1,
-    formState: { errors: errorsStep1 },
-  } = useForm<Step1Data>({
-    resolver: zodResolver(step1Schema),
+    register: registerDetails,
+    handleSubmit: handleSubmitDetails,
+    getValues: getDetailsValues,
+    formState: { errors: errorsDetails },
+  } = useForm<DetailsData>({
+    resolver: zodResolver(detailsSchema),
+    defaultValues: {
+      duracionDias: undefined,
+      ubicacionEvento: "",
+      notasAdicionales: "",
+    },
+  })
+
+  const {
+    register: registerContact,
+    handleSubmit: handleSubmitContact,
+    control: controlContact,
+    formState: { errors: errorsContact },
+  } = useForm<ContactData>({
+    resolver: zodResolver(contactSchema),
     defaultValues: {
       nombre: "",
       empresa: "",
@@ -101,16 +126,8 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
       fechaEvento: "",
       ciudad: "",
       asistentes: undefined,
+      aceptaPrivacidad: false,
     },
-  })
-
-  const {
-    register: registerStep3,
-    handleSubmit: handleSubmitStep3,
-    control: controlStep3,
-    formState: { errors: errorsStep3 },
-  } = useForm<Step3Data>({
-    resolver: zodResolver(step3Schema),
   })
 
   const toggleProduct = (productoId: string) => {
@@ -143,48 +160,63 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
     .filter((item) => item.producto)
 
   const onSubmitStep1 = () => {
-    setStep(2)
-  }
-
-  const onSubmitStep2 = () => {
     if (items.length === 0) {
       setErrorMessage("Selecciona al menos un producto")
       return
     }
     setErrorMessage("")
-    setStep(3)
+    goToStep(2)
   }
 
-  const onSubmitStep3 = async (data: Step3Data) => {
+  const onSubmitStep2 = () => {
+    goToStep(3)
+  }
+
+  const onSubmitStep3 = async (contact: ContactData) => {
     setStatus("loading")
     setErrorMessage("")
 
-    const step1Data = {} as Step1Data
-    const formValues = document.forms.namedItem("quote-form") as HTMLFormElement
-    if (formValues) {
-      const fd = new FormData(formValues)
-      Object.assign(step1Data, {
-        nombre: fd.get("nombre"),
-        empresa: fd.get("empresa") || undefined,
-        email: fd.get("email"),
-        telefono: fd.get("telefono"),
-        tipoEvento: fd.get("tipoEvento"),
-        fechaEvento: fd.get("fechaEvento"),
-        ciudad: fd.get("ciudad"),
-        asistentes: fd.get("asistentes")
-          ? Number(fd.get("asistentes"))
-          : undefined,
-      })
-    }
+    const details = getDetailsValues()
 
     try {
-      // Simulated API call — no backend in static prototype
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      const { addSolicitud, generateId } = await import(
+        "@/lib/cotizador/storage"
+      )
+      addSolicitud({
+        id: generateId("sol"),
+        fullName: contact.nombre,
+        company: contact.empresa,
+        email: contact.email,
+        phone: contact.telefono,
+        eventType: contact.tipoEvento,
+        eventDate: contact.fechaEvento,
+        city: contact.ciudad,
+        attendees:
+          contact.asistentes != null ? String(contact.asistentes) : undefined,
+        productSlugs: items
+          .map((i) => productos.find((p) => p.id === i.productoId)?.slug)
+          .filter((s): s is string => !!s),
+        notes: [
+          details.ubicacionEvento
+            ? `Ubicación: ${details.ubicacionEvento}`
+            : null,
+          details.duracionDias
+            ? `Duración: ${details.duracionDias} días`
+            : null,
+          details.notasAdicionales || null,
+        ]
+          .filter(Boolean)
+          .join(" · ") || undefined,
+        estado: "nueva",
+        recibidoEn: new Date().toISOString(),
+      })
+
+      await new Promise((resolve) => setTimeout(resolve, 400))
 
       setStatus("success")
-      toast.success(`Cotización solicitada por ${step1Data.nombre || "Cliente"}`, {
-        description: data.duracionDias
-          ? `Duración: ${data.duracionDias} días. Te contactaremos en menos de 24 horas.`
+      toast.success(`Cotización solicitada por ${contact.nombre}`, {
+        description: details.duracionDias
+          ? `Duración: ${details.duracionDias} días. Te contactaremos en menos de 24 horas.`
           : "Te contactaremos en menos de 24 horas.",
       })
     } catch (error) {
@@ -234,394 +266,442 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
         description="Completa el formulario en 3 pasos y recibe una propuesta personalizada"
       />
       <section className="container-boga relative z-10 -mt-8 pb-24">
-      <FadeIn delay={0.1}>
-        <Card className="mx-auto max-w-5xl border-boga-border-subtle bg-boga-surface-elevated shadow-boga-4">
-          <CardContent className="p-6 md:p-8">
-            <div className="mb-6 flex justify-center">
-              <BogaCircles size="m" tone="electric" />
-            </div>
-            {/* Step indicator — 3 círculos BOGA */}
-            <StepIndicator currentStep={step} totalSteps={3} />
+        <FadeIn delay={0.1}>
+          <Card className="mx-auto max-w-5xl border-boga-border-subtle bg-boga-surface-elevated shadow-boga-4">
+            <CardContent className="p-6 md:p-8">
+              <div ref={formTopRef} className="scroll-mt-24" />
+              <div className="mb-6 flex justify-center">
+                <BogaCircles size="m" tone="electric" />
+              </div>
+              <StepIndicator currentStep={step} totalSteps={3} />
 
-            <form id="quote-form" onSubmit={(e) => e.preventDefault()}>
-              {step === 1 && (
-                <div className="space-y-5">
-                  <h2 className="text-xl font-bold text-boga-text-primary">
-                    Paso 1: Datos de contacto
-                  </h2>
-                  <div className="grid gap-5 sm:grid-cols-2">
-                    <div className="space-y-2">
-                      <Label htmlFor="nombre">Nombre completo *</Label>
-                      <Input
-                        id="nombre"
-                        {...registerStep1("nombre")}
-                        aria-invalid={errorsStep1.nombre ? "true" : "false"}
-                      />
-                      {errorsStep1.nombre && (
-                        <p className="flex items-center gap-1 text-xs text-boga-error-500" role="alert"><AlertCircle className="h-3 w-3" aria-hidden="true" />
-                          {errorsStep1.nombre.message}
-                        </p>
-                      )}
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="empresa">Empresa</Label>
-                      <Input id="empresa" {...registerStep1("empresa")} />
-                    </div>
-                  </div>
+              <form id="quote-form" onSubmit={(e) => e.preventDefault()}>
+                {step === 1 && (
+                  <div className="space-y-5">
+                    <h2 className="text-xl font-bold text-boga-text-primary">
+                      Paso 1: Selección de productos
+                    </h2>
 
-                  <div className="grid gap-5 sm:grid-cols-2">
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email *</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        {...registerStep1("email")}
-                        aria-invalid={errorsStep1.email ? "true" : "false"}
-                      />
-                      {errorsStep1.email && (
-                        <p className="flex items-center gap-1 text-xs text-boga-error-500" role="alert"><AlertCircle className="h-3 w-3" aria-hidden="true" />
-                          {errorsStep1.email.message}
-                        </p>
-                      )}
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="telefono">Teléfono *</Label>
-                      <Input
-                        id="telefono"
-                        type="tel"
-                        {...registerStep1("telefono")}
-                        aria-invalid={errorsStep1.telefono ? "true" : "false"}
-                      />
-                      {errorsStep1.telefono && (
-                        <p className="flex items-center gap-1 text-xs text-boga-error-500" role="alert"><AlertCircle className="h-3 w-3" aria-hidden="true" />
-                          {errorsStep1.telefono.message}
-                        </p>
-                      )}
-                    </div>
-                  </div>
+                    {errorMessage && (
+                      <div className="flex items-start gap-2 rounded-lg bg-boga-error-50 p-3 text-sm text-boga-error-500">
+                        <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                        {errorMessage}
+                      </div>
+                    )}
 
-                  <div className="grid gap-5 sm:grid-cols-2">
-                    <div className="space-y-2">
-                      <Label htmlFor="tipoEvento">Tipo de evento *</Label>
-                      <Controller
-                        name="tipoEvento"
-                        control={controlStep1}
-                        render={({ field }) => (
-                          <Select
-                        value={field.value || undefined}
-                        onValueChange={field.onChange}
-                      >
-                            <SelectTrigger id="tipoEvento" className="w-full">
-                              <SelectValue placeholder="Selecciona" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {tipoEventoOptions.map((option) => (
-                                <SelectItem key={option} value={option}>
-                                  {option}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        )}
-                      />
-                      {errorsStep1.tipoEvento && (
-                        <p className="flex items-center gap-1 text-xs text-boga-error-500" role="alert"><AlertCircle className="h-3 w-3" aria-hidden="true" />
-                          {errorsStep1.tipoEvento.message}
-                        </p>
-                      )}
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="fechaEvento">Fecha del evento *</Label>
-                      <Input
-                        id="fechaEvento"
-                        type="date"
-                        {...registerStep1("fechaEvento")}
-                        aria-invalid={errorsStep1.fechaEvento ? "true" : "false"}
-                      />
-                      {errorsStep1.fechaEvento && (
-                        <p className="flex items-center gap-1 text-xs text-boga-error-500" role="alert"><AlertCircle className="h-3 w-3" aria-hidden="true" />
-                          {errorsStep1.fechaEvento.message}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="grid gap-5 sm:grid-cols-2">
-                    <div className="space-y-2">
-                      <Label htmlFor="ciudad">Ciudad *</Label>
-                      <Input
-                        id="ciudad"
-                        {...registerStep1("ciudad")}
-                        aria-invalid={errorsStep1.ciudad ? "true" : "false"}
-                      />
-                      {errorsStep1.ciudad && (
-                        <p className="flex items-center gap-1 text-xs text-boga-error-500" role="alert"><AlertCircle className="h-3 w-3" aria-hidden="true" />
-                          {errorsStep1.ciudad.message}
-                        </p>
-                      )}
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="asistentes">
-                        Número aproximado de asistentes
-                      </Label>
-                      <Input
-                        id="asistentes"
-                        type="number"
-                        {...registerStep1("asistentes", { valueAsNumber: true })}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="flex justify-end pt-4">
-                    <Button
-                      type="button"
-                      onClick={handleSubmitStep1(onSubmitStep1)}
-                    >
-                      Siguiente
-                      <ChevronRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              )}
-
-              {step === 2 && (
-                <div className="space-y-5">
-                  <h2 className="text-xl font-bold text-boga-text-primary">
-                    Paso 2: Selección de productos
-                  </h2>
-
-                  {errorMessage && (
-                    <div className="flex items-start gap-2 rounded-lg bg-boga-error-50 p-3 text-sm text-boga-error-500">
-                      <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
-                      {errorMessage}
-                    </div>
-                  )}
-
-                  <div className="grid gap-6 lg:grid-cols-3">
-                    <div className="lg:col-span-2">
-                      <div className="grid gap-4 sm:grid-cols-2">
-                        {productos.map((producto) => {
-                          const selected = items.find(
-                            (i) => i.productoId === producto.id
-                          )
-                          return (
-                            <div
-                              key={producto.id}
-                              className={cn(
-                                "relative cursor-pointer rounded-xl border-2 p-4 transition-all",
-                                selected
-                                  ? "border-boga-electric-500 bg-boga-electric-50/30"
-                                  : "border-boga-border-default bg-boga-surface-elevated hover:border-boga-electric-500/50"
-                              )}
-                              onClick={() => toggleProduct(producto.id)}
-                            >
-                              <div className="flex items-start gap-3">
-                                <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-boga-surface-muted">
-                                  <Image
-                                    src={producto.imagenPrincipal}
-                                    alt={producto.nombre}
-                                    fill
-                                    className="object-cover"
-                                    sizes="64px"
-                                    loading="lazy"
-                                  />
+                    <div className="grid gap-6 lg:grid-cols-3">
+                      <div className="lg:col-span-2">
+                        <div className="grid gap-4 sm:grid-cols-2">
+                          {productos.map((producto) => {
+                            const selected = items.find(
+                              (i) => i.productoId === producto.id
+                            )
+                            return (
+                              <div
+                                key={producto.id}
+                                className={cn(
+                                  "relative cursor-pointer rounded-xl border-2 p-4 transition-all",
+                                  selected
+                                    ? "border-boga-electric-500 bg-boga-electric-50/30"
+                                    : "border-boga-border-default bg-boga-surface-elevated hover:border-boga-electric-500/50"
+                                )}
+                                onClick={() => toggleProduct(producto.id)}
+                              >
+                                <div className="flex items-start gap-3">
+                                  <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-boga-surface-muted">
+                                    <Image
+                                      src={producto.imagenPrincipal}
+                                      alt={producto.nombre}
+                                      fill
+                                      className="object-cover"
+                                      sizes="64px"
+                                      loading="lazy"
+                                    />
+                                  </div>
+                                  <div className="flex-1">
+                                    <h3 className="font-semibold text-boga-text-primary">
+                                      {producto.nombre}
+                                    </h3>
+                                    <p className="text-xs text-boga-text-secondary">
+                                      {producto.descripcionCorta}
+                                    </p>
+                                  </div>
+                                  <Checkbox checked={!!selected} />
                                 </div>
-                                <div className="flex-1">
-                                  <h3 className="font-semibold text-boga-text-primary">
-                                    {producto.nombre}
-                                  </h3>
-                                  <p className="text-xs text-boga-text-secondary">
-                                    {producto.descripcionCorta}
-                                  </p>
-                                </div>
-                                <Checkbox checked={!!selected} />
-                              </div>
-                              {selected && (
-                                <div
-                                  className="mt-3 flex items-center gap-2"
-                                  onClick={(e) => e.stopPropagation()}
-                                >
-                                  <Label
-                                    htmlFor={`cantidad-${producto.id}`}
-                                    className="text-xs"
+                                {selected && (
+                                  <div
+                                    className="mt-3 flex items-center gap-2"
+                                    onClick={(e) => e.stopPropagation()}
                                   >
-                                    Cantidad
-                                  </Label>
-                                  <Input
-                                    id={`cantidad-${producto.id}`}
-                                    type="number"
-                                    min={1}
-                                    value={selected.cantidad}
-                                    onChange={(e) =>
-                                      updateQuantity(
-                                        producto.id,
-                                        Number(e.target.value)
-                                      )
-                                    }
-                                    className="w-20"
-                                  />
-                                </div>
-                              )}
-                            </div>
-                          )
-                        })}
+                                    <Label
+                                      htmlFor={`cantidad-${producto.id}`}
+                                      className="text-xs"
+                                    >
+                                      Cantidad
+                                    </Label>
+                                    <Input
+                                      id={`cantidad-${producto.id}`}
+                                      type="number"
+                                      min={1}
+                                      value={selected.cantidad}
+                                      onChange={(e) =>
+                                        updateQuantity(
+                                          producto.id,
+                                          Number(e.target.value)
+                                        )
+                                      }
+                                      className="w-20"
+                                    />
+                                  </div>
+                                )}
+                              </div>
+                            )
+                          })}
+                        </div>
+                      </div>
+
+                      <div className="rounded-xl border border-boga-border-subtle bg-boga-surface-muted p-4">
+                        <h3 className="font-bold text-boga-text-primary">
+                          Resumen
+                        </h3>
+                        {selectedItems.length === 0 ? (
+                          <p className="mt-2 text-sm text-boga-text-tertiary">
+                            Selecciona al menos un producto
+                          </p>
+                        ) : (
+                          <ul className="mt-3 space-y-2">
+                            {selectedItems.map((item) => (
+                              <li
+                                key={item.productoId}
+                                className="flex items-center justify-between text-sm"
+                              >
+                                <span className="text-boga-text-secondary">
+                                  {item.producto.nombre} x{item.cantidad}
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => removeItem(item.productoId)}
+                                  className="text-boga-text-tertiary hover:text-boga-error-500"
+                                  aria-label="Eliminar"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </button>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
                       </div>
                     </div>
 
-                    <div className="rounded-xl border border-boga-border-subtle bg-boga-surface-muted p-4">
-                      <h3 className="font-bold text-boga-text-primary">Resumen</h3>
-                      {selectedItems.length === 0 ? (
-                        <p className="mt-2 text-sm text-boga-text-tertiary">
-                          Selecciona al menos un producto
-                        </p>
-                      ) : (
-                        <ul className="mt-3 space-y-2">
-                          {selectedItems.map((item) => (
-                            <li
-                              key={item.productoId}
-                              className="flex items-center justify-between text-sm"
-                            >
-                              <span className="text-boga-text-secondary">
-                                {item.producto.nombre} x{item.cantidad}
-                              </span>
-                              <button
-                                type="button"
-                                onClick={() => removeItem(item.productoId)}
-                                className="text-boga-text-tertiary hover:text-boga-error-500"
-                                aria-label="Eliminar"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </button>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
+                    <div className="flex justify-end pt-4">
+                      <Button type="button" onClick={onSubmitStep1}>
+                        Siguiente
+                        <ChevronRight className="ml-2 h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
+                )}
 
-                  <div className="flex justify-between pt-4">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setStep(1)}
-                    >
-                      <ChevronLeft className="mr-2 h-4 w-4" />
-                      Anterior
-                    </Button>
-                    <Button type="button" onClick={onSubmitStep2}>
-                      Siguiente
-                      <ChevronRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              )}
+                {step === 2 && (
+                  <div className="space-y-5">
+                    <h2 className="text-xl font-bold text-boga-text-primary">
+                      Paso 2: Detalles del evento
+                    </h2>
 
-              {step === 3 && (
-                <div className="space-y-5">
-                  <h2 className="text-xl font-bold text-boga-text-primary">
-                    Paso 3: Detalles y envío
-                  </h2>
-
-                  <div className="grid gap-5 sm:grid-cols-2">
-                    <div className="space-y-2">
-                      <Label htmlFor="duracionDias">
-                        Duración del evento (días)
-                      </Label>
-                      <Input
-                        id="duracionDias"
-                        type="number"
-                        min={1}
-                        {...registerStep3("duracionDias", {
-                          valueAsNumber: true,
-                        })}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="ubicacionEvento">
-                        Ubicación / dirección
-                      </Label>
-                      <Input
-                        id="ubicacionEvento"
-                        {...registerStep3("ubicacionEvento")}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="notasAdicionales">Notas adicionales</Label>
-                    <Textarea
-                      id="notasAdicionales"
-                      rows={4}
-                      {...registerStep3("notasAdicionales")}
-                    />
-                  </div>
-
-                  <div className="flex items-start gap-3">
-                    <Controller
-                      name="aceptaPrivacidad"
-                      control={controlStep3}
-                      render={({ field }) => (
-                        <Checkbox
-                          id="aceptaPrivacidad"
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
+                    <div className="grid gap-5 sm:grid-cols-2">
+                      <div className="space-y-2">
+                        <Label htmlFor="duracionDias">
+                          Duración del evento (días)
+                        </Label>
+                        <Input
+                          id="duracionDias"
+                          type="number"
+                          min={1}
+                          {...registerDetails("duracionDias", {
+                            valueAsNumber: true,
+                          })}
                         />
-                      )}
-                    />
-                    <div>
-                      <Label htmlFor="aceptaPrivacidad" className="font-normal">
-                        Acepto la{" "}
-                        <Link
-                          href="/privacidad"
-                          className="font-semibold text-boga-electric-500 hover:underline"
+                        {errorsDetails.duracionDias && (
+                          <p
+                            className="flex items-center gap-1 text-xs text-boga-error-500"
+                            role="alert"
+                          >
+                            <AlertCircle className="h-3 w-3" aria-hidden="true" />
+                            {errorsDetails.duracionDias.message}
+                          </p>
+                        )}
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="ubicacionEvento">
+                          Ubicación / dirección
+                        </Label>
+                        <Input
+                          id="ubicacionEvento"
+                          {...registerDetails("ubicacionEvento")}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="notasAdicionales">Notas adicionales</Label>
+                      <Textarea
+                        id="notasAdicionales"
+                        rows={4}
+                        {...registerDetails("notasAdicionales")}
+                      />
+                    </div>
+
+                    <div className="flex justify-between pt-4">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => goToStep(1)}
+                      >
+                        <ChevronLeft className="mr-2 h-4 w-4" />
+                        Anterior
+                      </Button>
+                      <Button
+                        type="button"
+                        onClick={handleSubmitDetails(onSubmitStep2)}
+                      >
+                        Siguiente
+                        <ChevronRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {step === 3 && (
+                  <div className="space-y-5">
+                    <h2 className="text-xl font-bold text-boga-text-primary">
+                      Paso 3: Datos de contacto
+                    </h2>
+                    <div className="grid gap-5 sm:grid-cols-2">
+                      <div className="space-y-2">
+                        <Label htmlFor="nombre">Nombre completo *</Label>
+                        <Input
+                          id="nombre"
+                          {...registerContact("nombre")}
+                          aria-invalid={errorsContact.nombre ? "true" : "false"}
+                        />
+                        {errorsContact.nombre && (
+                          <p
+                            className="flex items-center gap-1 text-xs text-boga-error-500"
+                            role="alert"
+                          >
+                            <AlertCircle className="h-3 w-3" aria-hidden="true" />
+                            {errorsContact.nombre.message}
+                          </p>
+                        )}
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="empresa">Empresa</Label>
+                        <Input id="empresa" {...registerContact("empresa")} />
+                      </div>
+                    </div>
+
+                    <div className="grid gap-5 sm:grid-cols-2">
+                      <div className="space-y-2">
+                        <Label htmlFor="email">Email *</Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          {...registerContact("email")}
+                          aria-invalid={errorsContact.email ? "true" : "false"}
+                        />
+                        {errorsContact.email && (
+                          <p
+                            className="flex items-center gap-1 text-xs text-boga-error-500"
+                            role="alert"
+                          >
+                            <AlertCircle className="h-3 w-3" aria-hidden="true" />
+                            {errorsContact.email.message}
+                          </p>
+                        )}
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="telefono">Teléfono *</Label>
+                        <Input
+                          id="telefono"
+                          type="tel"
+                          {...registerContact("telefono")}
+                          aria-invalid={
+                            errorsContact.telefono ? "true" : "false"
+                          }
+                        />
+                        {errorsContact.telefono && (
+                          <p
+                            className="flex items-center gap-1 text-xs text-boga-error-500"
+                            role="alert"
+                          >
+                            <AlertCircle className="h-3 w-3" aria-hidden="true" />
+                            {errorsContact.telefono.message}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="grid gap-5 sm:grid-cols-2">
+                      <div className="space-y-2">
+                        <Label htmlFor="tipoEvento">Tipo de evento *</Label>
+                        <Controller
+                          name="tipoEvento"
+                          control={controlContact}
+                          render={({ field }) => (
+                            <Select
+                              value={field.value || undefined}
+                              onValueChange={field.onChange}
+                            >
+                              <SelectTrigger id="tipoEvento" className="w-full">
+                                <SelectValue placeholder="Selecciona" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {tipoEventoOptions.map((option) => (
+                                  <SelectItem key={option} value={option}>
+                                    {option}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          )}
+                        />
+                        {errorsContact.tipoEvento && (
+                          <p
+                            className="flex items-center gap-1 text-xs text-boga-error-500"
+                            role="alert"
+                          >
+                            <AlertCircle className="h-3 w-3" aria-hidden="true" />
+                            {errorsContact.tipoEvento.message}
+                          </p>
+                        )}
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="fechaEvento">Fecha del evento *</Label>
+                        <Input
+                          id="fechaEvento"
+                          type="date"
+                          {...registerContact("fechaEvento")}
+                          aria-invalid={
+                            errorsContact.fechaEvento ? "true" : "false"
+                          }
+                        />
+                        {errorsContact.fechaEvento && (
+                          <p
+                            className="flex items-center gap-1 text-xs text-boga-error-500"
+                            role="alert"
+                          >
+                            <AlertCircle className="h-3 w-3" aria-hidden="true" />
+                            {errorsContact.fechaEvento.message}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="grid gap-5 sm:grid-cols-2">
+                      <div className="space-y-2">
+                        <Label htmlFor="ciudad">Ciudad *</Label>
+                        <Input
+                          id="ciudad"
+                          {...registerContact("ciudad")}
+                          aria-invalid={errorsContact.ciudad ? "true" : "false"}
+                        />
+                        {errorsContact.ciudad && (
+                          <p
+                            className="flex items-center gap-1 text-xs text-boga-error-500"
+                            role="alert"
+                          >
+                            <AlertCircle className="h-3 w-3" aria-hidden="true" />
+                            {errorsContact.ciudad.message}
+                          </p>
+                        )}
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="asistentes">
+                          Número aproximado de asistentes
+                        </Label>
+                        <Input
+                          id="asistentes"
+                          type="number"
+                          {...registerContact("asistentes", {
+                            valueAsNumber: true,
+                          })}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-3">
+                      <Controller
+                        name="aceptaPrivacidad"
+                        control={controlContact}
+                        render={({ field }) => (
+                          <Checkbox
+                            id="aceptaPrivacidad"
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        )}
+                      />
+                      <div>
+                        <Label
+                          htmlFor="aceptaPrivacidad"
+                          className="font-normal"
                         >
-                          política de privacidad
-                        </Link>
-                      </Label>
-                      {errorsStep3.aceptaPrivacidad && (
-                        <p className="flex items-center gap-1 text-xs text-boga-error-500" role="alert"><AlertCircle className="h-3 w-3" aria-hidden="true" />
-                          {errorsStep3.aceptaPrivacidad.message}
-                        </p>
-                      )}
+                          Acepto la{" "}
+                          <Link
+                            href="/privacidad"
+                            className="font-semibold text-boga-electric-500 hover:underline"
+                          >
+                            política de privacidad
+                          </Link>
+                        </Label>
+                        {errorsContact.aceptaPrivacidad && (
+                          <p
+                            className="flex items-center gap-1 text-xs text-boga-error-500"
+                            role="alert"
+                          >
+                            <AlertCircle className="h-3 w-3" aria-hidden="true" />
+                            {errorsContact.aceptaPrivacidad.message}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    {status === "error" && (
+                      <div className="flex items-start gap-2 rounded-lg bg-boga-error-50 p-3 text-sm text-boga-error-500">
+                        <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                        {errorMessage}
+                      </div>
+                    )}
+
+                    <div className="flex justify-between pt-4">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => goToStep(2)}
+                        disabled={status === "loading"}
+                      >
+                        <ChevronLeft className="mr-2 h-4 w-4" />
+                        Anterior
+                      </Button>
+                      <Button
+                        type="button"
+                        className="btn-primary"
+                        onClick={handleSubmitContact(onSubmitStep3)}
+                        disabled={status === "loading"}
+                      >
+                        {status === "loading" && (
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        )}
+                        Enviar cotización
+                      </Button>
                     </div>
                   </div>
-
-                  {status === "error" && (
-                    <div className="flex items-start gap-2 rounded-lg bg-boga-error-50 p-3 text-sm text-boga-error-500">
-                      <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
-                      {errorMessage}
-                    </div>
-                  )}
-
-                  <div className="flex justify-between pt-4">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setStep(2)}
-                      disabled={status === "loading"}
-                    >
-                      <ChevronLeft className="mr-2 h-4 w-4" />
-                      Anterior
-                    </Button>
-                    <Button
-                      type="button"
-                      className="btn-primary"
-                      onClick={handleSubmitStep3(onSubmitStep3)}
-                      disabled={status === "loading"}
-                    >
-                      {status === "loading" && (
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      )}
-                      Enviar cotización
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </form>
-          </CardContent>
-        </Card>
-      </FadeIn>
-    </section>
+                )}
+              </form>
+            </CardContent>
+          </Card>
+        </FadeIn>
+      </section>
     </>
   )
 }
@@ -657,7 +737,11 @@ function StepIndicator({
               )}
               aria-current={isActive ? "step" : undefined}
             >
-              {isCompleted ? <Check className="h-5 w-5" strokeWidth={2.5} /> : stepNum}
+              {isCompleted ? (
+                <Check className="h-5 w-5" strokeWidth={2.5} />
+              ) : (
+                stepNum
+              )}
             </div>
             {stepNum < totalSteps && (
               <div

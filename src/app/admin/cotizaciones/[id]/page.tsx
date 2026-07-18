@@ -2,11 +2,8 @@
 
 import Link from "next/link"
 import { useParams } from "next/navigation"
-import { notFound } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
-import { getCotizacionById } from "@/lib/mocks"
-import { StatusBadge } from "@/components/admin/status-badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -17,71 +14,68 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { ArrowLeft, Pencil } from "lucide-react"
-import type { EstadoCotizacion } from "@/lib/mocks"
-
-function formatCurrency(value: number | null | undefined) {
-  if (value == null) return "—"
-  return new Intl.NumberFormat("es-CO", {
-    style: "currency",
-    currency: "COP",
-    maximumFractionDigits: 0,
-  }).format(Number(value))
-}
-
-function formatDate(date: string | Date | null | undefined) {
-  if (!date) return "—"
-  return new Intl.DateTimeFormat("es-CO", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  }).format(new Date(date))
-}
+import { ArrowLeft, FileDown, Pencil } from "lucide-react"
+import { formatCOP } from "@/lib/cotizador/calc"
+import { exportPaquetePdf } from "@/lib/cotizador/pdf"
+import {
+  getCatalogo,
+  getPaqueteById,
+  upsertPaquete,
+} from "@/lib/cotizador/storage"
+import type { CatalogItem, PaqueteEvento } from "@/types/cotizador-boga"
+import { cn } from "@/lib/utils"
 
 export default function CotizacionDetailPage() {
   const params = useParams()
   const id = typeof params.id === "string" ? params.id : ""
+  const [paquete, setPaquete] = useState<PaqueteEvento | null>(null)
+  const [catalogo, setCatalogo] = useState<CatalogItem[]>([])
 
-  const initialCotizacion = getCotizacionById(id)
+  useEffect(() => {
+    setCatalogo(getCatalogo())
+    setPaquete(getPaqueteById(id) ?? null)
+  }, [id])
 
-  if (!initialCotizacion) {
-    notFound()
+  if (!paquete) {
+    return (
+      <div className="space-y-4">
+        <p className="text-muted-foreground">Cotización no encontrada.</p>
+        <Button
+          variant="outline"
+          nativeButton={false}
+          render={<Link href="/admin/cotizaciones">Volver</Link>}
+        />
+      </div>
+    )
   }
 
-  const [cotizacion, setCotizacion] = useState(initialCotizacion)
-
-  const costoTotal = Number(cotizacion.costoTotal)
-  const precioVenta = Number(cotizacion.precioVenta)
-  const margen = Number(cotizacion.margen)
-  const ganancia = precioVenta - costoTotal
-
-  const acciones: { estado: EstadoCotizacion; label: string; variant: "default" | "outline" | "destructive" }[] = []
-
-  if (cotizacion.estado === "BORRADOR") {
-    acciones.push({ estado: "ENVIADA", label: "Enviar cotización", variant: "default" })
-  }
-  if (cotizacion.estado === "ENVIADA") {
-    acciones.push({ estado: "APROBADA", label: "Aprobar", variant: "default" })
-    acciones.push({ estado: "RECHAZADA", label: "Rechazar", variant: "destructive" })
-  }
-  if (cotizacion.estado !== "EXPIRADA") {
-    acciones.push({ estado: "EXPIRADA", label: "Marcar expirada", variant: "outline" })
+  const handlePdf = async () => {
+    try {
+      await exportPaquetePdf(paquete, catalogo)
+      toast.success("PDF generado")
+    } catch {
+      toast.error("No se pudo generar el PDF")
+    }
   }
 
-  const handleChangeEstado = (nuevoEstado: EstadoCotizacion) => {
-    setCotizacion((prev) => ({ ...prev, estado: nuevoEstado }))
-    toast.success(`Estado actualizado a ${nuevoEstado.toLowerCase()}`)
+  const cambiarEstado = (estado: PaqueteEvento["estado"]) => {
+    if (paquete.estado === "aceptada") {
+      toast.error("Cotización aceptada es inmutable — duplícala para editar")
+      return
+    }
+    const next = upsertPaquete({ ...paquete, estado })
+    setPaquete(next)
+    toast.success(`Estado: ${estado}`)
   }
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="flex items-start gap-4">
           <Button
             variant="ghost"
             size="icon"
-            aria-label="Volver a cotizaciones"
+            aria-label="Volver"
             nativeButton={false}
             render={
               <Link href="/admin/cotizaciones">
@@ -91,38 +85,40 @@ export default function CotizacionDetailPage() {
           />
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Cotización
+              {paquete.numero}
             </p>
-            <div className="flex items-center gap-3">
-              <h1 className="text-xl font-extrabold text-foreground">
-                {cotizacion.codigo}
-              </h1>
-              <StatusBadge status={cotizacion.estado} />
-            </div>
-            <p className="text-sm text-muted-foreground">{cotizacion.nombre}</p>
+            <h1 className="text-xl font-extrabold text-foreground">
+              {paquete.nombre}
+            </h1>
+            <p className="text-sm capitalize text-muted-foreground">
+              {paquete.estado.replace("_", " ")}
+            </p>
           </div>
         </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          {acciones.map((accion) => (
-            <Button
-              key={accion.estado}
-              variant={accion.variant}
-              onClick={() => handleChangeEstado(accion.estado)}
-              className={
-                accion.variant === "default"
-                  ? "bg-primary font-semibold text-primary-foreground hover:bg-primary-hover"
-                  : ""
-              }
-            >
-              {accion.label}
-            </Button>
-          ))}
+        <div className="flex flex-wrap gap-2">
+          {paquete.estado === "borrador" && (
+            <Button onClick={() => cambiarEstado("enviada")}>Enviar</Button>
+          )}
+          {paquete.estado === "enviada" && (
+            <>
+              <Button onClick={() => cambiarEstado("aceptada")}>Aceptar</Button>
+              <Button
+                variant="destructive"
+                onClick={() => cambiarEstado("rechazada")}
+              >
+                Rechazar
+              </Button>
+            </>
+          )}
+          <Button variant="outline" onClick={handlePdf}>
+            <FileDown className="mr-2 h-4 w-4" />
+            PDF
+          </Button>
           <Button
             variant="outline"
             nativeButton={false}
             render={
-              <Link href={`/admin/cotizaciones/nueva?id=${id}`}>
+              <Link href={`/admin/cotizaciones/nueva?id=${paquete.id}`}>
                 <Pencil className="mr-2 h-4 w-4" />
                 Editar
               </Link>
@@ -131,7 +127,6 @@ export default function CotizacionDetailPage() {
         </div>
       </div>
 
-      {/* Info cards */}
       <div className="grid gap-6 md:grid-cols-2">
         <Card className="bg-card ring-1 ring-foreground/10">
           <CardHeader>
@@ -140,163 +135,75 @@ export default function CotizacionDetailPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Empresa</span>
-              <span className="font-medium text-foreground">
-                {cotizacion.cliente.nombreEmpresa}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Contacto</span>
-              <span className="text-foreground">
-                {cotizacion.cliente.nombreContacto || "—"}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Email</span>
-              <span className="text-foreground">{cotizacion.cliente.email}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Teléfono</span>
-              <span className="text-foreground">
-                {cotizacion.cliente.telefono}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Ciudad</span>
-              <span className="text-foreground">
-                {cotizacion.cliente.ciudad || "—"}
-              </span>
-            </div>
+            <Row label="Nombre" value={paquete.cliente?.nombre} />
+            <Row label="Empresa" value={paquete.cliente?.empresa} />
+            <Row label="Email" value={paquete.cliente?.email} />
+            <Row label="Teléfono" value={paquete.cliente?.telefono} />
+            <Row label="Ciudad" value={paquete.cliente?.ciudad} />
           </CardContent>
         </Card>
-
-        <Card className="bg-card ring-1 ring-foreground/10">
-          <CardHeader>
-            <CardTitle className="text-sm font-extrabold uppercase tracking-wider">
-              Evento
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Nombre</span>
-              <span className="font-medium text-foreground">
-                {cotizacion.nombre}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Fecha</span>
-              <span className="text-foreground">
-                {formatDate(cotizacion.fechaEvento)}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Ubicación</span>
-              <span className="text-foreground">
-                {cotizacion.ubicacionEvento || "—"}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Tipo</span>
-              <span className="text-foreground">
-                {cotizacion.tipoEvento || "—"}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Duración</span>
-              <span className="text-foreground">
-                {cotizacion.duracionDias
-                  ? `${cotizacion.duracionDias} días`
-                  : "—"}
-              </span>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Items */}
-      <Card className="bg-card ring-1 ring-foreground/10">
-        <CardHeader>
-          <CardTitle className="text-sm font-extrabold uppercase tracking-wider">
-            Productos ({cotizacion.items.length})
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow className="border-border hover:bg-transparent">
-                <TableHead className="text-muted-foreground">Producto</TableHead>
-                <TableHead className="text-muted-foreground">Cantidad</TableHead>
-                <TableHead className="text-muted-foreground">
-                  Precio unitario
-                </TableHead>
-                <TableHead className="text-right text-muted-foreground">
-                  Subtotal
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {cotizacion.items.map((item) => (
-                <TableRow key={item.id} className="border-border">
-                  <TableCell className="text-foreground">
-                    {item.producto.nombre}
-                  </TableCell>
-                  <TableCell className="text-foreground">
-                    {item.cantidad}
-                  </TableCell>
-                  <TableCell className="text-foreground">
-                    {formatCurrency(Number(item.precioUnitario))}
-                  </TableCell>
-                  <TableCell className="text-right font-medium text-foreground">
-                    {formatCurrency(Number(item.precioTotal))}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-
-      {/* Totals */}
-      <div className="grid gap-6 md:grid-cols-2">
         <Card className="bg-card ring-1 ring-foreground/10">
           <CardHeader>
             <CardTitle className="text-sm font-extrabold uppercase tracking-wider">
               Totales
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3 text-sm">
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Costo total</span>
-              <span className="font-medium text-foreground">
-                {formatCurrency(costoTotal)}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Precio de venta</span>
-              <span className="font-medium text-foreground">
-                {formatCurrency(precioVenta)}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Margen</span>
-              <span className="font-medium text-foreground">
-                {margen.toFixed(1)}%
-              </span>
-            </div>
-            <div className="flex justify-between border-t border-border pt-3">
-              <span className="text-muted-foreground">Ganancia</span>
-              <span
-                className={
-                  ganancia >= 0 ? "font-bold text-boga-success-500" : "font-bold text-boga-error-500"
-                }
-              >
-                {formatCurrency(ganancia)}
-              </span>
-            </div>
+          <CardContent className="space-y-2 text-sm">
+            <Row label="Costo op." value={formatCOP(paquete.costoTotal)} />
+            <Row
+              label="Precio"
+              value={formatCOP(paquete.precioCliente)}
+              highlight
+            />
+            <Row label="Margen" value={`${paquete.margenPorcentaje}%`} />
+            <Row label="Ganancia" value={formatCOP(paquete.ganancia)} />
           </CardContent>
         </Card>
+      </div>
 
+      <Card className="bg-card ring-1 ring-foreground/10">
+        <CardHeader>
+          <CardTitle className="text-sm font-extrabold uppercase tracking-wider">
+            Ítems
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow className="border-border hover:bg-transparent">
+                <TableHead>Producto</TableHead>
+                <TableHead>Tarifa</TableHead>
+                <TableHead>Cant.</TableHead>
+                <TableHead className="text-right">Subtotal</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {paquete.items.map((it) => {
+                const item = catalogo.find((c) => c.id === it.catalogItemId)
+                const tarifa = item?.tarifas.find((t) => t.id === it.tarifaId)
+                const sub = (tarifa?.precioCliente ?? 0) * it.cantidad
+                return (
+                  <TableRow
+                    key={`${it.catalogItemId}-${it.tarifaId}`}
+                    className="border-border"
+                  >
+                    <TableCell>{item?.nombre ?? "—"}</TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {tarifa?.nombre ?? "—"}
+                    </TableCell>
+                    <TableCell>{it.cantidad}</TableCell>
+                    <TableCell className="text-right font-medium">
+                      {formatCOP(sub)}
+                    </TableCell>
+                  </TableRow>
+                )
+              })}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      {paquete.notasInternas && (
         <Card className="bg-card ring-1 ring-foreground/10">
           <CardHeader>
             <CardTitle className="text-sm font-extrabold uppercase tracking-wider">
@@ -304,12 +211,36 @@ export default function CotizacionDetailPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="whitespace-pre-wrap text-sm text-foreground">
-              {cotizacion.notasInternas || "Sin notas internas."}
+            <p className="whitespace-pre-wrap text-sm">
+              {paquete.notasInternas}
             </p>
           </CardContent>
         </Card>
-      </div>
+      )}
+    </div>
+  )
+}
+
+function Row({
+  label,
+  value,
+  highlight,
+}: {
+  label: string
+  value?: string | null
+  highlight?: boolean
+}) {
+  return (
+    <div className="flex justify-between gap-4">
+      <span className="text-muted-foreground">{label}</span>
+      <span
+        className={cn(
+          "text-right font-medium",
+          highlight && "text-boga-lima-500"
+        )}
+      >
+        {value || "—"}
+      </span>
     </div>
   )
 }

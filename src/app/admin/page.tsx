@@ -1,4 +1,5 @@
 import { KpiCard } from "@/components/admin/kpi-card"
+import { CotizadorKpis } from "@/components/admin/cotizador-kpis"
 import { RecentCotizaciones } from "@/components/admin/recent-cotizaciones"
 import { CotizacionesStatusChart } from "@/components/admin/cotizaciones-status-chart"
 import { cotizaciones } from "@/lib/mocks"
@@ -119,6 +120,7 @@ export default function AdminDashboardPage() {
   return (
     <div className="space-y-6">
       <h1 className="sr-only">Dashboard</h1>
+      <CotizadorKpis />
       {/* KPI Grid */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <KpiCard
