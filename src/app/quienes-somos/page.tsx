@@ -1,22 +1,9 @@
 import type { Metadata } from "next"
 import Image from "next/image"
-import { Card, CardContent } from "@/components/ui/card"
-import { FadeIn } from "@/components/home/fade-in"
 import { PageHero } from "@/components/brand/page-hero"
 import { BogaCircles } from "@/components/brand/boga-circles"
 import { BogaDecor } from "@/components/brand/boga-decor"
-import {
-  Sparkles,
-  Zap,
-  Smile,
-  Droplets,
-  Bath,
-  HandHelping,
-  Wrench,
-  Leaf,
-  Recycle,
-  Wind,
-} from "lucide-react"
+import { QuienesSomosStory } from "@/app/quienes-somos/quienes-somos-story"
 import {
   seoConfig,
   generateOpenGraph,
@@ -32,67 +19,6 @@ export const metadata: Metadata = {
   openGraph: generateOpenGraph("quienes-somos", "/quienes-somos"),
   twitter: generateTwitterCard("quienes-somos"),
 }
-
-const commitments = [
-  {
-    icon: Sparkles,
-    title: "Altos estándares de higiene",
-    description:
-      "Protocolos de limpieza y desinfección certificados para garantizar la salud de los usuarios.",
-  },
-  {
-    icon: Zap,
-    title: "Máxima eficiencia",
-    description:
-      "Logística optimizada, tiempos de respuesta rápidos y operación sin contratiempos.",
-  },
-  {
-    icon: Smile,
-    title: "Experiencia superior",
-    description:
-      "Atención cercana y profesional para que tu evento u obra transcurra sin preocupaciones.",
-  },
-]
-
-const equipment = [
-  { icon: Droplets, label: "Duchas" },
-  { icon: Bath, label: "Baños" },
-  { icon: HandHelping, label: "Lavamanos" },
-  { icon: Wrench, label: "Equipos especializados" },
-]
-
-const environmental = [
-  {
-    icon: Leaf,
-    title: "Insumos biodegradables",
-    description: "Papel, jabones y desinfectantes amigables con el medio ambiente.",
-  },
-  {
-    icon: Recycle,
-    title: "Descomposición de materia",
-    description: "Procesos que minimizan el impacto ambiental de los residuos.",
-  },
-  {
-    icon: Wind,
-    title: "Eliminación de olores",
-    description: "Tecnología de neutralización para espacios frescos y limpios.",
-  },
-]
-
-const sedes = [
-  {
-    city: "Medellín",
-    address: "Calle 13 sur #51C-54",
-    mapUrl:
-      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.521260322283!2d-75.612!3d6.208!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNsKwMTInMjguOCJOIDc1wrAzNic0My4yIlc!5e0!3m2!1ses!2sco!4v1600000000000!5m2!1ses!2sco",
-  },
-  {
-    city: "Bogotá",
-    address: "Cra 58b bis #131A 51",
-    mapUrl:
-      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3976.123456789012!2d-74.085!3d4.710!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNMKwNDInMzYuMCJOIDc0wrAwNScwNi4wIlc!5e0!3m2!1ses!2sco!4v1600000000000!5m2!1ses!2sco",
-  },
-]
 
 export default function QuienesSomosPage() {
   const breadcrumbJsonLd = generateBreadcrumbJsonLd([
@@ -113,7 +39,7 @@ export default function QuienesSomosPage() {
         description="Infraestructura sanitaria industrial con respaldo, tecnología y compromiso ambiental"
       />
 
-      {/* About — scrollytelling: imagen antes y sticky, texto se desplaza */}
+      {/* Historia — se conserva el storytelling sticky que ya funciona */}
       <section className="container-boga relative py-16 lg:py-24">
         <BogaDecor
           variant="bubbles"
@@ -121,7 +47,6 @@ export default function QuienesSomosPage() {
           className="absolute right-0 top-8 h-40 w-40 opacity-40"
         />
         <div className="relative z-10 grid gap-12 lg:grid-cols-2 lg:items-start">
-          {/* Imagen del equipo: aparece primero y se mantiene visible en desktop */}
           <div className="order-1 lg:sticky lg:top-24">
             <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-boga-surface-muted">
               <Image
@@ -135,7 +60,6 @@ export default function QuienesSomosPage() {
             </div>
           </div>
 
-          {/* Texto de la empresa: se desplaza junto a la imagen fija */}
           <div className="order-2 space-y-5 lg:py-12">
             <span className="inline-flex items-center gap-2 text-caption uppercase tracking-wider text-boga-electric-500">
               <BogaCircles size="s" tone="electric" />
@@ -175,195 +99,7 @@ export default function QuienesSomosPage() {
         </div>
       </section>
 
-      {/* Commitments */}
-      <section className="bg-boga-surface-muted py-16 lg:py-24">
-        <div className="container-boga">
-          <FadeIn className="mb-12 text-center">
-            <span className="mb-3 inline-flex items-center gap-2 text-caption uppercase tracking-wider text-boga-electric-500">
-              <BogaCircles size="s" tone="electric" />
-              Compromiso
-            </span>
-            <h2 className="text-2xl font-bold text-boga-text-primary md:text-3xl">
-              Nuestro Compromiso
-            </h2>
-          </FadeIn>
-          <div className="grid gap-6 md:grid-cols-3">
-            {commitments.map((item, index) => {
-              const Icon = item.icon
-              return (
-                <FadeIn key={item.title} delay={index * 0.1}>
-                  <Card className="h-full border-boga-border-subtle bg-boga-surface-elevated text-center shadow-boga-2">
-                    <CardContent className="p-6">
-                      <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border-2 border-boga-electric-500/30 text-boga-electric-500">
-                        <Icon className="h-7 w-7" strokeWidth={1.75} />
-                      </div>
-                      <h3 className="text-lg font-bold text-boga-text-primary">{item.title}</h3>
-                      <p className="mt-2 text-sm text-boga-text-secondary">{item.description}</p>
-                    </CardContent>
-                  </Card>
-                </FadeIn>
-              )
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* Equipment */}
-      <section className="container-boga py-16 lg:py-24">
-        <FadeIn className="mb-12 text-center">
-          <span className="mb-3 inline-flex items-center gap-2 text-caption uppercase tracking-wider text-boga-electric-500">
-            <BogaCircles size="s" tone="electric" />
-            Flota
-          </span>
-          <h2 className="text-2xl font-bold text-boga-text-primary md:text-3xl">
-            Equipos Disponibles
-          </h2>
-          <p className="mx-auto mt-3 max-w-2xl text-boga-text-secondary">
-            Contamos con una flota diversa para cubrir cualquier necesidad
-          </p>
-        </FadeIn>
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-          {equipment.map((item, index) => {
-            const Icon = item.icon
-            return (
-              <FadeIn key={item.label} delay={index * 0.1}>
-                <Card className="border-boga-border-subtle bg-boga-surface-elevated text-center shadow-boga-2 transition-all hover:-translate-y-1 hover:shadow-boga-3">
-                  <CardContent className="flex flex-col items-center p-6">
-                    <Icon
-                      className="h-10 w-10 text-boga-electric-500"
-                      strokeWidth={1.75}
-                    />
-                    <span className="mt-3 font-semibold text-boga-text-primary">{item.label}</span>
-                  </CardContent>
-                </Card>
-              </FadeIn>
-            )
-          })}
-        </div>
-      </section>
-
-      {/* Technical service */}
-      <section className="relative overflow-hidden bg-boga-deep-500 py-16 lg:py-24">
-        <BogaDecor
-          variant="waves"
-          tone="lima"
-          className="absolute left-8 top-10 h-10 w-24 opacity-30"
-        />
-        <div className="container-boga relative z-10">
-          <div className="grid items-center gap-12 lg:grid-cols-2">
-            <FadeIn direction="left">
-              <div className="space-y-5">
-                <span className="inline-flex items-center gap-2 text-caption uppercase tracking-wider text-boga-lima-500">
-                  <BogaCircles size="s" tone="lima" />
-                  Operación
-                </span>
-                <h2 className="text-2xl font-bold text-boga-text-inverted md:text-3xl">
-                  Servicio Técnico
-                </h2>
-                <p className="text-boga-text-inverted/70">
-                  Nuestro equipo de mantenimiento cuenta con vehículos tipo
-                  vactor y unidades móviles equipadas para atender cualquier
-                  situación en campo. Realizamos limpieza profunda,
-                  desinfección, reposición de insumos y revisión técnica
-                  preventiva para garantizar el funcionamiento óptimo de cada
-                  unidad.
-                </p>
-                <p className="text-boga-text-inverted/70">
-                  Operamos con turnos flexibles y cobertura 24/7, asegurando
-                  que tu evento u obra nunca se detenga por problemas de
-                  infraestructura sanitaria.
-                </p>
-              </div>
-            </FadeIn>
-            <FadeIn direction="right">
-              <div className="relative aspect-video overflow-hidden rounded-2xl bg-boga-text-inverted/5">
-                <Image
-                  src="/images/quienes-somos/servicio-tecnico.jpg"
-                  alt="Servicio técnico BOGA"
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                />
-              </div>
-            </FadeIn>
-          </div>
-        </div>
-      </section>
-
-      {/* Environmental commitment */}
-      <section className="container-boga py-16 lg:py-24">
-        <FadeIn className="mb-12 text-center">
-          <span className="mb-3 inline-flex items-center gap-2 text-caption uppercase tracking-wider text-boga-electric-500">
-            <BogaCircles size="s" tone="electric" />
-            Sostenibilidad
-          </span>
-          <h2 className="text-2xl font-bold text-boga-text-primary md:text-3xl">
-            Compromiso Ambiental
-          </h2>
-          <p className="mx-auto mt-3 max-w-2xl text-boga-text-secondary">
-            Prácticas sostenibles que cuidan el entorno sin comprometer la calidad
-          </p>
-        </FadeIn>
-        <div className="grid gap-6 md:grid-cols-3">
-          {environmental.map((item, index) => {
-            const Icon = item.icon
-            return (
-              <FadeIn key={item.title} delay={index * 0.1}>
-                <Card className="h-full border-boga-border-subtle bg-boga-surface-elevated shadow-boga-2">
-                  <CardContent className="p-6">
-                    <Icon
-                      className="h-10 w-10 text-boga-lima-500"
-                      strokeWidth={1.75}
-                    />
-                    <h3 className="mt-4 text-lg font-bold text-boga-text-primary">{item.title}</h3>
-                    <p className="mt-2 text-sm text-boga-text-secondary">{item.description}</p>
-                  </CardContent>
-                </Card>
-              </FadeIn>
-            )
-          })}
-        </div>
-      </section>
-
-      {/* Locations */}
-      <section className="bg-boga-surface-muted py-16 lg:py-24">
-        <div className="container-boga">
-          <FadeIn className="mb-12 text-center">
-            <span className="mb-3 inline-flex items-center gap-2 text-caption uppercase tracking-wider text-boga-electric-500">
-              <BogaCircles size="s" tone="electric" />
-              Cobertura
-            </span>
-            <h2 className="text-2xl font-bold text-boga-text-primary md:text-3xl">
-              Nuestras Sedes
-            </h2>
-          </FadeIn>
-          <div className="grid gap-8 lg:grid-cols-2">
-            {sedes.map((sede, index) => (
-              <FadeIn key={sede.city} delay={index * 0.1}>
-                <Card className="overflow-hidden border-boga-border-subtle bg-boga-surface-elevated shadow-boga-2">
-                  <CardContent className="p-0">
-                    <div className="p-6">
-                      <h3 className="text-xl font-bold text-boga-text-primary">{sede.city}</h3>
-                      <p className="mt-1 text-boga-text-secondary">{sede.address}</p>
-                    </div>
-                    <iframe
-                      src={sede.mapUrl}
-                      width="100%"
-                      height="300"
-                      style={{ border: 0 }}
-                      allowFullScreen
-                      loading="lazy"
-                      referrerPolicy="no-referrer-when-downgrade"
-                      title={`Mapa ${sede.city}`}
-                      className="grayscale-[20%]"
-                    />
-                  </CardContent>
-                </Card>
-              </FadeIn>
-            ))}
-          </div>
-        </div>
-      </section>
+      <QuienesSomosStory />
     </div>
   )
 }
