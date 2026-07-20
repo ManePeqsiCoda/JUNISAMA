@@ -5,6 +5,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Logo } from "@/components/logo"
+import { EmergencyButton } from "@/components/layout/emergency-button"
 import {
   Menu,
   X,
@@ -17,7 +18,7 @@ import {
   Truck,
   Users,
   Leaf,
-  Phone,
+  ArrowRight,
 } from "lucide-react"
 
 const serviceItems = [
@@ -38,20 +39,6 @@ const mainLinks = [
   { name: "Quiénes Somos", href: "/quienes-somos" },
   { name: "Contacto", href: "/contacto" },
 ]
-
-function EmergencyButton({ className }: { className?: string }) {
-  return (
-    <a
-      href="tel:+573507089584"
-      className={cn("btn-emergency", className)}
-      aria-label="Llamar a línea de emergencia"
-      title="Emergencia: +57 350 708 9584"
-    >
-      <Phone className="h-4 w-4" aria-hidden="true" />
-      <span>EMERGENCIA</span>
-    </a>
-  )
-}
 
 function NavLink({
   href,
@@ -207,6 +194,15 @@ export function Navbar() {
                       role="menu"
                     >
                       <div className="rounded-xl border border-[var(--boga-border-subtle)] bg-[var(--boga-surface-floating)] p-4 shadow-[var(--boga-shadow-4)]">
+                        <Link
+                          href="/servicios"
+                          onClick={() => setProductsOpen(false)}
+                          className="mb-3 flex w-full items-center justify-center gap-2 rounded-lg bg-boga-electric-500 px-3 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-boga-electric-600"
+                          role="menuitem"
+                        >
+                          Ver todos los servicios
+                          <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                        </Link>
                         <div className="grid grid-cols-2 gap-2">
                           {link.children.map((child) => {
                             const Icon = child.icon
@@ -371,14 +367,7 @@ export function Navbar() {
             </div>
 
             <div className="mt-auto flex flex-col gap-3 pt-8">
-              <a
-                href="tel:+573507089584"
-                className="btn-emergency w-full"
-                aria-label="Llamar a línea de emergencia"
-              >
-                <Phone className="h-4 w-4" aria-hidden="true" />
-                EMERGENCIA
-              </a>
+              <EmergencyButton className="w-full" />
               <Link
                 href="/cotizacion"
                 onClick={() => setMobileOpen(false)}
