@@ -7,6 +7,7 @@ import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { toast } from "sonner"
+import { differenceInCalendarDays, parseISO } from "date-fns"
 import type { Producto } from "@/lib/mocks"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -21,6 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { DateRangePicker } from "@/components/ui/date-range-picker"
 import { FadeIn } from "@/components/home/fade-in"
 import { PageHero } from "@/components/brand/page-hero"
 import { BogaCircles } from "@/components/brand/boga-circles"
@@ -33,7 +35,9 @@ import {
   ChevronRight,
   ChevronLeft,
   Trash2,
+  MessageCircle,
 } from "lucide-react"
+import { siteConfig } from "@/lib/site"
 
 const tipoEventoOptions = [
   "Concierto",
@@ -45,19 +49,31 @@ const tipoEventoOptions = [
   "Otro",
 ]
 
-const detailsSchema = z.object({
-  duracionDias: z.number().int().optional(),
-  ubicacionEvento: z.string().optional(),
-  notasAdicionales: z.string().optional(),
-})
+const detailsSchema = z
+  .object({
+    tipoEvento: z.string().min(1, "Selecciona un tipo de evento"),
+    fechaEvento: z.string().min(1, "Selecciona la fecha de inicio"),
+    fechaFinEvento: z.string().min(1, "Selecciona la fecha de fin"),
+    duracionDias: z.number().int().optional(),
+    ubicacionEvento: z.string().optional(),
+    notasAdicionales: z.string().optional(),
+  })
+  .refine(
+    (data) =>
+      !data.fechaEvento ||
+      !data.fechaFinEvento ||
+      data.fechaFinEvento >= data.fechaEvento,
+    {
+      message: "La fecha de fin debe ser igual o posterior al inicio",
+      path: ["fechaFinEvento"],
+    }
+  )
 
 const contactSchema = z.object({
   nombre: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
   empresa: z.string().optional(),
   email: z.string().email("Ingresa un correo electrónico válido"),
   telefono: z.string().min(7, "El teléfono debe tener al menos 7 dígitos"),
-  tipoEvento: z.string().min(1, "Selecciona un tipo de evento"),
-  fechaEvento: z.string().min(1, "Selecciona una fecha"),
   ciudad: z.string().min(2, "Indica la ciudad"),
   asistentes: z.number().int().optional(),
   aceptaPrivacidad: z.boolean().refine((value) => value === true, {
@@ -84,6 +100,8 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
     "idle"
   )
   const [errorMessage, setErrorMessage] = useState("")
+  const [successRef, setSuccessRef] = useState("")
+  const [whatsappUrl, setWhatsappUrl] = useState("")
   const formTopRef = useRef<HTMLDivElement>(null)
 
   const goToStep = (next: number) => {
@@ -100,10 +118,16 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
     register: registerDetails,
     handleSubmit: handleSubmitDetails,
     getValues: getDetailsValues,
+    setValue: setDetailsValue,
+    control: controlDetails,
+    watch: watchDetails,
     formState: { errors: errorsDetails },
   } = useForm<DetailsData>({
     resolver: zodResolver(detailsSchema),
     defaultValues: {
+      tipoEvento: "",
+      fechaEvento: "",
+      fechaFinEvento: "",
       duracionDias: undefined,
       ubicacionEvento: "",
       notasAdicionales: "",
@@ -122,13 +146,22 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
       empresa: "",
       email: "",
       telefono: "",
-      tipoEvento: "",
-      fechaEvento: "",
       ciudad: "",
       asistentes: undefined,
       aceptaPrivacidad: false,
     },
   })
+
+  const fechaEvento = watchDetails("fechaEvento")
+  const fechaFinEvento = watchDetails("fechaFinEvento")
+
+  const syncDurationFromRange = (from?: string, to?: string) => {
+    if (!from || !to) return
+    const days = differenceInCalendarDays(parseISO(to), parseISO(from)) + 1
+    if (days > 0) {
+      setDetailsValue("duracionDias", days, { shouldDirty: true })
+    }
+  }
 
   const toggleProduct = (productoId: string) => {
     setItems((prev) => {
@@ -182,14 +215,60 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
       const { addSolicitud, generateId } = await import(
         "@/lib/cotizador/storage"
       )
+      const referencia = generateId("sol")
+      const productosSeleccionados = items
+        .map((i) => {
+          const producto = productos.find((p) => p.id === i.productoId)
+          if (!producto) return null
+          return { nombre: producto.nombre, cantidad: i.cantidad }
+        })
+        .filter((p): p is { nombre: string; cantidad: number } => !!p)
+
+      const payload = {
+        referencia,
+        nombre: contact.nombre,
+        empresa: contact.empresa || undefined,
+        email: contact.email,
+        telefono: contact.telefono,
+        ciudad: contact.ciudad,
+        tipoEvento: details.tipoEvento,
+        fechaEvento: details.fechaEvento,
+        fechaFinEvento: details.fechaFinEvento || undefined,
+        duracionDias: details.duracionDias,
+        ubicacion: details.ubicacionEvento || undefined,
+        asistentes:
+          contact.asistentes != null ? String(contact.asistentes) : undefined,
+        productos: productosSeleccionados,
+        notas: details.notasAdicionales || undefined,
+      }
+
+      const response = await fetch("/api/cotizacion/enviar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      })
+      const result = (await response.json()) as {
+        ok: boolean
+        whatsappUrl?: string
+        emailSent?: boolean
+        emailSkippedReason?: string
+        error?: string
+      }
+
+      if (!response.ok || !result.ok) {
+        throw new Error(result.error || "No pudimos enviar la cotización")
+      }
+
       addSolicitud({
-        id: generateId("sol"),
+        id: referencia,
         fullName: contact.nombre,
         company: contact.empresa,
         email: contact.email,
         phone: contact.telefono,
-        eventType: contact.tipoEvento,
-        eventDate: contact.fechaEvento,
+        eventType: details.tipoEvento,
+        eventDate: details.fechaFinEvento
+          ? `${details.fechaEvento} → ${details.fechaFinEvento}`
+          : details.fechaEvento,
         city: contact.ciudad,
         attendees:
           contact.asistentes != null ? String(contact.asistentes) : undefined,
@@ -199,6 +278,9 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
         notes: [
           details.ubicacionEvento
             ? `Ubicación: ${details.ubicacionEvento}`
+            : null,
+          details.fechaEvento && details.fechaFinEvento
+            ? `Fechas: ${details.fechaEvento} → ${details.fechaFinEvento}`
             : null,
           details.duracionDias
             ? `Duración: ${details.duracionDias} días`
@@ -211,13 +293,29 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
         recibidoEn: new Date().toISOString(),
       })
 
-      await new Promise((resolve) => setTimeout(resolve, 400))
+      const waUrl =
+        result.whatsappUrl ||
+        `https://wa.me/${siteConfig.whatsapp}?text=${encodeURIComponent(
+          `Hola, ¿cómo estás? Te escribo por una cotización. Esta es la referencia: ${referencia}`
+        )}`
 
+      setSuccessRef(referencia)
+      setWhatsappUrl(waUrl)
       setStatus("success")
-      toast.success(`Cotización solicitada por ${contact.nombre}`, {
-        description: details.duracionDias
-          ? `Duración: ${details.duracionDias} días. Te contactaremos en menos de 24 horas.`
-          : "Te contactaremos en menos de 24 horas.",
+
+      toast.success("Ya recibimos tu cotización", {
+        description: `Referencia ${referencia}. ${
+          result.emailSent
+            ? "Te enviamos un resumen a tu correo."
+            : "Te contactaremos en menos de 24 horas."
+        }`,
+        duration: 20000,
+        action: {
+          label: "WhatsApp",
+          onClick: () => {
+            window.open(waUrl, "_blank", "noopener,noreferrer")
+          },
+        },
       })
     } catch (error) {
       setStatus("error")
@@ -242,15 +340,42 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
                 <CheckCircle2 className="h-8 w-8" />
               </div>
               <h2 className="text-2xl font-bold text-boga-text-primary">
-                ¡Gracias por tu solicitud!
+                ¡Ya recibimos tu cotización!
               </h2>
               <p className="mt-3 text-boga-text-secondary">
-                Tu solicitud ha sido enviada. Te contactaremos en menos de 24
-                horas.
+                Te enviamos un resumen a tu correo. Nos pondremos en contacto en
+                menos de 24 horas.
               </p>
-              <Link href="/" className={cn(buttonVariants(), "mt-6")}>
-                Volver al inicio
-              </Link>
+              {successRef && (
+                <div className="mx-auto mt-5 max-w-sm rounded-xl border border-boga-electric-200 bg-boga-electric-50 px-4 py-3">
+                  <p className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-boga-electric-600">
+                    Número de referencia
+                  </p>
+                  <p className="mt-1 font-mono text-lg font-bold text-boga-text-primary">
+                    {successRef}
+                  </p>
+                </div>
+              )}
+              <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
+                <a
+                  href={whatsappUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={cn(
+                    buttonVariants(),
+                    "inline-flex items-center gap-2 bg-[#25D366] text-white hover:bg-[#1ebe57]"
+                  )}
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  Continuar en WhatsApp
+                </a>
+                <Link
+                  href="/"
+                  className={cn(buttonVariants({ variant: "outline" }))}
+                >
+                  Volver al inicio
+                </Link>
+              </div>
             </CardContent>
           </Card>
         </FadeIn>
@@ -408,6 +533,88 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
                       Paso 2: Detalles del evento
                     </h2>
 
+                    <div className="space-y-2">
+                      <Label htmlFor="tipoEvento">Tipo de evento *</Label>
+                      <Controller
+                        name="tipoEvento"
+                        control={controlDetails}
+                        render={({ field }) => (
+                          <Select
+                            value={field.value || undefined}
+                            onValueChange={field.onChange}
+                          >
+                            <SelectTrigger id="tipoEvento" className="w-full">
+                              <SelectValue placeholder="Selecciona" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {tipoEventoOptions.map((option) => (
+                                <SelectItem key={option} value={option}>
+                                  {option}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        )}
+                      />
+                      {errorsDetails.tipoEvento && (
+                        <p
+                          className="flex items-center gap-1 text-xs text-boga-error-500"
+                          role="alert"
+                        >
+                          <AlertCircle className="h-3 w-3" aria-hidden="true" />
+                          {errorsDetails.tipoEvento.message}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="fechaEvento">
+                        Fechas del evento *{" "}
+                        <span className="font-normal text-muted-foreground">
+                          (inicio → fin)
+                        </span>
+                      </Label>
+                      <DateRangePicker
+                        id="fechaEvento"
+                        value={{
+                          from: fechaEvento || undefined,
+                          to: fechaFinEvento || undefined,
+                        }}
+                        onChange={(range) => {
+                          setDetailsValue("fechaEvento", range.from ?? "", {
+                            shouldValidate: Boolean(range.from && range.to),
+                            shouldDirty: true,
+                          })
+                          setDetailsValue(
+                            "fechaFinEvento",
+                            range.to ?? "",
+                            {
+                              shouldValidate: Boolean(range.from && range.to),
+                              shouldDirty: true,
+                            }
+                          )
+                          syncDurationFromRange(range.from, range.to)
+                        }}
+                        aria-invalid={
+                          errorsDetails.fechaEvento ||
+                          errorsDetails.fechaFinEvento
+                            ? "true"
+                            : "false"
+                        }
+                      />
+                      {(errorsDetails.fechaEvento ||
+                        errorsDetails.fechaFinEvento) && (
+                        <p
+                          className="flex items-center gap-1 text-xs text-boga-error-500"
+                          role="alert"
+                        >
+                          <AlertCircle className="h-3 w-3" aria-hidden="true" />
+                          {errorsDetails.fechaEvento?.message ||
+                            errorsDetails.fechaFinEvento?.message}
+                        </p>
+                      )}
+                    </div>
+
                     <div className="grid gap-5 sm:grid-cols-2">
                       <div className="space-y-2">
                         <Label htmlFor="duracionDias">
@@ -421,6 +628,9 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
                             valueAsNumber: true,
                           })}
                         />
+                        <p className="text-xs text-muted-foreground">
+                          Se actualiza automáticamente con las fechas elegidas.
+                        </p>
                         {errorsDetails.duracionDias && (
                           <p
                             className="flex items-center gap-1 text-xs text-boga-error-500"
@@ -536,62 +746,6 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
                           >
                             <AlertCircle className="h-3 w-3" aria-hidden="true" />
                             {errorsContact.telefono.message}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="grid gap-5 sm:grid-cols-2">
-                      <div className="space-y-2">
-                        <Label htmlFor="tipoEvento">Tipo de evento *</Label>
-                        <Controller
-                          name="tipoEvento"
-                          control={controlContact}
-                          render={({ field }) => (
-                            <Select
-                              value={field.value || undefined}
-                              onValueChange={field.onChange}
-                            >
-                              <SelectTrigger id="tipoEvento" className="w-full">
-                                <SelectValue placeholder="Selecciona" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {tipoEventoOptions.map((option) => (
-                                  <SelectItem key={option} value={option}>
-                                    {option}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          )}
-                        />
-                        {errorsContact.tipoEvento && (
-                          <p
-                            className="flex items-center gap-1 text-xs text-boga-error-500"
-                            role="alert"
-                          >
-                            <AlertCircle className="h-3 w-3" aria-hidden="true" />
-                            {errorsContact.tipoEvento.message}
-                          </p>
-                        )}
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="fechaEvento">Fecha del evento *</Label>
-                        <Input
-                          id="fechaEvento"
-                          type="date"
-                          {...registerContact("fechaEvento")}
-                          aria-invalid={
-                            errorsContact.fechaEvento ? "true" : "false"
-                          }
-                        />
-                        {errorsContact.fechaEvento && (
-                          <p
-                            className="flex items-center gap-1 text-xs text-boga-error-500"
-                            role="alert"
-                          >
-                            <AlertCircle className="h-3 w-3" aria-hidden="true" />
-                            {errorsContact.fechaEvento.message}
                           </p>
                         )}
                       </div>
