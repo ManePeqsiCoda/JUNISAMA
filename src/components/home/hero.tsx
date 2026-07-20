@@ -93,7 +93,7 @@ export function Hero() {
         >
           <div className="badge-iso mx-auto mb-6">
             <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
-            <span>ISO 9001</span>
+            <span>ISO 14001</span>
             {ISO_CERTIFICATE_NUMBER && (
               <span className="ml-1 font-sans text-white/70">
                 · {ISO_CERTIFICATE_NUMBER}

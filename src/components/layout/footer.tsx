@@ -94,7 +94,7 @@ export function Footer() {
             <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-[var(--boga-lima-500)]/30 bg-[var(--boga-lima-500)]/10 px-3 py-1.5">
               <ShieldIcon className="h-4 w-4 text-[var(--boga-lima-500)]" aria-hidden="true" />
               <span className="text-xs font-medium uppercase tracking-wider text-[var(--boga-lima-500)]">
-                ISO 9001
+                ISO 14001
               </span>
             </div>
           </div>
