@@ -42,7 +42,6 @@ import { siteConfig } from "@/lib/site"
 import {
   calcularCarritoPublico,
   BUNDLE_DISCOUNT_RATE,
-  isBundleTrigger,
 } from "@/lib/cotizador/public-pricing"
 import {
   PriceDisplay,
