@@ -34,8 +34,12 @@ export const metadata: Metadata = {
     ICBM: "6.2518, -75.5636",
   },
   icons: {
-    icon: "/favicon.svg",
+    icon: [
+      { url: "/favicon.ico", sizes: "48x48" },
+      { url: "/LogoBOGA.svg", type: "image/svg+xml" },
+    ],
     shortcut: "/favicon.ico",
+    apple: "/LogoBOGA.svg",
   },
 };
 
