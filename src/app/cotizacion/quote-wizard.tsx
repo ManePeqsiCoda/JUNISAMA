@@ -437,12 +437,15 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
                     )}
 
                     {cartTotals.hasBundleTrigger && (
-                      <div className="flex items-start gap-2 rounded-lg border border-boga-lima-500/30 bg-boga-lima-50 px-3 py-2 text-sm text-boga-deep-500">
-                        <Percent className="mt-0.5 h-4 w-4 shrink-0 text-boga-electric-500" />
+                      <div className="flex items-start gap-2 rounded-lg border border-boga-lima-500/40 bg-boga-lima-500/15 px-3 py-2 text-sm text-boga-text-primary">
+                        <Percent className="mt-0.5 h-4 w-4 shrink-0 text-boga-lima-500" />
                         <span>
                           Bundle activo: los productos complementarios (p. ej.
                           lavamanos, puntos ecológicos) tienen{" "}
-                          <strong>{discountPct}% de descuento</strong>.
+                          <strong className="text-boga-lima-500">
+                            {discountPct}% de descuento
+                          </strong>
+                          .
                         </span>
                       </div>
                     )}

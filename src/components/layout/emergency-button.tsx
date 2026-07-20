@@ -167,7 +167,7 @@ export function EmergencyButton({ className }: { className?: string }) {
               </form>
             ) : (
               <div className="space-y-4">
-                <div className="rounded-xl border border-boga-lima-500/40 bg-boga-lima-50 px-4 py-3 text-sm leading-relaxed text-boga-deep-500">
+                <div className="rounded-xl border border-boga-lima-500/40 bg-boga-lima-500/15 px-4 py-3 text-sm leading-relaxed text-boga-text-primary">
                   <p className="font-semibold">
                     Entendemos la situación y agradecemos que nos lo haya
                     comunicado.
