@@ -20,11 +20,11 @@ import {
 import { FadeIn } from "@/components/home/fade-in"
 import { PageHero } from "@/components/brand/page-hero"
 import { BogaCircles } from "@/components/brand/boga-circles"
+import { SedesCoverage } from "@/components/brand/sedes-coverage"
 import { siteConfig } from "@/lib/site"
 import {
   Phone,
   Mail,
-  MapPin,
   MessageCircle,
   Clock,
   Loader2,
@@ -67,21 +67,6 @@ const contactInfo = [
     label: "Horario",
     value: "Atención 24/7",
     href: undefined,
-  },
-]
-
-const sedes = [
-  {
-    city: `Sede ${siteConfig.addresses[0].city}`,
-    address: siteConfig.addresses[0].street,
-    mapUrl:
-      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.521260322283!2d-75.612!3d6.208!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNsKwMTInMjguOCJOIDc1wrAzNic0My4yIlc!5e0!3m2!1ses!2sco!4v1600000000000!5m2!1ses!2sco",
-  },
-  {
-    city: `Sede ${siteConfig.addresses[1].city}`,
-    address: siteConfig.addresses[1].street,
-    mapUrl:
-      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3976.123456789012!2d-74.085!3d4.710!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNMKwNDInMzYuMCJOIDc0wrAwNScwNi4wIlc!5e0!3m2!1ses!2sco!4v1600000000000!5m2!1ses!2sco",
   },
 ]
 
@@ -338,37 +323,12 @@ export default function ContactForm() {
                 })}
               </div>
 
-              {sedes.map((sede) => (
-                <Card
-                  key={sede.city}
-                  className="overflow-hidden border-boga-border-subtle bg-boga-surface-elevated shadow-boga-2"
-                >
-                  <CardContent className="p-0">
-                    <div className="flex items-start gap-3 p-5">
-                      <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-boga-electric-500" />
-                      <div>
-                        <h3 className="font-bold text-boga-text-primary">{sede.city}</h3>
-                        <p className="text-sm text-boga-text-secondary">{sede.address}</p>
-                      </div>
-                    </div>
-                    <iframe
-                      src={sede.mapUrl}
-                      width="100%"
-                      height="250"
-                      style={{ border: 0 }}
-                      allowFullScreen
-                      loading="lazy"
-                      referrerPolicy="no-referrer-when-downgrade"
-                      title={`Mapa ${sede.city}`}
-                      className="grayscale-[20%]"
-                    />
-                  </CardContent>
-                </Card>
-              ))}
             </div>
           </FadeIn>
         </div>
       </section>
+
+      <SedesCoverage tone="canvas" />
     </div>
   )
 }
