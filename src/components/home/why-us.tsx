@@ -100,7 +100,7 @@ export function WhyUs() {
           }}
         >
           {/* Stage */}
-          <div className="relative min-h-[18rem] overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.04] shadow-boga-4 backdrop-blur-sm md:min-h-[20rem]">
+          <div className="relative flex min-h-[18rem] items-center justify-center overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.04] shadow-boga-4 backdrop-blur-sm md:min-h-[20rem]">
             {/* Progress bar */}
             <div className="absolute left-0 right-0 top-0 z-20 h-1 bg-white/10">
               <motion.div
@@ -124,7 +124,7 @@ export function WhyUs() {
                 animate={{ opacity: 1, x: 0, scale: 1 }}
                 exit={{ opacity: 0, x: direction * -40, scale: 0.98 }}
                 transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-                className="flex h-full flex-col items-center justify-center gap-6 px-6 py-12 text-center md:flex-row md:gap-10 md:px-12 md:text-left"
+                className="absolute inset-0 flex flex-col items-center justify-center gap-6 px-14 py-10 text-center md:flex-row md:gap-10 md:px-16 md:text-left"
               >
                 <motion.div
                   initial={{ scale: 0.8, rotate: -8 }}
