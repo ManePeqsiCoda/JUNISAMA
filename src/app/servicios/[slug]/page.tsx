@@ -27,6 +27,7 @@ import {
   siteConfig,
   generateBreadcrumbJsonLd,
 } from "@/lib/seo"
+import { ProductPriceBlock } from "@/components/pricing/product-price-block"
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Crown: Star,
@@ -208,6 +209,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 {producto.nombre}
               </h1>
               <p className="text-lg text-boga-text-secondary">{producto.descripcion}</p>
+              <ProductPriceBlock producto={producto} />
               <div className="flex flex-col gap-3 sm:flex-row">
                 <Link
                   href="/cotizacion"

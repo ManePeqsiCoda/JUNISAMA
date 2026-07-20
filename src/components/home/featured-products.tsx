@@ -11,6 +11,10 @@ import { Badge } from "@/components/ui/badge"
 import { FadeIn } from "./fade-in"
 import { ArrowRight, Star, Bath, Accessibility, Users, Leaf } from "lucide-react"
 import type { Producto } from "@/lib/mocks"
+import {
+  PriceDisplay,
+  PriceVisibilityToggle,
+} from "@/components/pricing/price-visibility"
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Crown: Star,
@@ -35,6 +39,9 @@ export function FeaturedProducts({ productos }: FeaturedProductsProps) {
           <p className="mx-auto mt-3 max-w-2xl text-[var(--boga-text-secondary)]">
             Equipos sanitarios portátiles para todo tipo de evento
           </p>
+          <div className="mt-4 flex justify-center">
+            <PriceVisibilityToggle showLabel size="sm" />
+          </div>
         </FadeIn>
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -62,6 +69,13 @@ export function FeaturedProducts({ productos }: FeaturedProductsProps) {
                     <CardDescription className="text-[var(--boga-text-secondary)]">
                       {producto.descripcionCorta}
                     </CardDescription>
+                    <div className="pt-2">
+                      <PriceDisplay
+                        amount={producto.precioBase}
+                        unidadMedida={producto.unidadMedida}
+                        size="sm"
+                      />
+                    </div>
                   </CardHeader>
                   <CardContent className="mt-auto">
                     <Link

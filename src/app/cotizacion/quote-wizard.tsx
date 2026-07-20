@@ -36,8 +36,18 @@ import {
   ChevronLeft,
   Trash2,
   MessageCircle,
+  Percent,
 } from "lucide-react"
 import { siteConfig } from "@/lib/site"
+import {
+  calcularCarritoPublico,
+  BUNDLE_DISCOUNT_RATE,
+  isBundleTrigger,
+} from "@/lib/cotizador/public-pricing"
+import {
+  PriceDisplay,
+  PriceVisibilityToggle,
+} from "@/components/pricing/price-visibility"
 
 const tipoEventoOptions = [
   "Concierto",
@@ -191,6 +201,9 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
       producto: productos.find((p) => p.id === item.productoId)!,
     }))
     .filter((item) => item.producto)
+
+  const cartTotals = calcularCarritoPublico(selectedItems)
+  const discountPct = Math.round(BUNDLE_DISCOUNT_RATE * 100)
 
   const onSubmitStep1 = () => {
     if (items.length === 0) {
@@ -403,14 +416,34 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
               <form id="quote-form" onSubmit={(e) => e.preventDefault()}>
                 {step === 1 && (
                   <div className="space-y-5">
-                    <h2 className="text-xl font-bold text-boga-text-primary">
-                      Paso 1: Selección de productos
-                    </h2>
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div>
+                        <h2 className="text-xl font-bold text-boga-text-primary">
+                          Paso 1: Selección de productos
+                        </h2>
+                        <p className="mt-1 text-sm text-boga-text-tertiary">
+                          Baños, trailer u operarios activan {discountPct}% off
+                          en el resto del carrito.
+                        </p>
+                      </div>
+                      <PriceVisibilityToggle showLabel size="sm" />
+                    </div>
 
                     {errorMessage && (
                       <div className="flex items-start gap-2 rounded-lg bg-boga-error-50 p-3 text-sm text-boga-error-500">
                         <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
                         {errorMessage}
+                      </div>
+                    )}
+
+                    {cartTotals.hasBundleTrigger && (
+                      <div className="flex items-start gap-2 rounded-lg border border-boga-lima-500/30 bg-boga-lima-50 px-3 py-2 text-sm text-boga-deep-500">
+                        <Percent className="mt-0.5 h-4 w-4 shrink-0 text-boga-electric-500" />
+                        <span>
+                          Bundle activo: los productos complementarios (p. ej.
+                          lavamanos, puntos ecológicos) tienen{" "}
+                          <strong>{discountPct}% de descuento</strong>.
+                        </span>
                       </div>
                     )}
 
@@ -421,6 +454,18 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
                             const selected = items.find(
                               (i) => i.productoId === producto.id
                             )
+                            const line = cartTotals.lines.find(
+                              (l) => l.productoId === producto.id
+                            )
+                            const showDiscountPreview =
+                              cartTotals.hasBundleTrigger &&
+                              !isBundleTrigger(producto.slug)
+                            const unitLista = producto.precioBase ?? 0
+                            const unitFinal = showDiscountPreview
+                              ? Math.round(
+                                  unitLista * (1 - BUNDLE_DISCOUNT_RATE)
+                                )
+                              : unitLista
                             return (
                               <div
                                 key={producto.id}
@@ -450,6 +495,22 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
                                     <p className="text-xs text-boga-text-secondary">
                                       {producto.descripcionCorta}
                                     </p>
+                                    <div className="mt-1.5">
+                                      <PriceDisplay
+                                        amount={
+                                          selected && line
+                                            ? line.precioUnitarioFinal
+                                            : unitFinal
+                                        }
+                                        compareAt={
+                                          showDiscountPreview
+                                            ? unitLista
+                                            : undefined
+                                        }
+                                        unidadMedida={producto.unidadMedida}
+                                        size="sm"
+                                      />
+                                    </div>
                                   </div>
                                   <Checkbox checked={!!selected} />
                                 </div>
@@ -486,34 +547,79 @@ export function QuoteWizard({ productos }: QuoteWizardProps) {
                       </div>
 
                       <div className="rounded-xl border border-boga-border-subtle bg-boga-surface-muted p-4">
-                        <h3 className="font-bold text-boga-text-primary">
-                          Resumen
-                        </h3>
+                        <div className="flex items-center justify-between gap-2">
+                          <h3 className="font-bold text-boga-text-primary">
+                            Resumen
+                          </h3>
+                          <PriceVisibilityToggle size="sm" />
+                        </div>
                         {selectedItems.length === 0 ? (
                           <p className="mt-2 text-sm text-boga-text-tertiary">
                             Selecciona al menos un producto
                           </p>
                         ) : (
-                          <ul className="mt-3 space-y-2">
-                            {selectedItems.map((item) => (
-                              <li
-                                key={item.productoId}
-                                className="flex items-center justify-between text-sm"
-                              >
-                                <span className="text-boga-text-secondary">
-                                  {item.producto.nombre} x{item.cantidad}
-                                </span>
-                                <button
-                                  type="button"
-                                  onClick={() => removeItem(item.productoId)}
-                                  className="text-boga-text-tertiary hover:text-boga-error-500"
-                                  aria-label="Eliminar"
+                          <>
+                            <ul className="mt-3 space-y-3">
+                              {cartTotals.lines.map((line) => (
+                                <li
+                                  key={line.productoId}
+                                  className="flex items-start justify-between gap-2 text-sm"
                                 >
-                                  <Trash2 className="h-4 w-4" />
-                                </button>
-                              </li>
-                            ))}
-                          </ul>
+                                  <div className="min-w-0">
+                                    <p className="text-boga-text-secondary">
+                                      {line.nombre}{" "}
+                                      <span className="text-boga-text-tertiary">
+                                        ×{line.cantidad}
+                                      </span>
+                                    </p>
+                                    {line.aplicaDescuento && (
+                                      <p className="text-[11px] font-medium text-boga-electric-500">
+                                        −{discountPct}% bundle
+                                      </p>
+                                    )}
+                                    <PriceDisplay
+                                      amount={line.subtotalFinal}
+                                      compareAt={
+                                        line.aplicaDescuento
+                                          ? line.subtotalLista
+                                          : undefined
+                                      }
+                                      size="sm"
+                                    />
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={() => removeItem(line.productoId)}
+                                    className="shrink-0 text-boga-text-tertiary hover:text-boga-error-500"
+                                    aria-label="Eliminar"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </button>
+                                </li>
+                              ))}
+                            </ul>
+                            <div className="mt-4 space-y-1 border-t border-boga-border-subtle pt-3 text-sm">
+                              {cartTotals.descuentoTotal > 0 && (
+                                <div className="flex items-baseline justify-between gap-2 text-boga-text-secondary">
+                                  <span>Descuento bundle (−{discountPct}%)</span>
+                                  <span className="inline-flex items-baseline gap-0.5 font-medium text-boga-electric-500">
+                                    <span aria-hidden>−</span>
+                                    <PriceDisplay
+                                      amount={cartTotals.descuentoTotal}
+                                      size="sm"
+                                    />
+                                  </span>
+                                </div>
+                              )}
+                              <div className="flex items-center justify-between font-semibold text-boga-text-primary">
+                                <span>Total estimado</span>
+                                <PriceDisplay
+                                  amount={cartTotals.total}
+                                  size="md"
+                                />
+                              </div>
+                            </div>
+                          </>
                         )}
                       </div>
                     </div>

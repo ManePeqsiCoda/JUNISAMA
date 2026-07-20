@@ -7,6 +7,7 @@ import { CheckCircle2, ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 import type { Producto } from "@/lib/mocks"
+import { PriceDisplay } from "@/components/pricing/price-visibility"
 
 interface ProductCardProps {
   producto: Producto
@@ -140,6 +141,14 @@ export function ProductCard({ producto, className, compact = false }: ProductCar
         >
           {producto.descripcionCorta}
         </p>
+
+        <div className={cn(compact ? "mt-2" : "mt-3")}>
+          <PriceDisplay
+            amount={producto.precioBase}
+            unidadMedida={producto.unidadMedida}
+            size={compact ? "sm" : "md"}
+          />
+        </div>
 
         {specEntries.length > 0 && (
           <ul className={cn("flex-1 space-y-1.5", compact ? "mt-3" : "mt-5 space-y-2")}>

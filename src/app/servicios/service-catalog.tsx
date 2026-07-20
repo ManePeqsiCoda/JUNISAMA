@@ -8,6 +8,7 @@ import { buttonVariants } from "@/components/ui/button"
 import { FadeIn } from "@/components/home/fade-in"
 import { cn } from "@/lib/utils"
 import { ArrowRight } from "lucide-react"
+import { PriceVisibilityToggle } from "@/components/pricing/price-visibility"
 
 interface ServiceCatalogProps {
   servicios: Producto[]
@@ -56,7 +57,13 @@ export function ServiceCatalog({ servicios, categorias }: ServiceCatalogProps) {
         </div>
       </FadeIn>
 
-      <h2 className="sr-only">Catálogo de servicios</h2>
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <h2 className="sr-only">Catálogo de servicios</h2>
+        <p className="text-sm text-boga-text-tertiary">
+          Precios de referencia · prototipo
+        </p>
+        <PriceVisibilityToggle showLabel size="sm" />
+      </div>
       <ProductGrid productos={filtered} columns={3} />
 
       {filtered.length === 0 && (
