@@ -6,11 +6,37 @@ export interface Event {
   highlighted?: boolean
   /** Foto local temática (stock libre). Sustituir por foto autorizada del evento cuando exista. */
   image: string
+  /** Álbum del evento (carrusel). Si no hay, se usa solo `image`. */
+  album?: string[]
+}
+
+export function getEventAlbum(event: Event): string[] {
+  if (event.album && event.album.length > 0) return event.album
+  return [event.image]
 }
 
 export const events: Event[] = [
   // 2025
-  { id: "alvaro-diaz-2025", name: "Alvaro Díaz", years: [2025], type: "concierto", highlighted: true, image: "/images/eventos/alvaro-diaz-2025.jpg" },
+  {
+    id: "alvaro-diaz-2025",
+    name: "Alvaro Díaz",
+    years: [2025],
+    type: "concierto",
+    highlighted: true,
+    image: "/images/eventos/alvaro-diaz-2025.jpg",
+    album: [
+      "/images/eventos/alvaro-diaz-2025.jpg",
+      "/images/eventos/albums/alvaro-diaz/01-concierto-atmosfera.jpg",
+      "/images/eventos/albums/alvaro-diaz/03-produccion-escenario.jpg",
+      "/images/eventos/albums/alvaro-diaz/07-bano-evento.jpg",
+      "/images/eventos/albums/alvaro-diaz/06-banos-portatiles.jpg",
+      "/images/eventos/albums/alvaro-diaz/08-unidades-sanitarias.jpg",
+      "/images/eventos/albums/alvaro-diaz/09-boga-vip.jpg",
+      "/images/eventos/albums/alvaro-diaz/10-boga-puntos.jpg",
+      "/images/eventos/albums/alvaro-diaz/11-boga-operarios.jpg",
+      "/images/eventos/albums/alvaro-diaz/12-boga-lavamanos.jpg",
+    ],
+  },
   { id: "andme-2025", name: "&ME", years: [2025], type: "concierto", highlighted: true, image: "/images/eventos/andme-2025.jpg" },
   { id: "core-2025", name: "CORE", years: [2025, 2024], type: "festival", highlighted: true, image: "/images/eventos/core-2025.jpg" },
   { id: "feria-manizales-2025", name: "Feria de Manizales", years: [2025], type: "feria", highlighted: true, image: "/images/eventos/feria-manizales-2025.jpg" },
