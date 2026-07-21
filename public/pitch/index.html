@@ -1773,7 +1773,7 @@
         <div class="slide-inner">
           <p class="eyebrow animate-entry">El reto</p>
           <h2 class="title-section animate-entry delay-1">Operaci&oacute;n fuerte.<br><span class="title-accent">Presencia digital desactualizada.</span></h2>
-          <p class="lead animate-entry delay-2">BOGA domina el terreno. Pero cuando un cliente busca en Google, lo que encuentra no refleja esa calidad.</p>
+          <p class="lead animate-entry delay-2">BOGA es una empresa antioque&ntilde;a especializada en el alquiler de ba&ntilde;os port&aacute;tiles para eventos, construcci&oacute;n y miner&iacute;a, con presencia en Antioquia y el Eje Cafetero. Domina el terreno, pero su presencia digital no refleja esa calidad.</p>
           <div class="card-grid card-grid--3 animate-entry delay-3">
             <div class="problem-card">
               <div class="problem-card__num">01</div>
@@ -1997,7 +1997,7 @@
             <div class="timeline__node">
               <div class="timeline__dot"></div>
               <div class="timeline__label">Go-live</div>
-              <div class="timeline__sub">Web en producci&oacute;n</div>
+              <div class="timeline__sub">Web en producci&oacute;n &mdash; <strong style="color:var(--parchment);font-weight:400;">2 a 3 semanas</strong></div>
             </div>
             <div class="timeline__node">
               <div class="timeline__dot"></div>
@@ -2016,6 +2016,7 @@
                 <li>Cambios de textos e im&aacute;genes</li>
                 <li>Monitoreo de forms / WA / SMTP</li>
                 <li>Hasta 4 h/mes de soporte t&eacute;cnico</li>
+                <li>SLA: respuesta a bugs cr&iacute;ticos &lt; 24h h&aacute;biles</li>
               </ul>
             </div>
             <div class="care-col care-col--no">
@@ -2537,7 +2538,11 @@
       var copyBtn = document.getElementById('copy-btn');
       if (copyBtn) copyBtn.addEventListener('click', copyLink);
       var pdfBtn = document.getElementById('pdf-btn');
-      if (pdfBtn) pdfBtn.addEventListener('click', function() { window.print(); });
+      if (pdfBtn) pdfBtn.addEventListener('click', function() {
+        document.title = 'Propuesta_BOGA_RR_Aliados';
+        window.print();
+        setTimeout(function() { document.title = 'RR × BOGA — Propuesta 2026'; }, 500);
+      });
 
       /* ── Secciones (dots + vista general) ── */
       var SECTIONS = [
@@ -2663,7 +2668,11 @@
           else if (act === 'help') toggleHelp(true);
           else if (act === 'presenter') { if (!presenterOn) togglePresenter(); }
           else if (act === 'fullscreen') toggleFullscreen();
-          else if (act === 'pdf') window.print();
+          else if (act === 'pdf') {
+            document.title = 'Propuesta_BOGA_RR_Aliados';
+            window.print();
+            setTimeout(function() { document.title = 'RR × BOGA — Propuesta 2026'; }, 500);
+          }
           else if (act === 'copy') copyLink();
         });
       });
@@ -2823,10 +2832,7 @@
 
       /* Closing CTA stays on slide */
       document.getElementById('closing-cta').addEventListener('click', function() {
-        this.style.boxShadow = '0 0 60px rgba(206,61,31,0.6)';
-        setTimeout(function() {
-          document.getElementById('closing-cta').style.boxShadow = '';
-        }, 600);
+        window.open('https://wa.me/573104435375?text=' + encodeURIComponent('Hola RR Aliados, vimos la propuesta de BOGA y queremos avanzar.'), '_blank');
       });
 
     })();
