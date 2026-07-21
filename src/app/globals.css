@@ -1,0 +1,1346 @@
+/* Google Fonts — Montserrat (BOGA) */
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;900&display=swap");
+
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* =========================================================
+   BOGA DESIGN SYSTEM v1
+   Industria: ingeniería portátil / alquiler unidades sanitarias
+   Feel: confiable, fresco, corporativo, festival
+   Fuente: Montserrat (display + body)
+   ========================================================= */
+
+@theme inline {
+  /* Font families */
+  --font-montserrat: "Montserrat", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-sans: var(--font-montserrat);
+  --font-heading: var(--font-montserrat);
+
+  /* Electric Blue — 50/100 siguen tokens (cambian en .dark) */
+  --color-boga-electric-50: var(--boga-electric-50);
+  --color-boga-electric-100: var(--boga-electric-100);
+  --color-boga-electric-200: #abb8fa;
+  --color-boga-electric-300: #8094f7;
+  --color-boga-electric-400: #5671f5;
+  --color-boga-electric-500: #2c4df2;
+  --color-boga-electric-600: #2541ce;
+  --color-boga-electric-700: #1f36a9;
+  --color-boga-electric-800: #182a85;
+  --color-boga-electric-900: #121f61;
+  --color-boga-electric-950: #0a1135;
+
+  /* Deep Blue */
+  --color-boga-deep-50: #efeef2;
+  --color-boga-deep-100: #d1d0d9;
+  --color-boga-deep-200: #a4a1b3;
+  --color-boga-deep-300: #76718d;
+  --color-boga-deep-400: #494267;
+  --color-boga-deep-500: #1b1341;
+  --color-boga-deep-600: #171037;
+  --color-boga-deep-700: #130d2e;
+  --color-boga-deep-800: #0f0a24;
+  --color-boga-deep-900: #0b081a;
+  --color-boga-deep-950: #06040e;
+
+  /* Lima — 50/100 siguen tokens (cambian en .dark) */
+  --color-boga-lima-50: var(--boga-lima-50);
+  --color-boga-lima-100: var(--boga-lima-100);
+  --color-boga-lima-200: #f0fcb0;
+  --color-boga-lima-300: #e9fa89;
+  --color-boga-lima-400: #e1f961;
+  --color-boga-lima-500: #daf73a;
+  --color-boga-lima-600: #b9d231;
+  --color-boga-lima-700: #99ad29;
+  --color-boga-lima-800: #788820;
+  --color-boga-lima-900: #576317;
+  --color-boga-lima-950: #30360d;
+
+  /* Neutral — 50/100 siguen tokens (cambian en .dark) */
+  --color-boga-neutral-50: var(--boga-neutral-50);
+  --color-boga-neutral-100: var(--boga-neutral-100);
+  --color-boga-neutral-200: #e2e0e8;
+  --color-boga-neutral-300: #c8c5d2;
+  --color-boga-neutral-400: #a8a3b8;
+  --color-boga-neutral-500: #8a849d;
+  --color-boga-neutral-600: #6e6780;
+  --color-boga-neutral-700: #544e63;
+  --color-boga-neutral-800: #3d3849;
+  --color-boga-neutral-900: #272331;
+  --color-boga-neutral-950: #17141e;
+
+  /* Brand kit neutrals */
+  --color-boga-cream: #e9eac1;
+  --color-boga-silver: #d8d8d8;
+
+  /* Surfaces — referencian tokens de :root / .dark */
+  --color-boga-surface-canvas: var(--boga-surface-canvas);
+  --color-boga-surface-elevated: var(--boga-surface-elevated);
+  --color-boga-surface-floating: var(--boga-surface-floating);
+  --color-boga-surface-inset: var(--boga-surface-inset);
+  --color-boga-surface-muted: var(--boga-surface-muted);
+  --color-boga-surface-dark: var(--boga-surface-dark);
+  --color-boga-surface-hero: var(--boga-surface-hero);
+
+  /* Text */
+  --color-boga-text-primary: var(--boga-text-primary);
+  --color-boga-text-secondary: var(--boga-text-secondary);
+  --color-boga-text-tertiary: var(--boga-text-tertiary);
+  --color-boga-text-muted: var(--boga-text-muted);
+  --color-boga-text-inverted: var(--boga-text-inverted);
+  --color-boga-text-on-lima: var(--boga-text-on-lima);
+  --color-boga-text-on-electric: var(--boga-text-on-electric);
+
+  /* Borders */
+  --color-boga-border-subtle: var(--boga-border-subtle);
+  --color-boga-border-default: var(--boga-border-default);
+  --color-boga-border-strong: var(--boga-border-strong);
+  --color-boga-border-focus: var(--boga-border-focus);
+
+  /* Semantic */
+  --color-boga-success-50: #f5fdec;
+  --color-boga-success-100: #e6fac7;
+  --color-boga-success-200: #d0f69f;
+  --color-boga-success-300: #b0ed72;
+  --color-boga-success-400: #8ede4f;
+  --color-boga-success-500: #6bc935;
+  --color-boga-success-600: #4da828;
+  --color-boga-success-700: #36871e;
+  --color-boga-success-800: #236d18;
+  --color-boga-success-900: #155a11;
+  --color-boga-success-950: #0a3d08;
+
+  --color-boga-error-50: #fdf2f2;
+  --color-boga-error-100: #fde8e8;
+  --color-boga-error-200: #fbd5d5;
+  --color-boga-error-300: #f8b4b4;
+  --color-boga-error-400: #f98080;
+  --color-boga-error-500: #f05252;
+  --color-boga-error-600: #e02424;
+  --color-boga-error-700: #c81e1e;
+  --color-boga-error-800: #9b1c1c;
+  --color-boga-error-900: #771d1d;
+  --color-boga-error-950: #4a0d0d;
+
+  --color-boga-warning-50: #fffbeb;
+  --color-boga-warning-100: #fef3c7;
+  --color-boga-warning-200: #fde68a;
+  --color-boga-warning-300: #fcd34d;
+  --color-boga-warning-400: #fbbf24;
+  --color-boga-warning-500: #f59e0b;
+  --color-boga-warning-600: #d97706;
+  --color-boga-warning-700: #b45309;
+  --color-boga-warning-800: #92400e;
+  --color-boga-warning-900: #78350f;
+  --color-boga-warning-950: #451a03;
+
+  --color-boga-info-50: #f0f3fe;
+  --color-boga-info-100: #d5dbfc;
+  --color-boga-info-200: #abb8fa;
+  --color-boga-info-300: #8094f7;
+  --color-boga-info-400: #5671f5;
+  --color-boga-info-500: #2c4df2;
+  --color-boga-info-600: #2541ce;
+  --color-boga-info-700: #1f36a9;
+  --color-boga-info-800: #182a85;
+  --color-boga-info-900: #121f61;
+  --color-boga-info-950: #0a1135;
+
+  /* Semantic aliases (legacy + shadcn) — siguen tokens de :root / .dark */
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-light: var(--primary-light);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-elevated: var(--secondary-elevated);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent-gold: var(--accent-gold);
+  --color-accent-gold-bg: var(--accent-gold-bg);
+  --color-dark: var(--dark);
+  --color-body: var(--body);
+  --color-muted: var(--muted);
+  --color-white: var(--white);
+  --color-text-on-dark: var(--text-on-dark);
+  --color-text-on-dark-muted: var(--text-on-dark-muted);
+  --color-bg-light: var(--bg-light);
+  --color-bg-warm: var(--bg-warm);
+  --color-border: var(--border);
+  --color-border-subtle: var(--border-subtle);
+  --color-success: var(--success);
+  --color-success-bg: var(--success-bg);
+  --color-error: var(--error);
+  --color-error-bg: var(--error-bg);
+  --color-warning: var(--warning);
+  --color-warning-bg: var(--warning-bg);
+  --color-whatsapp: var(--whatsapp);
+
+  /* shadcn semantic colors */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-destructive: var(--destructive);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-muted-foreground: var(--muted-foreground);
+
+  /* Legacy color scales (mantener compatibilidad durante transición) */
+  --color-primary-50: #f0f3fe;
+  --color-primary-100: #d5dbfc;
+  --color-primary-200: #abb8fa;
+  --color-primary-300: #8094f7;
+  --color-primary-400: #5671f5;
+  --color-primary-500: #2c4df2;
+  --color-primary-600: #2541ce;
+  --color-primary-700: #1f36a9;
+  --color-primary-800: #182a85;
+  --color-primary-900: #121f61;
+
+  --color-secondary-50: #efeef2;
+  --color-secondary-100: #d1d0d9;
+  --color-secondary-200: #a4a1b3;
+  --color-secondary-300: #76718d;
+  --color-secondary-400: #494267;
+  --color-secondary-500: #1b1341;
+  --color-secondary-600: #171037;
+  --color-secondary-700: #130d2e;
+  --color-secondary-800: #0f0a24;
+  --color-secondary-900: #0b081a;
+
+  --color-emergency-50: #fdf2f2;
+  --color-emergency-100: #fde8e8;
+  --color-emergency-200: #fbd5d5;
+  --color-emergency-300: #f8b4b4;
+  --color-emergency-400: #f98080;
+  --color-emergency-500: #e02424;
+  --color-emergency-600: #c81e1e;
+  --color-emergency-700: #9b1c1c;
+  --color-emergency-800: #771d1d;
+  --color-emergency-900: #4a0d0d;
+
+  --color-neutral-50: #f8f8fa;
+  --color-neutral-100: #f0eff4;
+  --color-neutral-200: #e2e0e8;
+  --color-neutral-300: #c8c5d2;
+  --color-neutral-400: #a8a3b8;
+  --color-neutral-500: #8a849d;
+  --color-neutral-600: #6e6780;
+  --color-neutral-700: #544e63;
+  --color-neutral-800: #3d3849;
+  --color-neutral-900: #272331;
+
+  /* Typography scale — BOGA */
+  --text-display-3xl: 5.5rem;
+  --text-display-3xl--line-height: 1;
+  --text-display-3xl--letter-spacing: -0.03em;
+  --text-display-3xl--font-weight: 900;
+
+  --text-display-2xl: 4.5rem;
+  --text-display-2xl--line-height: 1.05;
+  --text-display-2xl--letter-spacing: -0.02em;
+  --text-display-2xl--font-weight: 900;
+
+  --text-display-xl: 3.75rem;
+  --text-display-xl--line-height: 1.1;
+  --text-display-xl--letter-spacing: -0.02em;
+  --text-display-xl--font-weight: 800;
+
+  --text-display-lg: 3rem;
+  --text-display-lg--line-height: 1.15;
+  --text-display-lg--letter-spacing: -0.01em;
+  --text-display-lg--font-weight: 800;
+
+  --text-heading-1: 2.25rem;
+  --text-heading-1--line-height: 1.2;
+  --text-heading-1--letter-spacing: -0.01em;
+  --text-heading-1--font-weight: 700;
+
+  --text-heading-2: 1.875rem;
+  --text-heading-2--line-height: 1.25;
+  --text-heading-2--letter-spacing: 0;
+  --text-heading-2--font-weight: 700;
+
+  --text-heading-3: 1.5rem;
+  --text-heading-3--line-height: 1.3;
+  --text-heading-3--letter-spacing: 0;
+  --text-heading-3--font-weight: 600;
+
+  --text-heading-4: 1.25rem;
+  --text-heading-4--line-height: 1.35;
+  --text-heading-4--letter-spacing: 0;
+  --text-heading-4--font-weight: 600;
+
+  --text-heading-5: 1.125rem;
+  --text-heading-5--line-height: 1.4;
+  --text-heading-5--letter-spacing: 0;
+  --text-heading-5--font-weight: 600;
+
+  --text-body-lg: 1.125rem;
+  --text-body-lg--line-height: 1.65;
+  --text-body-lg--font-weight: 400;
+
+  --text-body-md: 1rem;
+  --text-body-md--line-height: 1.6;
+  --text-body-md--font-weight: 400;
+
+  --text-body-sm: 0.875rem;
+  --text-body-sm--line-height: 1.55;
+  --text-body-sm--font-weight: 400;
+
+  --text-caption: 0.75rem;
+  --text-caption--line-height: 1.5;
+  --text-caption--letter-spacing: 0.08em;
+  --text-caption--font-weight: 500;
+
+  --text-overline: 0.6875rem;
+  --text-overline--line-height: 1.4;
+  --text-overline--letter-spacing: 0.25em;
+  --text-overline--font-weight: 500;
+
+  /* Legacy typography scale */
+  --text-display-md: 3rem;
+  --text-display-md--line-height: 1.15;
+  --text-display-md--letter-spacing: -0.015em;
+  --text-display-md--font-weight: 700;
+
+  --text-heading-lg: 2.25rem;
+  --text-heading-lg--line-height: 1.2;
+  --text-heading-lg--letter-spacing: -0.01em;
+  --text-heading-lg--font-weight: 600;
+
+  --text-heading-md: 1.5rem;
+  --text-heading-md--line-height: 1.3;
+  --text-heading-md--letter-spacing: -0.005em;
+  --text-heading-md--font-weight: 600;
+
+  --text-heading-sm: 1.25rem;
+  --text-heading-sm--line-height: 1.4;
+  --text-heading-sm--font-weight: 600;
+
+  /* Spacing */
+  --spacing-boga-space-0: 0;
+  --spacing-boga-space-1: 0.25rem;
+  --spacing-boga-space-2: 0.5rem;
+  --spacing-boga-space-3: 0.75rem;
+  --spacing-boga-space-4: 1rem;
+  --spacing-boga-space-5: 1.25rem;
+  --spacing-boga-space-6: 1.5rem;
+  --spacing-boga-space-8: 2rem;
+  --spacing-boga-space-10: 2.5rem;
+  --spacing-boga-space-12: 3rem;
+  --spacing-boga-space-16: 4rem;
+  --spacing-boga-space-20: 5rem;
+  --spacing-boga-space-24: 6rem;
+
+  /* Legacy spacing */
+  --spacing-space-1: 0.5rem;
+  --spacing-space-2: 1rem;
+  --spacing-space-3: 1.5rem;
+  --spacing-space-4: 2rem;
+  --spacing-space-5: 2.5rem;
+  --spacing-space-6: 3rem;
+  --spacing-space-8: 4rem;
+  --spacing-space-10: 5rem;
+  --spacing-space-12: 6rem;
+  --spacing-space-16: 8rem;
+  --spacing-space-20: 10rem;
+
+  --spacing-container: 1280px;
+
+  /* Border radius */
+  --radius-boga-none: 0;
+  --radius-boga-xs: 2px;
+  --radius-boga-sm: 4px;
+  --radius-boga-md: 6px;
+  --radius-boga-lg: 8px;
+  --radius-boga-xl: 12px;
+  --radius-boga-2xl: 16px;
+  --radius-boga-3xl: 24px;
+  --radius-boga-full: 9999px;
+
+  /* Legacy radius */
+  --radius-pill: 9999px;
+  --radius-card: 16px;
+  --radius-badge: 8px;
+
+  /* Shadows */
+  --shadow-boga-0: none;
+  --shadow-boga-1: 0 1px 2px rgba(27, 19, 65, 0.06);
+  --shadow-boga-2: 0 1px 3px rgba(27, 19, 65, 0.08), 0 1px 2px rgba(27, 19, 65, 0.04);
+  --shadow-boga-3: 0 4px 6px rgba(27, 19, 65, 0.08), 0 2px 4px rgba(27, 19, 65, 0.04);
+  --shadow-boga-4: 0 10px 15px rgba(27, 19, 65, 0.1), 0 4px 6px rgba(27, 19, 65, 0.05);
+  --shadow-boga-5: 0 20px 25px rgba(27, 19, 65, 0.12), 0 10px 10px rgba(27, 19, 65, 0.04);
+  --shadow-boga-dark-1: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-boga-dark-2: 0 1px 3px rgba(0, 0, 0, 0.24), 0 1px 2px rgba(0, 0, 0, 0.16);
+  --shadow-boga-dark-3: 0 4px 6px rgba(0, 0, 0, 0.24), 0 2px 4px rgba(0, 0, 0, 0.16);
+
+  /* Legacy shadows */
+  --shadow-sm: 0 1px 2px rgba(27, 19, 65, 0.06);
+  --shadow-md: 0 4px 6px rgba(27, 19, 65, 0.07), 0 2px 4px rgba(27, 19, 65, 0.04);
+  --shadow-lg: 0 10px 15px rgba(27, 19, 65, 0.09), 0 4px 6px rgba(27, 19, 65, 0.04);
+  --shadow-xl: 0 20px 25px rgba(27, 19, 65, 0.12), 0 10px 10px rgba(27, 19, 65, 0.04);
+  --shadow-focus: 0 0 0 3px rgba(44, 77, 242, 0.25);
+
+  /* Breakpoints */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
+  /* Animations */
+  --animate-boga-pulse-emergency: boga-pulse-emergency 2s ease-in-out infinite;
+  --animate-boga-marquee: boga-marquee 90s linear infinite;
+  --animate-boga-marquee-reverse: boga-marquee-reverse 100s linear infinite;
+  --animate-boga-fade-up: boga-fade-up 400ms cubic-bezier(0.4, 0, 0.2, 1) both;
+  --animate-boga-spin-circles: boga-spin-circles 800ms linear infinite;
+
+  /* Legacy animations */
+  --animate-pulse-emergency: pulse-emergency 2s ease-in-out infinite;
+  --animate-marquee: marquee 40s linear infinite;
+  --animate-marquee-reverse: marquee-reverse 45s linear infinite;
+
+  /* Timing functions */
+  --transition-timing-function-ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-timing-function-ease-in-out-expo: cubic-bezier(0.87, 0, 0.13, 1);
+
+  /* Motion tokens */
+  --ease-boga-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-boga-enter: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-boga-exit: cubic-bezier(0.55, 0, 1, 0.45);
+  --ease-boga-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+:root {
+  /* ===========================================
+     ESCALA AZUL ELECTRICO
+     =========================================== */
+  --boga-electric-50: #f0f3fe;
+  --boga-electric-100: #d5dbfc;
+  --boga-electric-200: #abb8fa;
+  --boga-electric-300: #8094f7;
+  --boga-electric-400: #5671f5;
+  --boga-electric-500: #2c4df2;
+  --boga-electric-600: #2541ce;
+  --boga-electric-700: #1f36a9;
+  --boga-electric-800: #182a85;
+  --boga-electric-900: #121f61;
+  --boga-electric-950: #0a1135;
+
+  /* ESCALA AZUL PROFUNDO */
+  --boga-deep-50: #efeef2;
+  --boga-deep-100: #d1d0d9;
+  --boga-deep-200: #a4a1b3;
+  --boga-deep-300: #76718d;
+  --boga-deep-400: #494267;
+  --boga-deep-500: #1b1341;
+  --boga-deep-600: #171037;
+  --boga-deep-700: #130d2e;
+  --boga-deep-800: #0f0a24;
+  --boga-deep-900: #0b081a;
+  --boga-deep-950: #06040e;
+
+  /* ESCALA LIMA BOGA */
+  --boga-lima-50: #fcfef1;
+  --boga-lima-100: #f8fdd8;
+  --boga-lima-200: #f0fcb0;
+  --boga-lima-300: #e9fa89;
+  --boga-lima-400: #e1f961;
+  --boga-lima-500: #daf73a;
+  --boga-lima-600: #b9d231;
+  --boga-lima-700: #99ad29;
+  --boga-lima-800: #788820;
+  --boga-lima-900: #576317;
+  --boga-lima-950: #30360d;
+
+  /* ESCALA NEUTRA */
+  --boga-neutral-50: #f8f8fa;
+  --boga-neutral-100: #f0eff4;
+  --boga-neutral-200: #e2e0e8;
+  --boga-neutral-300: #c8c5d2;
+  --boga-neutral-400: #a8a3b8;
+  --boga-neutral-500: #8a849d;
+  --boga-neutral-600: #6e6780;
+  --boga-neutral-700: #544e63;
+  --boga-neutral-800: #3d3849;
+  --boga-neutral-900: #272331;
+  --boga-neutral-950: #17141e;
+
+  /* SUPERFICIES */
+  --boga-surface-canvas: #ffffff;
+  --boga-surface-elevated: #ffffff;
+  --boga-surface-floating: #ffffff;
+  --boga-surface-inset: #f0eff4;
+  --boga-surface-muted: #f8f8fa;
+  --boga-surface-dark: #1b1341;
+  --boga-surface-hero: #2c4df2;
+
+  /* TEXTO */
+  --boga-text-primary: #272331;
+  --boga-text-secondary: #544e63;
+  --boga-text-tertiary: #8a849d;
+  --boga-text-muted: #a8a3b8;
+  --boga-text-inverted: #ffffff;
+  --boga-text-on-lima: #1b1341;
+  --boga-text-on-electric: #ffffff;
+
+  /* BORDES */
+  --boga-border-subtle: rgba(27, 19, 65, 0.06);
+  --boga-border-default: rgba(27, 19, 65, 0.12);
+  --boga-border-strong: rgba(27, 19, 65, 0.24);
+  --boga-border-focus: #2c4df2;
+  --boga-border-focus-ring: 0 0 0 3px rgba(44, 77, 242, 0.25);
+
+  /* SEMANTICOS */
+  --boga-success-50: #f5fdec;
+  --boga-success-100: #e6fac7;
+  --boga-success-500: #6bc935;
+  --boga-success-600: #4da828;
+  --boga-success-700: #36871e;
+
+  --boga-error-50: #fdf2f2;
+  --boga-error-100: #fde8e8;
+  --boga-error-500: #f05252;
+  --boga-error-600: #e02424;
+  --boga-error-700: #c81e1e;
+
+  --boga-warning-50: #fffbeb;
+  --boga-warning-100: #fef3c7;
+  --boga-warning-500: #f59e0b;
+  --boga-warning-600: #d97706;
+  --boga-warning-700: #b45309;
+
+  --boga-info-50: #f0f3fe;
+  --boga-info-100: #d5dbfc;
+  --boga-info-500: #2c4df2;
+  --boga-info-600: #2541ce;
+  --boga-info-700: #1f36a9;
+
+  /* TIPOGRAFIA */
+  --boga-font-display: 'Montserrat', sans-serif;
+  --boga-font-body: 'Montserrat', 'Poppins', system-ui, -apple-system, sans-serif;
+
+  --boga-text-display-3xl: 900 5.5rem/1.0 var(--boga-font-display);
+  --boga-text-display-2xl: 900 4.5rem/1.05 var(--boga-font-display);
+  --boga-text-display-xl: 800 3.75rem/1.1 var(--boga-font-display);
+  --boga-text-display-lg: 800 3rem/1.15 var(--boga-font-display);
+  --boga-text-heading-1: 700 2.25rem/1.2 var(--boga-font-body);
+  --boga-text-heading-2: 700 1.875rem/1.25 var(--boga-font-body);
+  --boga-text-heading-3: 600 1.5rem/1.3 var(--boga-font-body);
+  --boga-text-heading-4: 600 1.25rem/1.35 var(--boga-font-body);
+  --boga-text-heading-5: 600 1.125rem/1.4 var(--boga-font-body);
+  --boga-text-body-lg: 400 1.125rem/1.65 var(--boga-font-body);
+  --boga-text-body-md: 400 1rem/1.6 var(--boga-font-body);
+  --boga-text-body-sm: 400 0.875rem/1.55 var(--boga-font-body);
+  --boga-text-caption: 500 0.75rem/1.5 var(--boga-font-body);
+  --boga-text-overline: 500 0.6875rem/1.4 var(--boga-font-body);
+
+  --boga-tracking-tight: -0.03em;
+  --boga-tracking-tight-sm: -0.02em;
+  --boga-tracking-tight-xs: -0.01em;
+  --boga-tracking-normal: 0;
+  --boga-tracking-wide: 0.08em;
+  --boga-tracking-wider: 0.25em;
+
+  /* ESPACIADO */
+  --boga-space-0: 0;
+  --boga-space-1: 0.25rem;
+  --boga-space-2: 0.5rem;
+  --boga-space-3: 0.75rem;
+  --boga-space-4: 1rem;
+  --boga-space-5: 1.25rem;
+  --boga-space-6: 1.5rem;
+  --boga-space-8: 2rem;
+  --boga-space-10: 2.5rem;
+  --boga-space-12: 3rem;
+  --boga-space-16: 4rem;
+  --boga-space-20: 5rem;
+  --boga-space-24: 6rem;
+
+  --boga-container-max: 1280px;
+  --boga-grid-columns: 12;
+  --boga-grid-gap: 1rem;
+
+  /* RADIOS */
+  --boga-radius-none: 0;
+  --boga-radius-xs: 2px;
+  --boga-radius-sm: 4px;
+  --boga-radius-md: 6px;
+  --boga-radius-lg: 8px;
+  --boga-radius-xl: 12px;
+  --boga-radius-2xl: 16px;
+  --boga-radius-3xl: 24px;
+  --boga-radius-full: 9999px;
+
+  /* SOMBRAS */
+  --boga-shadow-0: none;
+  --boga-shadow-1: 0 1px 2px rgba(27, 19, 65, 0.06);
+  --boga-shadow-2: 0 1px 3px rgba(27, 19, 65, 0.08), 0 1px 2px rgba(27, 19, 65, 0.04);
+  --boga-shadow-3: 0 4px 6px rgba(27, 19, 65, 0.08), 0 2px 4px rgba(27, 19, 65, 0.04);
+  --boga-shadow-4: 0 10px 15px rgba(27, 19, 65, 0.1), 0 4px 6px rgba(27, 19, 65, 0.05);
+  --boga-shadow-5: 0 20px 25px rgba(27, 19, 65, 0.12), 0 10px 10px rgba(27, 19, 65, 0.04);
+  --boga-shadow-dark-1: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --boga-shadow-dark-2: 0 1px 3px rgba(0, 0, 0, 0.24), 0 1px 2px rgba(0, 0, 0, 0.16);
+  --boga-shadow-dark-3: 0 4px 6px rgba(0, 0, 0, 0.24), 0 2px 4px rgba(0, 0, 0, 0.16);
+
+  /* MOTION */
+  --boga-duration-instant: 100ms;
+  --boga-duration-fast: 150ms;
+  --boga-duration-normal: 200ms;
+  --boga-duration-slow: 300ms;
+  --boga-duration-slower: 400ms;
+
+  --boga-easing-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --boga-easing-enter: cubic-bezier(0.23, 1, 0.32, 1);
+  --boga-easing-exit: cubic-bezier(0.55, 0, 1, 0.45);
+  --boga-easing-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Semantic aliases (legacy + shadcn) */
+  --primary: var(--boga-electric-500);
+  --primary-hover: var(--boga-electric-600);
+  --primary-light: var(--boga-electric-50);
+  --primary-foreground: var(--boga-text-on-electric);
+  --secondary: var(--boga-deep-500);
+  --secondary-elevated: var(--boga-deep-600);
+  --secondary-foreground: var(--boga-text-inverted);
+  --accent-gold: #c9a84c;
+  --accent-gold-bg: rgba(201, 168, 76, 0.12);
+  --dark: var(--boga-text-primary);
+  --body: var(--boga-text-secondary);
+  --muted: var(--boga-text-tertiary);
+  --white: #ffffff;
+  --text-on-dark: var(--boga-text-inverted);
+  --text-on-dark-muted: rgba(255, 255, 255, 0.7);
+  --bg-light: var(--boga-surface-muted);
+  --bg-warm: var(--boga-surface-muted);
+  --border: var(--boga-border-default);
+  --border-subtle: var(--boga-border-subtle);
+  --input: var(--boga-surface-inset);
+  --ring: var(--boga-border-focus);
+  --success: var(--boga-success-500);
+  --success-bg: var(--boga-success-50);
+  --error: var(--boga-error-500);
+  --error-bg: var(--boga-error-50);
+  --warning: var(--boga-warning-500);
+  --warning-bg: var(--boga-warning-50);
+  --whatsapp: #25d366;
+  --destructive: var(--boga-error-500);
+
+  /* Backgrounds */
+  --background: var(--boga-surface-canvas);
+  --foreground: var(--boga-text-primary);
+  --card: var(--boga-surface-elevated);
+  --card-foreground: var(--boga-text-primary);
+  --popover: var(--boga-surface-floating);
+  --popover-foreground: var(--boga-text-primary);
+  --accent: var(--boga-lima-500);
+  --accent-foreground: var(--boga-text-on-lima);
+  --muted-foreground: var(--boga-text-tertiary);
+
+  /* Layout */
+  --container-max: 1280px;
+  --container-padding: 1rem;
+  --header-height: 72px;
+  --header-height-mobile: 64px;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 350ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (min-width: 640px) {
+  :root {
+    --container-padding: 1.5rem;
+    --boga-grid-gap: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --container-padding: 1.5rem;
+    --boga-grid-gap: 2rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  :root {
+    --container-padding: 3rem;
+  }
+}
+
+.dark {
+  color-scheme: dark;
+
+  /* Superficies */
+  --boga-surface-canvas: #0f0a24;
+  --boga-surface-elevated: #171037;
+  --boga-surface-floating: #1b1341;
+  --boga-surface-inset: #130d2e;
+  --boga-surface-muted: #130d2e;
+  --boga-surface-dark: #0b081a;
+  --boga-surface-hero: #2c4df2;
+
+  /* Texto */
+  --boga-text-primary: #f4f3f8;
+  --boga-text-secondary: #c8c5d2;
+  --boga-text-tertiary: #a8a3b8;
+  --boga-text-muted: #8a849d;
+  --boga-text-inverted: #ffffff;
+  --boga-text-on-lima: #1b1341;
+  --boga-text-on-electric: #ffffff;
+
+  /* Bordes */
+  --boga-border-subtle: rgba(255, 255, 255, 0.06);
+  --boga-border-default: rgba(255, 255, 255, 0.12);
+  --boga-border-strong: rgba(255, 255, 255, 0.22);
+  --boga-border-focus: #5671f5;
+  --boga-border-focus-ring: 0 0 0 3px rgba(86, 113, 245, 0.35);
+
+  /* Tintes claros de marca → versiones oscuras útiles en UI */
+  --boga-electric-50: rgba(44, 77, 242, 0.16);
+  --boga-electric-100: rgba(44, 77, 242, 0.28);
+  --boga-lima-50: rgba(218, 247, 58, 0.1);
+  --boga-lima-100: rgba(218, 247, 58, 0.18);
+  --boga-neutral-50: #171037;
+  --boga-neutral-100: #1b1341;
+
+  /* Sombras más profundas */
+  --boga-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --boga-shadow-2: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.25);
+  --boga-shadow-3: 0 4px 6px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.25);
+  --boga-shadow-4: 0 10px 15px rgba(0, 0, 0, 0.45), 0 4px 6px rgba(0, 0, 0, 0.3);
+  --boga-shadow-5: 0 20px 25px rgba(0, 0, 0, 0.5), 0 10px 10px rgba(0, 0, 0, 0.3);
+
+  /* Semantic / shadcn */
+  --background: var(--boga-surface-canvas);
+  --foreground: var(--boga-text-primary);
+  --card: var(--boga-surface-elevated);
+  --card-foreground: var(--boga-text-primary);
+  --popover: var(--boga-surface-floating);
+  --popover-foreground: var(--boga-text-primary);
+  --primary: var(--boga-electric-500);
+  --primary-hover: var(--boga-electric-400);
+  --primary-light: var(--boga-electric-50);
+  --primary-foreground: var(--boga-text-on-electric);
+  --secondary: var(--boga-deep-600);
+  --secondary-elevated: var(--boga-deep-700);
+  --secondary-foreground: var(--boga-text-inverted);
+  --accent: var(--boga-lima-500);
+  --accent-foreground: var(--boga-text-on-lima);
+  --muted: var(--boga-text-tertiary);
+  --muted-foreground: var(--boga-text-muted);
+  --border: var(--boga-border-default);
+  --border-subtle: var(--boga-border-subtle);
+  --input: var(--boga-surface-inset);
+  --ring: var(--boga-border-focus);
+  --body: var(--boga-text-secondary);
+  --dark: var(--boga-text-primary);
+  --bg-light: var(--boga-surface-muted);
+  --bg-warm: var(--boga-surface-muted);
+  --success-bg: rgba(107, 201, 53, 0.12);
+  --error-bg: rgba(240, 82, 82, 0.12);
+  --warning-bg: rgba(245, 158, 11, 0.12);
+  --accent-gold-bg: rgba(201, 168, 76, 0.16);
+}
+
+/* Admin panel dark theme — BOGA brand colors */
+.dark[data-admin-theme="dark"],
+[data-admin-theme="dark"] {
+  --background: #0f0a24;
+  --foreground: #f4f3f8;
+  --card: #171037;
+  --card-foreground: #f4f3f8;
+  --popover: #1b1341;
+  --popover-foreground: #f4f3f8;
+  --primary: #2c4df2;
+  --primary-hover: #5671f5;
+  --primary-foreground: #ffffff;
+  --primary-light: rgba(44, 77, 242, 0.16);
+  --secondary: #130d2e;
+  --secondary-foreground: #f4f3f8;
+  --secondary-elevated: #171037;
+  --accent: #daf73a;
+  --accent-foreground: #1b1341;
+  --accent-gold: #c9a84c;
+  --accent-gold-bg: rgba(201, 168, 76, 0.16);
+  --dark: #f4f3f8;
+  --body: #c8c5d2;
+  --muted: #130d2e;
+  --muted-foreground: #a8a3b8;
+  --white: #ffffff;
+  --text-on-dark: #ffffff;
+  --text-on-dark-muted: rgba(255, 255, 255, 0.7);
+  --bg-light: #130d2e;
+  --bg-warm: #130d2e;
+  --border: rgba(255, 255, 255, 0.12);
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --input: #1f1a3a;
+  --ring: #5671f5;
+  --success: #6bc935;
+  --success-bg: rgba(107, 201, 53, 0.12);
+  --error: #f05252;
+  --error-bg: rgba(240, 82, 82, 0.12);
+  --warning: #f59e0b;
+  --warning-bg: rgba(245, 158, 11, 0.12);
+  --destructive: #f05252;
+}
+
+/* Admin panel light theme — BOGA brand tokens */
+[data-admin-theme="light"] {
+  --background: #ffffff;
+  --foreground: #272331;
+  --card: #ffffff;
+  --card-foreground: #272331;
+  --popover: #ffffff;
+  --popover-foreground: #272331;
+  --primary: #2c4df2;
+  --primary-hover: #2541ce;
+  --primary-foreground: #ffffff;
+  --primary-light: rgba(44, 77, 242, 0.08);
+  --secondary: #f3f3f7;
+  --secondary-foreground: #272331;
+  --secondary-elevated: #ffffff;
+  --accent: #daf73a;
+  --accent-foreground: #1b1341;
+  --accent-gold: #c9a84c;
+  --accent-gold-bg: rgba(201, 168, 76, 0.12);
+  --dark: #ffffff;
+  --body: #544e63;
+  --muted: #f3f3f7;
+  --muted-foreground: #8a849d;
+  --white: #ffffff;
+  --text-on-dark: #ffffff;
+  --text-on-dark-muted: rgba(255, 255, 255, 0.7);
+  --bg-light: #f8f8fa;
+  --bg-warm: #f8f8fa;
+  --border: rgba(27, 19, 65, 0.1);
+  --border-subtle: rgba(27, 19, 65, 0.06);
+  --input: #f0eff4;
+  --ring: #2c4df2;
+  --success: #16a34a;
+  --success-bg: rgba(22, 163, 74, 0.1);
+  --error: #dc2626;
+  --error-bg: rgba(220, 38, 38, 0.08);
+  --warning: #d97706;
+  --warning-bg: rgba(217, 119, 6, 0.1);
+  --destructive: #dc2626;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    font-family: var(--boga-font-body);
+    color: var(--boga-text-primary);
+    background-color: var(--boga-surface-canvas);
+    line-height: 1.6;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--boga-font-display);
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    color: var(--boga-text-primary);
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+    transition: color var(--boga-duration-fast) var(--boga-easing-smooth);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--boga-border-focus);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  .skip-link {
+    position: absolute;
+    top: -100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--boga-deep-500);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0 0 8px 8px;
+    z-index: 9999;
+    font-weight: 500;
+    transition: top 200ms ease;
+  }
+
+  .skip-link:focus {
+    top: 0;
+  }
+}
+
+@layer components {
+  /* Contenedor principal BOGA */
+  .container-boga {
+    width: 100%;
+    max-width: var(--boga-container-max);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--container-padding);
+    padding-right: var(--container-padding);
+  }
+
+  /* Contenedor legacy (alias durante transición) */
+  .container-boga-legacy {
+    width: 100%;
+    max-width: var(--boga-container-max);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--container-padding);
+    padding-right: var(--container-padding);
+  }
+
+  /* Badge ISO */
+  .badge-iso {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--accent-gold-bg);
+    border: 1px solid rgba(201, 168, 76, 0.3);
+    border-radius: 9999px;
+    font-family: var(--boga-font-body);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--accent-gold);
+  }
+
+  /* Botón primario BOGA */
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--boga-lima-500);
+    color: var(--boga-text-on-lima);
+    font-family: var(--boga-font-body);
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border-radius: 9999px;
+    transition: all var(--boga-duration-normal) var(--boga-easing-enter);
+    border: none;
+    cursor: pointer;
+    box-shadow: var(--boga-shadow-1);
+  }
+
+  .btn-primary:hover {
+    background-color: var(--boga-lima-600);
+    transform: translateY(-1px);
+    box-shadow: var(--boga-shadow-2);
+  }
+
+  .btn-primary:active {
+    transform: scale(0.97);
+    background-color: var(--boga-lima-700);
+  }
+
+  .btn-primary:focus-visible {
+    outline: 2px solid var(--boga-text-inverted);
+    outline-offset: 2px;
+  }
+
+  /* Botón secundario (outline) */
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background-color: transparent;
+    color: var(--boga-text-inverted);
+    font-family: var(--boga-font-body);
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border-radius: 9999px;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    transition: all var(--boga-duration-normal) var(--boga-easing-enter);
+    cursor: pointer;
+  }
+
+  .btn-secondary:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.6);
+  }
+
+  /* Botón EMERGENCIA */
+  .btn-emergency {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background-color: var(--boga-error-600);
+    color: white;
+    font-family: var(--boga-font-body);
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    animation: boga-pulse-emergency 2s ease-in-out infinite;
+    transition: background-color var(--boga-duration-fast) var(--boga-easing-smooth);
+    box-shadow: var(--boga-shadow-3);
+  }
+
+  .btn-emergency:hover {
+    background-color: var(--boga-error-700);
+  }
+
+  .btn-emergency:focus-visible {
+    outline: 2px solid white;
+    outline-offset: 2px;
+  }
+
+  /* Card de producto */
+  .card-product {
+    position: relative;
+    background: var(--boga-surface-elevated);
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--boga-border-subtle);
+    transition: all 200ms cubic-bezier(0.23, 1, 0.32, 1);
+    box-shadow: var(--boga-shadow-2);
+  }
+
+  .card-product:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--boga-shadow-3);
+    border-color: transparent;
+  }
+
+  .card-product:active {
+    transform: scale(0.98);
+  }
+
+  .card-product__image {
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--boga-surface-muted) 0%, var(--boga-surface-inset) 100%);
+  }
+
+  .card-product__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--boga-duration-slow) var(--boga-easing-smooth);
+  }
+
+  .card-product:hover .card-product__image img {
+    transform: scale(1.05);
+  }
+
+  /* Stats number */
+  .stat-number {
+    font-family: var(--boga-font-display);
+    font-weight: 800;
+    font-size: 2.25rem;
+    line-height: 1;
+    color: var(--boga-lima-500);
+  }
+
+  @media (min-width: 768px) {
+    .stat-number {
+      font-size: 3rem;
+    }
+  }
+
+  /* Marquee container */
+  .marquee-container {
+    overflow: hidden;
+    mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      black 10%,
+      black 90%,
+      transparent 100%
+    );
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      black 10%,
+      black 90%,
+      transparent 100%
+    );
+  }
+
+  .marquee-container:hover .marquee-track,
+  .marquee-container:hover .marquee-track-reverse {
+    animation-play-state: paused;
+  }
+
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    animation: boga-marquee 90s linear infinite;
+  }
+
+  .marquee-track-reverse {
+    display: flex;
+    width: max-content;
+    animation: boga-marquee-reverse 100s linear infinite;
+  }
+
+  /* Signature 3 circles — 2 filled + 1 hollow center
+     Modifiers (--s/--m/--l/--electric/…) also set base layout so they work alone. */
+  .boga-circles,
+  .boga-circles--s,
+  .boga-circles--m,
+  .boga-circles--l,
+  .boga-circles--electric,
+  .boga-circles--dark,
+  .boga-circles--white {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .boga-circles .circle,
+  .boga-circles--s .circle,
+  .boga-circles--m .circle,
+  .boga-circles--l .circle,
+  .boga-circles--electric .circle,
+  .boga-circles--dark .circle,
+  .boga-circles--white .circle {
+    width: 10px;
+    height: 10px;
+    border-radius: 9999px;
+    background: var(--boga-lima-500);
+    border: 2px solid transparent;
+    box-sizing: border-box;
+    flex-shrink: 0;
+  }
+
+  .boga-circles .circle:nth-child(2),
+  .boga-circles--s .circle:nth-child(2),
+  .boga-circles--m .circle:nth-child(2),
+  .boga-circles--l .circle:nth-child(2),
+  .boga-circles--electric .circle:nth-child(2),
+  .boga-circles--dark .circle:nth-child(2),
+  .boga-circles--white .circle:nth-child(2) {
+    background: transparent;
+    border-color: var(--boga-lima-500);
+  }
+
+  .boga-circles--s .circle { width: 6px; height: 6px; }
+  .boga-circles--m .circle { width: 10px; height: 10px; }
+  .boga-circles--l .circle { width: 16px; height: 16px; }
+
+  .boga-circles--electric .circle {
+    background: var(--boga-electric-500);
+  }
+  .boga-circles--electric .circle:nth-child(2) {
+    background: transparent;
+    border-color: var(--boga-electric-500);
+  }
+
+  .boga-circles--dark .circle {
+    background: var(--boga-deep-500);
+  }
+  .boga-circles--dark .circle:nth-child(2) {
+    background: transparent;
+    border-color: var(--boga-deep-500);
+  }
+
+  .boga-circles--white .circle {
+    background: #ffffff;
+  }
+  .boga-circles--white .circle:nth-child(2) {
+    background: transparent;
+    border-color: #ffffff;
+  }
+
+  /* Loading: 3 circles pulse */
+  .boga-loading-circles {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .boga-loading-circles .circle {
+    width: 8px;
+    height: 8px;
+    border-radius: 9999px;
+    background: var(--boga-lima-500);
+    animation: boga-pulse-circle 1s ease-in-out infinite;
+  }
+  .boga-loading-circles .circle:nth-child(2) {
+    background: transparent;
+    border: 2px solid var(--boga-lima-500);
+    animation-delay: 0.15s;
+  }
+  .boga-loading-circles .circle:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+
+  .boga-diagonal {
+    background: linear-gradient(
+      135deg,
+      var(--boga-electric-500) 0%,
+      var(--boga-electric-500) 48%,
+      var(--boga-lima-500) 48%,
+      var(--boga-lima-500) 100%
+    );
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .gradient-primary {
+    background: linear-gradient(135deg, var(--boga-electric-500) 0%, var(--boga-electric-600) 100%);
+  }
+
+  .gradient-dark {
+    background: linear-gradient(180deg, var(--boga-deep-500) 0%, var(--boga-deep-900) 100%);
+  }
+
+  .gradient-hero {
+    background: linear-gradient(135deg, var(--boga-deep-500) 0%, var(--boga-electric-500) 50%, var(--boga-electric-400) 100%);
+  }
+
+  .surface-elevated {
+    box-shadow: var(--boga-shadow-2);
+  }
+
+  .surface-floating {
+    box-shadow: var(--boga-shadow-4);
+  }
+
+  .font-display {
+    font-family: var(--boga-font-display);
+  }
+
+  .text-overline {
+    font: var(--boga-text-overline);
+    text-transform: uppercase;
+    letter-spacing: var(--boga-tracking-wider);
+  }
+}
+
+/* Keyframes */
+@keyframes boga-pulse-emergency {
+  0% {
+    box-shadow: 0 0 0 0 rgba(224, 36, 36, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(224, 36, 36, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(224, 36, 36, 0);
+  }
+}
+
+@keyframes boga-marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes boga-marquee-reverse {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes boga-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes boga-spin-circles {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes boga-pulse-circle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.5; transform: scale(0.8); }
+}
+
+@keyframes pulse-emergency {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(224, 36, 36, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgba(224, 36, 36, 0);
+  }
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes marquee-reverse {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .marquee-track,
+  .marquee-track * {
+    animation: none !important;
+  }
+}
