@@ -9,10 +9,10 @@ import {
   CATALOGO_VERSION,
   COTIZACIONES_DEMO,
   DEFAULT_CATALOGO,
-  PLANTILLAS_PAQUETE,
   SOLICITUDES_DEMO,
 } from "@/lib/mocks/cotizador-boga"
-import { calcularPaquete, formatCOP } from "@/lib/cotizador/calc"
+import { calcularPaquete, formatCOP, nextNumeroSolicitud } from "@/lib/cotizador/calc"
+import { calcularTransporte } from "@/lib/cotizador/transporte"
 import type { Producto } from "@/lib/mocks"
 
 const KEY_CATALOGO = "boga-catalogo-v1"
@@ -68,7 +68,7 @@ export function saveCatalogo(catalogo: CatalogItem[]) {
 export function getPaquetes(): PaqueteEvento[] {
   const stored = readJSON<PaqueteEvento[] | null>(KEY_PAQUETES, null)
   if (!stored) {
-    const seed = [...COTIZACIONES_DEMO, ...PLANTILLAS_PAQUETE]
+    const seed = [...COTIZACIONES_DEMO]
     writeJSON(KEY_PAQUETES, seed)
     return seed
   }
@@ -80,11 +80,7 @@ export function savePaquetes(paquetes: PaqueteEvento[]) {
 }
 
 export function getCotizaciones(): PaqueteEvento[] {
-  return getPaquetes().filter((p) => !p.esPlantilla)
-}
-
-export function getPlantillas(): PaqueteEvento[] {
-  return getPaquetes().filter((p) => p.esPlantilla)
+  return getPaquetes()
 }
 
 export function getPaqueteById(id: string): PaqueteEvento | undefined {
@@ -101,15 +97,31 @@ export function upsertPaquete(paquete: PaqueteEvento) {
     paquete.descuentoPorcentaje ?? 0,
     paquete.duracionDias ?? 1
   )
+
+  // Calcular transporte
+  const ciudad = paquete.cliente?.ciudad
+  const transportResult = calcularTransporte(paquete.items, ciudad)
+
   const next = {
     ...paquete,
     ...totales,
+    transporte: transportResult.sede
+      ? {
+          sede: transportResult.sede,
+          numCamiones: transportResult.camiones.length,
+          costoTotal: transportResult.costoTotal,
+        }
+      : undefined,
     actualizadoEn: new Date().toISOString(),
   }
   if (idx >= 0) all[idx] = next
   else all.unshift(next)
   savePaquetes(all)
   return next
+}
+
+export function getSolicitudById(id: string): SolicitudPublica | undefined {
+  return getSolicitudes().find((s) => s.id === id)
 }
 
 export function getSolicitudes(): SolicitudPublica[] {
@@ -127,9 +139,13 @@ export function saveSolicitudes(solicitudes: SolicitudPublica[]) {
 
 export function addSolicitud(solicitud: SolicitudPublica) {
   const all = getSolicitudes()
-  all.unshift(solicitud)
+  const next = {
+    ...solicitud,
+    numeroReferencia: solicitud.numeroReferencia || nextNumeroSolicitud(all),
+  }
+  all.unshift(next)
   saveSolicitudes(all)
-  return solicitud
+  return next
 }
 
 export function updateSolicitud(id: string, patch: Partial<SolicitudPublica>) {
@@ -145,7 +161,7 @@ export function generateId(prefix: string) {
   return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`
 }
 
-/** Convierte paquetes/plantillas a objetos Producto para mostrarlos en la sección Servicios */
+/** Convierte paquetes a objetos Producto para mostrarlos en la sección Servicios */
 export function getPaquetesComoProductos(): Producto[] {
   const planesCat: { id: string; slug: string; nombre: string; orden: number } = {
     id: "cat_5",
@@ -177,7 +193,7 @@ export function getPaquetesComoProductos(): Producto[] {
 
   const allImages = [...eventImages, ...productImages]
 
-  const paquetes = getPaquetes().filter((p) => p.esPlantilla || p.origen === "admin" || p.estado !== "borrador")
+  const paquetes = getPaquetes().filter((p) => p.origen === "admin" || p.estado !== "borrador")
 
   return paquetes.map((p, i) => {
     const descuento = p.descuentoPorcentaje ?? 0

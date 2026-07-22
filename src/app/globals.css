@@ -739,7 +739,7 @@
   --muted-foreground: var(--boga-text-muted);
   --border: var(--boga-border-default);
   --border-subtle: var(--boga-border-subtle);
-  --input: var(--boga-surface-inset);
+  --input: var(--boga-border-default);
   --ring: var(--boga-border-focus);
   --body: var(--boga-text-secondary);
   --dark: var(--boga-text-primary);

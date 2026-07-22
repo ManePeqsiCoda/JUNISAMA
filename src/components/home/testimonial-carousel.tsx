@@ -119,7 +119,7 @@ export function TestimonialCarousel() {
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
         >
-          <div className="relative min-h-[240px] overflow-hidden rounded-2xl border border-[var(--boga-border-subtle)] bg-[var(--boga-surface-elevated)] p-8 shadow-[var(--boga-shadow-2)] md:p-12">
+          <div className="relative flex h-[400px] items-center overflow-hidden rounded-2xl border border-[var(--boga-border-subtle)] bg-[var(--boga-surface-elevated)] p-8 shadow-[var(--boga-shadow-2)] md:h-[360px] md:p-12">
             <Quote className="absolute right-6 top-6 h-12 w-12 text-[var(--boga-lima-500)]/10" />
 
             <AnimatePresence mode="wait" custom={direction}>
@@ -131,7 +131,7 @@ export function TestimonialCarousel() {
                 animate="center"
                 exit="exit"
                 transition={{ duration: 0.35, ease: "easeInOut" }}
-                className="flex flex-col"
+                className="flex w-full flex-col"
               >
                 {/* Estrellas */}
                 <div className="mb-5 flex gap-1">
@@ -208,7 +208,6 @@ export function TestimonialCarousel() {
             </button>
           </div>
 
-          {/* Contador */}
           <p className="mt-3 text-center text-xs text-[var(--boga-text-tertiary)]">
             {current + 1} / {testimonials.length}
           </p>

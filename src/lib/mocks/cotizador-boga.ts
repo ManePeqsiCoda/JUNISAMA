@@ -362,39 +362,74 @@ export const DEFAULT_CATALOGO: CatalogItem[] = [
       },
     ],
   },
+  {
+    id: "prod-bano-obra",
+    slug: "bano-obra",
+    nombre: "Baño de Obra",
+    descripcion: "Baño portátil económico para obras de construcción. Alquiler mínimo: 1 mes.",
+    categoria: "obras",
+    icono: "Building2",
+    imagen: "/images/products/bano-estandar-photo.jpg",
+    specs: [{ label: "Alquiler mínimo", value: "1 mes" }],
+    activo: true,
+    orden: 11,
+    tarifas: [
+      {
+        id: "tar-bano-obra-mes",
+        nombre: "Mensual (mínimo 1 mes)",
+        descripcion: "Cobro mensual con descuento por permanencia.",
+        incluye: ["Instalación", "Retiro", "Limpieza semanal"],
+        costos: [
+          { concepto: "Amortización unidad obra", cantidad: 1, unidad: "mes", costoUnitario: 90000, costoTotal: 90000 },
+          { concepto: "Logística instalación/retiro (prorrateado)", cantidad: 1, unidad: "mes", costoUnitario: 40000, costoTotal: 40000 },
+          { concepto: "Limpieza semanal", cantidad: 4, unidad: "semana", costoUnitario: 5000, costoTotal: 20000 },
+        ],
+        costoTotal: 150000,
+        precioCliente: 280000,
+        margenPorcentaje: 46,
+        ganancia: 130000,
+        unidadCobro: "mes",
+        activa: true,
+      },
+    ],
+  },
+  {
+    id: "prod-lavamanos-obra",
+    slug: "lavamanos-obra",
+    nombre: "Lava Manos de Obra",
+    descripcion: "Lavamanos portátil económico para obras. Alquiler mínimo: 1 mes.",
+    categoria: "obras",
+    icono: "Droplets",
+    imagen: "/images/products/lavamanos-photo.jpg",
+    specs: [{ label: "Alquiler mínimo", value: "1 mes" }],
+    activo: true,
+    orden: 12,
+    tarifas: [
+      {
+        id: "tar-lavamanos-obra-mes",
+        nombre: "Mensual (mínimo 1 mes)",
+        descripcion: "Cobro mensual para obra.",
+        incluye: ["Instalación", "Retiro", "Recarga de agua"],
+        costos: [
+          { concepto: "Amortización unidad", cantidad: 1, unidad: "mes", costoUnitario: 30000, costoTotal: 30000 },
+          { concepto: "Logística", cantidad: 1, unidad: "mes", costoUnitario: 15000, costoTotal: 15000 },
+          { concepto: "Recarga de agua", cantidad: 4, unidad: "semana", costoUnitario: 2500, costoTotal: 10000 },
+        ],
+        costoTotal: 55000,
+        precioCliente: 90000,
+        margenPorcentaje: 39,
+        ganancia: 35000,
+        unidadCobro: "mes",
+        activa: true,
+      },
+    ],
+  },
 ]
 
 function withTotales(p: PaqueteEvento): PaqueteEvento {
   const t = calcularPaquete(p.items, DEFAULT_CATALOGO, p.descuentoPorcentaje ?? 0)
   return { ...p, ...t }
 }
-
-export const PLANTILLAS_PAQUETE: PaqueteEvento[] = [
-  withTotales({
-    id: "pkg-festival-starter",
-    numero: "PLANTILLA-01",
-    nombre: "Festival Starter",
-    esPlantilla: true,
-    tipoEvento: "festival",
-    items: [
-      { catalogItemId: "prod-estandar", tarifaId: "tar-std-dia", cantidad: 20 },
-      { catalogItemId: "prod-accesible", tarifaId: "tar-acc-dia", cantidad: 4 },
-      { catalogItemId: "prod-lavamanos", tarifaId: "tar-lava-dia", cantidad: 6 },
-      { catalogItemId: "prod-operarios", tarifaId: "tar-op-12h", cantidad: 4 },
-      { catalogItemId: "svc-mantenimiento", tarifaId: "tar-mant-evento", cantidad: 1 },
-    ],
-    costoTotal: 0,
-    precioCliente: 0,
-    margenPorcentaje: 0,
-    ganancia: 0,
-    estado: "borrador",
-    origen: "plantilla",
-    validezDias: 15,
-    descuentoPorcentaje: 10,
-    creadoEn: "2026-07-01T00:00:00.000Z",
-    actualizadoEn: "2026-07-01T00:00:00.000Z",
-  }),
-]
 
 export const COTIZACIONES_DEMO: PaqueteEvento[] = [
   withTotales({
@@ -464,8 +499,10 @@ export const COTIZACIONES_DEMO: PaqueteEvento[] = [
 export const SOLICITUDES_DEMO: SolicitudPublica[] = [
   {
     id: "sol-001",
+    numeroReferencia: "BOGA-REF-2026-0001",
     fullName: "Andrés Quintero",
     company: "Core Festival",
+    rut: "901.123.456-7",
     email: "ops@corefest.co",
     phone: "+57 320 111 0303",
     eventType: "festival",

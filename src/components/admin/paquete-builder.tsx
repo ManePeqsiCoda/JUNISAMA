@@ -36,16 +36,19 @@ import {
   MARGEN_WARNING,
   nextNumeroCotizacion,
   precioDesdeMargen,
+  validarDuracionObra,
 } from "@/lib/cotizador/calc"
 import {
   generateId,
   getCatalogo,
   getPaqueteById,
   getPaquetes,
-  getPlantillas,
+  updateSolicitud,
   upsertPaquete,
 } from "@/lib/cotizador/storage"
 import { exportPaquetePdf } from "@/lib/cotizador/pdf"
+import { TransporteCostos } from "@/components/admin/transporte-costos"
+import { EmailPreviewDialog } from "@/components/admin/email-preview-dialog"
 import type {
   CatalogItem,
   CategoriaCatalogo,
@@ -58,7 +61,7 @@ import { CATEGORIA_LABELS } from "@/types/cotizador-boga"
 
 interface PaqueteBuilderProps {
   paqueteId?: string
-  plantillaId?: string
+  solicitudId?: string
   solicitudPrefill?: {
     cliente?: Partial<ClienteEvento>
     nombre?: string
@@ -83,7 +86,7 @@ const CATEGORIAS = Object.keys(CATEGORIA_LABELS) as CategoriaCatalogo[]
 
 export function PaqueteBuilder({
   paqueteId,
-  plantillaId,
+  solicitudId,
   solicitudPrefill,
 }: PaqueteBuilderProps) {
   const router = useRouter()
@@ -111,6 +114,13 @@ export function PaqueteBuilder({
   const [editId, setEditId] = useState<string | undefined>(paqueteId)
   const [numero, setNumero] = useState("")
   const [saving, setSaving] = useState(false)
+  const [emailPreviewOpen, setEmailPreviewOpen] = useState(false)
+  const [emailPreviewData, setEmailPreviewData] = useState<{
+    nombre: string
+    email: string
+    numeroCotizacion: string
+    precioCliente: number
+  } | null>(null)
 
   // Items abiertos (mostrando detalle de cantidad)
   const [openItems, setOpenItems] = useState<string[]>([])
@@ -128,30 +138,21 @@ export function PaqueteBuilder({
     const cat = getCatalogo()
     setCatalogo(cat)
 
-    const sourceId = paqueteId || plantillaId
-    if (sourceId) {
-      const existing = getPaqueteById(sourceId)
+    if (paqueteId) {
+      const existing = getPaqueteById(paqueteId)
       if (existing) {
-        const isTemplate = existing.esPlantilla && !paqueteId
         setItems(existing.items.map((i) => ({ ...i })))
         setDescuento(existing.descuentoPorcentaje ?? 0)
         setDuracionDias(Math.max(1, existing.duracionDias ?? 1))
         setMargenManual(existing.margenPorcentaje)
-        setNombre(
-          isTemplate ? `${existing.nombre} — copia` : existing.nombre
-        )
+        setNombre(existing.nombre)
         setTipoEvento(existing.tipoEvento ?? "")
         setFechaEvento(existing.fechaEvento ?? "")
         setAsistentes(existing.asistentesEstimados)
         setNotasInternas(existing.notasInternas ?? "")
         if (existing.cliente) setCliente(existing.cliente)
-        if (!isTemplate) {
-          setEditId(existing.id)
-          setNumero(existing.numero)
-        } else {
-          setEditId(undefined)
-          setNumero("")
-        }
+        setEditId(existing.id)
+        setNumero(existing.numero)
       }
     }
 
@@ -192,7 +193,7 @@ export function PaqueteBuilder({
         if (seeded.length) setItems(seeded)
       }
     }
-  }, [paqueteId, plantillaId, solicitudPrefill])
+  }, [paqueteId, solicitudPrefill])
 
   const baseTotales = useMemo(
     () => calcularPaquete(items, catalogo, descuento, duracionDias),
@@ -276,7 +277,7 @@ export function PaqueteBuilder({
     const id = editId ?? generateId("cot")
     const num =
       numero ||
-      nextNumeroCotizacion(all.filter((p) => !p.esPlantilla))
+      nextNumeroCotizacion(all)
     return {
       id,
       numero: num,
@@ -326,6 +327,11 @@ export function PaqueteBuilder({
       )
       return false
     }
+    const obraVal = validarDuracionObra(items, catalogo, duracionDias)
+    if (!obraVal.valido) {
+      toast.error(obraVal.mensaje!)
+      return false
+    }
     return true
   }
 
@@ -339,11 +345,33 @@ export function PaqueteBuilder({
       const saved = upsertPaquete(buildPaquete(estado))
       setEditId(saved.id)
       setNumero(saved.numero)
+
+      if (solicitudId) {
+        updateSolicitud(solicitudId, { paqueteId: saved.id, estado: "convertida" })
+      }
+
       toast.success(
         estado === "enviada"
-          ? `Cotización ${saved.numero} marcada como enviada`
+          ? `Cotizaci\u00f3n ${saved.numero} marcada como enviada`
           : `Borrador ${saved.numero} guardado`
       )
+
+      if (estado === "enviada") {
+        // Simulacion visual: mostrar preview del correo que se enviaria al cliente
+        // El envio real requiere conectar un proveedor de correo (Resend o nodemailer)
+        toast.success(`Correo enviado a ${cliente.email}`, {
+          description: "Simulacion visual para demo — el envio real no esta conectado.",
+          duration: 8000,
+        })
+        setEmailPreviewData({
+          nombre: cliente.nombre,
+          email: cliente.email,
+          numeroCotizacion: saved.numero,
+          precioCliente: saved.precioCliente,
+        })
+        setEmailPreviewOpen(true)
+      }
+
       router.push(`/admin/cotizaciones/${saved.id}`)
     } finally {
       setSaving(false)
@@ -361,9 +389,6 @@ export function PaqueteBuilder({
     }
   }
 
-  const plantillasList = getPlantillas()
-
-  // Obtener la tarifa activa de un item para mostrar precio
   const getTarifaItem = (it: ItemEnPaquete) => {
     const item = catalogo.find((c) => c.id === it.catalogItemId)
     return item?.tarifas.find((t) => t.id === it.tarifaId) ?? null
@@ -377,27 +402,6 @@ export function PaqueteBuilder({
     <div className="space-y-4">
       <div className="rounded-lg border border-dashed border-boga-lima-500/40 bg-boga-lima-500/5 px-3 py-2 text-xs text-muted-foreground">
         MOCK — validar con BOGA. Elevamos el estándar de tus eventos.
-      </div>
-
-      <div className="flex flex-wrap items-center gap-2">
-        <Label className="text-xs text-muted-foreground">Usar plantilla</Label>
-        <Select
-          onValueChange={(id) => {
-            if (!id) return
-            router.push(`/admin/cotizaciones/nueva?plantillaId=${id}`)
-          }}
-        >
-          <SelectTrigger className="w-56">
-            <SelectValue placeholder="Elegir plantilla…" />
-          </SelectTrigger>
-          <SelectContent>
-            {plantillasList.map((p) => (
-              <SelectItem key={p.id} value={p.id}>
-                {p.nombre}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-5">
@@ -601,7 +605,7 @@ export function PaqueteBuilder({
                 <div className="space-y-2">
                   <Label>Tipo evento</Label>
                   <Select
-                    value={tipoEvento || undefined}
+                    value={tipoEvento}
                     onValueChange={(v) =>
                       setTipoEvento(v as TipoEventoCotizador)
                     }
@@ -776,6 +780,9 @@ export function PaqueteBuilder({
                     <span>{formatCOP(totales.costoTotal)}</span>
                   </div>
                 )}
+                {mostrarCostos && (
+                  <TransporteCostos items={items} ciudad={cliente.ciudad} />
+                )}
                 <div className="flex justify-between text-sm">
                   <span>Precio cliente</span>
                   <span className="font-bold text-foreground">
@@ -868,6 +875,17 @@ export function PaqueteBuilder({
           </Card>
         </div>
       </div>
+
+      {/* Simulacion visual de correo electronico para demo */}
+      {/* El envio real requiere conectar un proveedor de correo (Resend o nodemailer) */}
+      {emailPreviewData && (
+        <EmailPreviewDialog
+          tipo="cotizacion-enviada"
+          data={emailPreviewData}
+          open={emailPreviewOpen}
+          onOpenChange={setEmailPreviewOpen}
+        />
+      )}
     </div>
   )
 }

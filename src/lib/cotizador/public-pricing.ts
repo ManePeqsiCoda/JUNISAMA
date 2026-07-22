@@ -103,6 +103,7 @@ export function formatPrecioPublico(v: number): string {
 export function labelUnidadPublica(unidad: string): string {
   const u = unidad.toLowerCase()
   if (u.includes("turno")) return "/turno"
-  if (u.includes("día") || u.includes("dia") || u.includes("evento")) return "/día"
+  if (u.includes("día") || u.includes("dia") || u.includes("evento")) return "unidad por día"
+  if (u.includes("mes")) return "/mes"
   return "/unidad"
 }

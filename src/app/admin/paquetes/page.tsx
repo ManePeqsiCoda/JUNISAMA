@@ -186,21 +186,13 @@ export default function PaquetesPage() {
             return (
               <Card
                 key={p.id}
-                className={cn(
-                  "border-border bg-card transition-all hover:shadow-md",
-                  p.esPlantilla && "ring-1 ring-boga-electric-500/30"
-                )}
+                className="border-border bg-card transition-all hover:shadow-md"
               >
                 <CardHeader className="space-y-2">
                   <div className="flex items-start justify-between">
                     <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
                       <Layers className="h-5 w-5" />
                     </div>
-                    {p.esPlantilla && (
-                      <span className="rounded-full bg-boga-electric-500/10 px-2 py-0.5 text-[10px] font-semibold text-boga-electric-600">
-                        Plantilla
-                      </span>
-                    )}
                   </div>
                   <CardTitle className="text-lg">{p.nombre}</CardTitle>
                   <p className="text-xs capitalize text-muted-foreground">
@@ -400,8 +392,8 @@ function PaqueteEditor({ paqueteId, onSaved, onCancel }: PaqueteEditorProps) {
       const all = getPaquetes()
       const id = paqueteId ?? generateId("pkg")
       const num = paqueteId
-        ? (getPaqueteById(paqueteId)?.numero ?? nextNumeroCotizacion(all.filter((p) => !p.esPlantilla)))
-        : nextNumeroCotizacion(all.filter((p) => !p.esPlantilla))
+        ? (getPaqueteById(paqueteId)?.numero ?? nextNumeroCotizacion(all))
+        : nextNumeroCotizacion(all)
 
       const pkg: PaqueteEvento = {
         id,
@@ -602,7 +594,7 @@ function PaqueteEditor({ paqueteId, onSaved, onCancel }: PaqueteEditorProps) {
               <div className="space-y-2">
                 <Label>Tipo de evento</Label>
                 <Select
-                  value={tipoEvento || undefined}
+                  value={tipoEvento}
                   onValueChange={(v) =>
                     setTipoEvento(v as TipoEventoCotizador)
                   }

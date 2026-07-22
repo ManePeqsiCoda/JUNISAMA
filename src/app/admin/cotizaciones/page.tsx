@@ -71,7 +71,7 @@ function contarSufijo(nombre: string, existentes: PaqueteEvento[]): number {
   const base = nombre.replace(/ v\d+$/, "")
   let maxVer = 0
   for (const p of existentes) {
-    if (p.id.startsWith("cot-")) continue // solo contar paquetes/plantillas
+    if (p.id.startsWith("cot-")) continue
     const pBase = p.nombre.replace(/ v\d+$/, "")
     if (pBase === base) {
       const match = p.nombre.match(/ v(\d+)$/)
@@ -186,11 +186,7 @@ export default function CotizacionesPage() {
               Cotización no editable
             </DialogTitle>
             <DialogDescription className="text-center text-muted-foreground">
-              ¡Ey! Esta cotización ya fue{" "}
-              {duplicateTarget?.estado === "aceptada"
-                ? "aceptada"
-                : "enviada"}
-              , por lo tanto no puede ser editada.
+              Vamos a crear una copia editable de esto.
             </DialogDescription>
           </DialogHeader>
           <div className="rounded-lg border border-border bg-muted/30 p-3 text-sm">
